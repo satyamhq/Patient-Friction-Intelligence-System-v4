@@ -1,0 +1,114 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+  html {
+    overflow-x: hidden;
+    width: 100%;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    @apply bg-slate-50 text-slate-900 font-sans antialiased min-h-screen;
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+  }
+  #root {
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+  }
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Fluid Typography Utilities */
+.text-fluid-h1 {
+  font-size: clamp(2rem, 5.5vw, 4.25rem);
+  line-height: 1.12;
+}
+.text-fluid-h2 {
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
+  line-height: 1.2;
+}
+.text-fluid-body {
+  font-size: clamp(0.9375rem, 1.2vw, 1.125rem);
+  line-height: 1.6;
+}
+
+/* Safe-area insets & touch targets */
+.bottom-safe {
+  bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+}
+.left-safe {
+  left: max(1rem, env(safe-area-inset-left, 1rem));
+}
+.pb-safe {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 1rem));
+}
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Leaflet map styles */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+  z-index: 10;
+}
+
+/* WCAG High Contrast Mode */
+html.high-contrast {
+  filter: contrast(115%);
+}
+html.high-contrast button,
+html.high-contrast a,
+html.high-contrast input,
+html.high-contrast select,
+html.high-contrast .card {
+  border-width: 2px !important;
+  border-color: #0f172a !important;
+}
+
+/* WCAG Reduced Motion */
+html.reduced-motion *,
+html.reduced-motion *::before,
+html.reduced-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+
