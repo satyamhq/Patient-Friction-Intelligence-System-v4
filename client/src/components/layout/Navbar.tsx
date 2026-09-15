@@ -1,36 +1,27 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useLocation as useRouterLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   Activity,
-  MapPin,
   Bell,
   LogOut,
   User as UserIcon,
-  Shield,
-  Building2,
+  ShieldAlert,
   Menu,
   X,
-  Settings as SettingsIcon,
-  Laptop,
-  Layers,
-  LayoutDashboard,
-  Cpu,
-  Ambulance,
-  GitFork,
-  FileText,
-  Pill,
+  Settings,
   HeartPulse,
-  HeartHandshake,
-  BarChart3,
-  ChevronDown,
-  FolderLock,
-  Sliders,
+  Calendar,
+  Building2,
+  Stethoscope,
+  Phone,
+  CheckCircle2,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { useNotifications } from '../../context/NotificationContext';
 import { LanguageSelector } from '../common/LanguageSelector';
 import { OfflineSyncIndicator } from '../common/OfflineSyncIndicator';
+import { SimpleModeToggle } from '../common/SimpleModeToggle';
 import { EmergencySOSModal } from '../common/EmergencySOSModal';
 import { openElevenLabsCalling } from '../../services/elevenlabsCallingService';
 
@@ -39,18 +30,17 @@ export const Navbar: React.FC = () => {
   const { user, isAuthenticated, logout } = useAuth();
   const { notifications, unreadCount, markAsRead } = useNotifications();
   const navigate = useNavigate();
-  const routerLocation = useRouterLocation();
+  const location = useLocation();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isMobileNotifExpanded, setIsMobileNotifExpanded] = useState(false);
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
 
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdowns on click outside
+  // Close dropdowns on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
@@ -64,7 +54,7 @@ export const Navbar: React.FC = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Close mobile drawer on escape key and lock body scroll when open
+  // Handle escape key and body scroll lock for mobile menu
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -91,1111 +81,515 @@ export const Navbar: React.FC = () => {
     navigate('/login');
   };
 
-  const isActive = (path: string) => routerLocation.pathname === path;
+  const isActive = (path: string) => location.pathname === path;
+
+  // Primary top links based on role
+  const renderTopLinks = () => {
+    if (!isAuthenticated) {
+      return (
+        <>
+          <Link
+            to="/patient/triage"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/patient/triage') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Health Check
+          </Link>
+          <Link
+            to="/patient/hospitals"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/patient/hospitals') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Find Facilities
+          </Link>
+          <Link
+            to="/architecture"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/architecture') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Architecture
+          </Link>
+        </>
+      );
+    }
+
+    const role = user?.role?.toLowerCase();
+    if (role === 'patient') {
+      return (
+        <>
+          <Link
+            to="/patient/dashboard"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/patient/dashboard') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Home
+          </Link>
+          <Link
+            to="/patient/requests"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/patient/requests') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Appointments
+          </Link>
+          <Link
+            to="/patient/triage"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/patient/triage') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            My Care
+          </Link>
+          <Link
+            to="/patient/health-records"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/patient/health-records') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Records
+          </Link>
+          <Link
+            to="/patient/referrals"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/patient/referrals') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Referrals
+          </Link>
+        </>
+      );
+    }
+
+    if (role === 'asha' || role === 'asha_worker') {
+      return (
+        <>
+          <Link
+            to="/asha/dashboard"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/asha/dashboard') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Today's Visits
+          </Link>
+          <Link
+            to="/asha/patients"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/asha/patients') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Patients
+          </Link>
+          <Link
+            to="/asha/households"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/asha/households') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Households
+          </Link>
+          <Link
+            to="/asha/follow-ups"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/asha/follow-ups') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Follow-ups
+          </Link>
+        </>
+      );
+    }
+
+    if (role === 'doctor') {
+      return (
+        <>
+          <Link
+            to="/doctor/dashboard"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/doctor/dashboard') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Today
+          </Link>
+          <Link
+            to="/doctor/opd-queue"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/doctor/opd-queue') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Queue
+          </Link>
+          <Link
+            to="/doctor/consultation"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/doctor/consultation') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Consultation Desk
+          </Link>
+          <Link
+            to="/doctor/referrals"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/doctor/referrals') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Referrals
+          </Link>
+        </>
+      );
+    }
+
+    if (role === 'hospital') {
+      return (
+        <>
+          <Link
+            to="/hospital/dashboard"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/hospital/dashboard') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Overview
+          </Link>
+          <Link
+            to="/hospital/requests"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/hospital/requests') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            OPD Queue
+          </Link>
+          <Link
+            to="/hospital/departments"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/hospital/departments') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Departments
+          </Link>
+          <Link
+            to="/hospital/facility-metrics"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/hospital/facility-metrics') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Quality
+          </Link>
+        </>
+      );
+    }
+
+    if (role === 'government') {
+      return (
+        <>
+          <Link
+            to="/government/dashboard"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/government/dashboard') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Overview
+          </Link>
+          <Link
+            to="/government/friction-map"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/government/friction-map') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Access Map
+          </Link>
+          <Link
+            to="/government/hospitals"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/government/hospitals') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Facilities
+          </Link>
+          <Link
+            to="/government/interventions"
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              isActive('/government/interventions') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            Interventions
+          </Link>
+        </>
+      );
+    }
+
+    // Default / Admin
+    return (
+      <>
+        <Link
+          to="/admin/dashboard"
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            isActive('/admin/dashboard') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          Overview
+        </Link>
+        <Link
+          to="/admin/users"
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            isActive('/admin/users') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          Users
+        </Link>
+        <Link
+          to="/admin/hospitals"
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            isActive('/admin/hospitals') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          Facilities
+        </Link>
+        <Link
+          to="/admin/system-health"
+          className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            isActive('/admin/system-health') ? 'bg-teal-50 text-teal-800 font-bold' : 'text-slate-600 hover:text-slate-900'
+          }`}
+        >
+          System Health
+        </Link>
+      </>
+    );
+  };
 
   return (
-    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs">
+    <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/90 shadow-xs select-none">
+      {/* Accessible Skip to Content Link */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+
       <div className="w-full max-w-[1700px] mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-3 lg:gap-4">
-          {/* Left: Mobile Hamburger & Logo Brand */}
-          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-            {/* Hamburger Button (Mobile & Tablet) */}
+        <div className="flex items-center justify-between h-16 gap-3">
+          {/* Brand Logo */}
+          <div className="flex items-center gap-3 shrink-0">
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               aria-label={isMobileMenuOpen ? 'Close mobile menu' : 'Open mobile menu'}
               aria-expanded={isMobileMenuOpen}
-              className="lg:hidden touch-target flex items-center justify-center p-2 text-slate-700 hover:bg-slate-100 rounded-xl transition-colors relative cursor-pointer"
+              className="lg:hidden touch-target flex items-center justify-center p-2 text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
-              {isAuthenticated && unreadCount > 0 && !isMobileMenuOpen && (
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full ring-2 ring-white animate-pulse" />
-              )}
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
 
-            <Link to="/" className="flex items-center gap-2 sm:gap-2.5 group">
-              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-brand-500/20 group-hover:scale-105 transition-transform">
-                <Activity className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.2]" />
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform">
+                <Activity className="w-5 h-5 stroke-[2.2]" />
               </div>
               <div className="flex flex-col">
-                <span className="font-extrabold text-sm sm:text-base lg:text-lg tracking-tight text-slate-900 flex items-center gap-1.5">
+                <span className="font-extrabold text-base tracking-tight text-slate-900 flex items-center gap-1.5">
                   PFIS
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 font-bold hidden sm:inline">
+                    v4.0
+                  </span>
                 </span>
-                <span className="text-[10px] font-medium text-slate-500 -mt-0.5 hidden sm:inline">
-                  Patient Friction Index & Access Platform
+                <span className="text-[10px] font-semibold text-slate-500 -mt-0.5 hidden md:inline">
+                  Patient Friction Intelligence System
                 </span>
               </div>
             </Link>
           </div>
 
-          {/* Center Navigation Links (Laptop & Desktop Only) */}
-          <nav className="hidden lg:flex items-center gap-1 text-xs font-semibold text-slate-600">
-            {/* PATIENT NAV */}
-            {user?.role === 'patient' && (
-              <>
-                <Link
-                  to="/patient/hospitals"
-                  className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
-                    isActive('/patient/hospitals')
-                      ? 'bg-teal-50 text-teal-700 border border-teal-200 font-bold shadow-xs'
-                      : 'hover:text-teal-600 hover:bg-slate-100'
-                  }`}
-                >
-                  <MapPin className="w-3.5 h-3.5 text-teal-600" />
-                  <span>Find Hospitals & Doctors</span>
-                </Link>
-
-                <Link
-                  to="/patient/teleconsult"
-                  className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
-                    isActive('/patient/teleconsult')
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200 font-bold shadow-xs'
-                      : 'hover:text-blue-600 hover:bg-slate-100'
-                  }`}
-                >
-                  <Laptop className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Live Teleconsult</span>
-                </Link>
-
-                <Link
-                  to="/patient/digital-twin"
-                  className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
-                    isActive('/patient/digital-twin')
-                      ? 'bg-teal-50 text-teal-700 border border-teal-200 font-bold shadow-xs'
-                      : 'hover:text-teal-600 hover:bg-slate-100'
-                  }`}
-                >
-                  <Sliders className="w-3.5 h-3.5 text-teal-600" />
-                  <span>Digital Twin</span>
-                </Link>
-
-                <Link
-                  to="/patient/dashboard"
-                  className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1.5 ${
-                    isActive('/patient/dashboard')
-                      ? 'bg-slate-100 text-slate-900 font-bold'
-                      : 'hover:text-slate-900 hover:bg-slate-100'
-                  }`}
-                >
-                  <LayoutDashboard className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Dashboard</span>
-                </Link>
-              </>
-            )}
-
-            {/* HOSPITAL NAV */}
-            {user?.role === 'hospital' && (
-              <>
-                <Link
-                  to="/hospital/dashboard"
-                  className={`px-3 py-1.5 rounded-xl transition-all ${
-                    isActive('/hospital/dashboard')
-                      ? 'bg-teal-50 text-teal-700 font-bold'
-                      : 'hover:bg-slate-100'
-                  }`}
-                >
-                  Hospital Desk
-                </Link>
-                <Link
-                  to="/hospital/requests"
-                  className={`px-3 py-1.5 rounded-xl transition-all ${
-                    isActive('/hospital/requests')
-                      ? 'bg-teal-50 text-teal-700 font-bold'
-                      : 'hover:bg-slate-100'
-                  }`}
-                >
-                  Patient Queue
-                </Link>
-                <Link
-                  to="/hospital/teleconsult"
-                  className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1 ${
-                    isActive('/hospital/teleconsult')
-                      ? 'bg-blue-50 text-blue-700 font-bold'
-                      : 'hover:bg-slate-100'
-                  }`}
-                >
-                  <Laptop className="w-3.5 h-3.5 text-blue-500" />
-                  <span>Tele-Triage</span>
-                </Link>
-                <Link
-                  to="/hospital/departments"
-                  className={`px-3 py-1.5 rounded-xl transition-all ${
-                    isActive('/hospital/departments')
-                      ? 'bg-teal-50 text-teal-700 font-bold'
-                      : 'hover:bg-slate-100'
-                  }`}
-                >
-                  Departments & OPD
-                </Link>
-              </>
-            )}
-
-            {/* ADMIN NAV */}
-            {user?.role === 'admin' && (
-              <>
-                <Link
-                  to="/admin/dashboard"
-                  className={`px-3 py-1.5 rounded-xl transition-all ${
-                    isActive('/admin/dashboard')
-                      ? 'bg-teal-50 text-teal-700 font-bold'
-                      : 'hover:bg-slate-100'
-                  }`}
-                >
-                  System Intelligence
-                </Link>
-                <Link
-                  to="/admin/judge-mode"
-                  className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1 ${
-                    isActive('/admin/judge-mode')
-                      ? 'bg-purple-50 text-purple-700 font-bold border border-purple-200'
-                      : 'hover:bg-slate-100 text-purple-700 font-semibold'
-                  }`}
-                >
-                  <BarChart3 className="w-3.5 h-3.5 text-purple-600" />
-                  <span>Judge Mode</span>
-                </Link>
-                <Link
-                  to="/admin/simulator"
-                  className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1 ${
-                    isActive('/admin/simulator')
-                      ? 'bg-teal-50 text-teal-700 font-bold'
-                      : 'hover:bg-slate-100 text-teal-700'
-                  }`}
-                >
-                  <Cpu className="w-3.5 h-3.5" />
-                  <span>What-If Simulator</span>
-                </Link>
-                <Link
-                  to="/admin/digital-twin"
-                  className={`px-3 py-1.5 rounded-xl transition-all flex items-center gap-1 ${
-                    isActive('/admin/digital-twin')
-                      ? 'bg-teal-50 text-teal-700 font-bold'
-                      : 'hover:bg-slate-100'
-                  }`}
-                >
-                  <Sliders className="w-3.5 h-3.5 text-amber-500" />
-                  <span>Digital Twin</span>
-                </Link>
-                <Link
-                  to="/admin/interventions"
-                  className={`px-3 py-1.5 rounded-xl transition-all ${
-                    isActive('/admin/interventions')
-                      ? 'bg-teal-50 text-teal-700 font-bold'
-                      : 'hover:bg-slate-100'
-                  }`}
-                >
-                  Budget Optimizer
-                </Link>
-                <div className="flex items-center gap-1 ml-2 pl-2 border-l border-slate-200">
-                  <Link
-                    to="/patient/dashboard"
-                    className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-teal-50 text-teal-800 hover:bg-teal-100 border border-teal-200 transition-all flex items-center gap-1"
-                    title="Open Patient Portal View"
-                  >
-                    <span>👤 Patient View</span>
-                  </Link>
-                  <Link
-                    to="/hospital/dashboard"
-                    className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-blue-50 text-blue-800 hover:bg-blue-100 border border-blue-200 transition-all flex items-center gap-1"
-                    title="Open Hospital Desk View"
-                  >
-                    <span>🏥 Hospital View</span>
-                  </Link>
-                </div>
-              </>
-            )}
-
-            {/* PUBLIC VISITOR NAV */}
-            {!isAuthenticated && (
-              <>
-                <Link
-                  to="/patient/hospitals"
-                  className="px-3 py-1.5 rounded-xl hover:text-teal-600 hover:bg-slate-100 transition-colors flex items-center gap-1.5"
-                >
-                  <MapPin className="w-3.5 h-3.5 text-teal-600" />
-                  <span>Find Hospitals</span>
-                </Link>
-                <Link
-                  to="/assessment"
-                  className="px-3 py-1.5 rounded-xl hover:text-teal-600 hover:bg-slate-100 transition-colors flex items-center gap-1.5 font-semibold text-slate-800"
-                >
-                  <Activity className="w-3.5 h-3.5 text-teal-600" />
-                  <span>Access Assessment</span>
-                </Link>
-                <Link
-                  to="/architecture"
-                  className="px-3 py-1.5 rounded-xl text-teal-700 bg-teal-50 hover:bg-teal-100 font-bold transition-colors flex items-center gap-1.5 border border-teal-200"
-                >
-                  <Layers className="w-3.5 h-3.5 text-teal-600" />
-                  <span>System Architecture</span>
-                </Link>
-                <Link
-                  to="/about"
-                  className="px-3 py-1.5 rounded-xl hover:text-teal-600 hover:bg-slate-100 transition-colors"
-                >
-                  About Platform
-                </Link>
-              </>
-            )}
+          {/* Desktop Center Links */}
+          <nav className="hidden lg:flex items-center gap-1">
+            {renderTopLinks()}
           </nav>
 
-          {/* Right Action Controls */}
-          <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            {/* 108 Emergency SOS Button (Immediate Emergencies) */}
+          {/* Right Action Tools: Connectivity, Language, SOS, Calling, Profile */}
+          <div className="flex items-center gap-2 sm:gap-2.5">
+            {/* Offline Sync State */}
+            <OfflineSyncIndicator />
+
+            {/* Simple Mode Toggle */}
+            <SimpleModeToggle />
+
+            {/* Language Selector */}
+            <LanguageSelector />
+
+            {/* AI Voice Assistant Trigger */}
+            <button
+              type="button"
+              onClick={() => openElevenLabsCalling()}
+              className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-xs font-bold transition-all cursor-pointer"
+              title="Speak with AI Healthcare Assistant"
+            >
+              <Phone className="w-3.5 h-3.5 text-teal-600" />
+              <span>Voice Assist</span>
+            </button>
+
+            {/* Emergency SOS Button */}
             <button
               type="button"
               onClick={() => setIsEmergencyModalOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xs font-black tracking-wide border border-red-700 shadow-sm flex items-center gap-1.5 transition-all cursor-pointer select-none shrink-0"
-              title="108 Emergency: For immediate emergencies"
-              aria-label="108 Emergency SOS"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-extrabold shadow-xs transition-all cursor-pointer"
+              title="108 Emergency Ambulance & SOS"
             >
-              <Ambulance className="w-4 h-4 text-white shrink-0" />
-              <span className="font-extrabold tracking-wider whitespace-nowrap">108 SOS</span>
+              <ShieldAlert className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span className="hidden sm:inline">108 SOS</span>
             </button>
 
-            {/* ElevenLabs Calling Button (Placed Immediately After 108 - Only 📞) */}
-            <button
-              type="button"
-              onClick={openElevenLabsCalling}
-              className="w-9 h-9 rounded-xl bg-teal-600 hover:bg-teal-700 active:scale-95 text-white text-base shadow-sm border border-teal-700/80 flex items-center justify-center transition-all cursor-pointer select-none shrink-0"
-              title="Call with ElevenLabs Healthcare AI"
-              aria-label="Call with ElevenLabs Healthcare AI"
-            >
-              <span className="leading-none select-none" role="img" aria-label="phone">📞</span>
-            </button>
-
-            {/* Desktop & Tablet Action Controls */}
-            <div className="hidden sm:flex items-center gap-2 sm:gap-2.5">
-              {/* Offline Sync Indicator */}
-              <OfflineSyncIndicator />
-
-              {/* Global Language Selector (Compact on md, full on xl) */}
-              <div className="hidden md:block">
-                <LanguageSelector />
-              </div>
-
-              {/* Notification Bell */}
-              {isAuthenticated && (
-                <div className="relative" ref={notifRef}>
-                  <button
-                    onClick={() => setIsNotifOpen(!isNotifOpen)}
-                    className="p-2 rounded-xl text-slate-600 hover:bg-slate-100 relative transition-colors touch-target flex items-center justify-center"
-                    title={t('nav.notifications', 'Notifications')}
-                    aria-label="Notifications"
-                  >
-                    <Bell className="w-4 h-4" />
-                    {unreadCount > 0 && (
-                      <span className="absolute top-1 right-1 w-3.5 h-3.5 bg-rose-500 text-white rounded-full text-[9px] font-bold flex items-center justify-center animate-pulse">
-                        {unreadCount}
-                      </span>
-                    )}
-                  </button>
-
-                  {/* Desktop Notifications Dropdown */}
-                  {isNotifOpen && (
-                    <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-200 py-3 z-50 overflow-hidden">
-                      <div className="px-4 pb-2 border-b border-slate-100 flex items-center justify-between">
-                        <h4 className="font-bold text-sm text-slate-900">{t('nav.notifications', 'Notifications')}</h4>
-                        <span className="text-[11px] font-medium text-slate-500">
-                          {unreadCount} unread
-                        </span>
-                      </div>
-
-                      <div className="max-h-72 overflow-y-auto divide-y divide-slate-100">
-                        {notifications.length === 0 ? (
-                          <div className="p-6 text-center text-xs text-slate-400">
-                            No notifications yet.
-                          </div>
-                        ) : (
-                          notifications.map((notif) => (
-                            <div
-                              key={notif._id}
-                              onClick={() => {
-                                markAsRead(notif._id);
-                                if (notif.actionUrl) {
-                                  setIsNotifOpen(false);
-                                  navigate(notif.actionUrl);
-                                }
-                              }}
-                              className={`p-3.5 hover:bg-slate-50 cursor-pointer transition-colors ${
-                                !notif.isRead ? 'bg-teal-50/40' : ''
-                              }`}
-                            >
-                              <div className="flex items-start justify-between gap-2">
-                                <p className="text-xs font-semibold text-slate-900">{notif.title}</p>
-                                {!notif.isRead && (
-                                  <span className="w-2 h-2 rounded-full bg-brand-500 shrink-0 mt-1" />
-                                )}
-                              </div>
-                              <p className="text-[11px] text-slate-600 mt-0.5 line-clamp-2">
-                                {notif.message}
-                              </p>
-                              <span className="text-[10px] text-slate-400 mt-1 block">
-                                {new Date(notif.createdAt).toLocaleTimeString([], {
-                                  hour: '2-digit',
-                                  minute: '2-digit',
-                                })}
-                              </span>
-                            </div>
-                          ))
-                        )}
-                      </div>
-                    </div>
+            {/* Notifications Dropdown */}
+            {isAuthenticated && (
+              <div className="relative" ref={notifRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsNotifOpen(!isNotifOpen)}
+                  aria-label="Notifications"
+                  className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                >
+                  <Bell className="w-5 h-5" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-rose-500 text-white text-[10px] font-extrabold flex items-center justify-center ring-2 ring-white">
+                      {unreadCount > 9 ? '9+' : unreadCount}
+                    </span>
                   )}
-                </div>
-              )}
+                </button>
 
-              {/* User Profile Pill with Floating Dropdown */}
-              {isAuthenticated && user ? (
-                <div className="relative" ref={profileRef}>
-                  <button
-                    type="button"
-                    onClick={() => setIsProfileOpen(!isProfileOpen)}
-                    className="flex items-center gap-2 p-1 sm:px-2.5 sm:py-1.5 rounded-xl hover:bg-slate-100 transition-all border border-transparent hover:border-slate-200 cursor-pointer"
-                    title="User Account & Settings"
-                  >
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-slate-900 to-slate-700 text-white flex items-center justify-center font-bold text-xs shadow-xs shrink-0">
-                      {user.role === 'hospital' ? (
-                        <Building2 className="w-4 h-4 text-teal-300" />
-                      ) : user.role === 'admin' ? (
-                        <Shield className="w-4 h-4 text-amber-300" />
+                {isNotifOpen && (
+                  <div className="absolute right-0 mt-2 w-80 sm:w-96 bg-white rounded-2xl border border-slate-200 shadow-xl py-3 z-50 animate-fade-in">
+                    <div className="flex items-center justify-between px-4 pb-2 border-b border-slate-100">
+                      <span className="font-bold text-xs text-slate-900">Care Notifications</span>
+                      <span className="text-[10px] text-teal-700 font-semibold">Real-time alerts</span>
+                    </div>
+
+                    <div className="max-h-72 overflow-y-auto divide-y divide-slate-100">
+                      {notifications && notifications.length > 0 ? (
+                        notifications.slice(0, 5).map((n: any) => (
+                          <div key={n.id || n._id} className="p-3 hover:bg-slate-50 text-xs">
+                            <p className="font-semibold text-slate-900">{n.title || n.message}</p>
+                            <span className="text-[10px] text-slate-400 mt-1 block">
+                              {n.createdAt ? new Date(n.createdAt).toLocaleTimeString() : 'Just now'}
+                            </span>
+                          </div>
+                        ))
                       ) : (
-                        <UserIcon className="w-4 h-4 text-white" />
+                        <div className="p-4 text-center text-xs text-slate-500">
+                          <CheckCircle2 className="w-5 h-5 text-emerald-500 mx-auto mb-1" />
+                          No pending alerts
+                        </div>
                       )}
                     </div>
-                    <div className="hidden lg:flex flex-col text-left">
-                      <span className="text-xs font-bold text-slate-900 leading-tight truncate max-w-[120px]">
-                        {user.name}
-                      </span>
-                      <span className="text-[9px] font-extrabold text-teal-600 uppercase tracking-wide">
-                        {user.role}
-                      </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Profile Dropdown or Login */}
+            {isAuthenticated ? (
+              <div className="relative" ref={profileRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-slate-100 transition-colors cursor-pointer"
+                  aria-expanded={isProfileOpen}
+                >
+                  <div className="w-7 h-7 rounded-lg bg-teal-100 text-teal-800 font-bold text-xs flex items-center justify-center border border-teal-200">
+                    {user?.name ? user.name[0].toUpperCase() : 'U'}
+                  </div>
+                  <span className="hidden md:inline text-xs font-bold text-slate-800 max-w-[100px] truncate">
+                    {user?.name || 'User'}
+                  </span>
+                </button>
+
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl border border-slate-200 shadow-xl py-2 z-50 animate-fade-in">
+                    <div className="px-4 py-2 border-b border-slate-100">
+                      <p className="font-bold text-xs text-slate-900 truncate">{user?.name}</p>
+                      <p className="text-[10px] text-slate-500 capitalize">{user?.role} Portal</p>
                     </div>
-                    <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                  </button>
 
-                  {/* Floating Profile Dropdown Menu */}
-                  {isProfileOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-2xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                      <div className="px-4 py-3 border-b border-slate-100">
-                        <p className="text-xs font-bold text-slate-900 truncate">
-                          {user.name}
-                        </p>
-                        <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
-                        <span className="inline-block mt-1.5 text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 border border-teal-200">
-                          {user.role} ACCESS
-                        </span>
-                      </div>
+                    <Link
+                      to={`/${user?.role}/profile`}
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                    >
+                      <UserIcon className="w-4 h-4 text-slate-400" />
+                      <span>Profile & ABHA</span>
+                    </Link>
 
-                      <div className="py-1">
-                        <Link
-                          to={
-                            user.role === 'patient'
-                              ? '/patient/profile'
-                              : user.role === 'hospital'
-                              ? '/hospital/profile'
-                              : '/admin/dashboard'
-                          }
-                          onClick={() => setIsProfileOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-                        >
-                          <UserIcon className="w-4 h-4 text-slate-400" />
-                          <span>My Profile & Location</span>
-                        </Link>
+                    <Link
+                      to={`/${user?.role}/settings`}
+                      onClick={() => setIsProfileOpen(false)}
+                      className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+                    >
+                      <Settings className="w-4 h-4 text-slate-400" />
+                      <span>Settings</span>
+                    </Link>
 
-                        <Link
-                          to={
-                            user.role === 'patient'
-                              ? '/patient/settings'
-                              : user.role === 'hospital'
-                              ? '/hospital/settings'
-                              : '/admin/settings'
-                          }
-                          onClick={() => setIsProfileOpen(false)}
-                          className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-                        >
-                          <SettingsIcon className="w-4 h-4 text-slate-400" />
-                          <span>Settings & Accessibility</span>
-                        </Link>
-
-                        {user.role === 'patient' && (
-                          <Link
-                            to="/patient/documents"
-                            onClick={() => setIsProfileOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-slate-700 hover:bg-slate-50 transition-colors"
-                          >
-                            <FolderLock className="w-4 h-4 text-slate-400" />
-                            <span>Document Vault</span>
-                          </Link>
-                        )}
-                      </div>
-
-                      <div className="pt-1 border-t border-slate-100">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setIsProfileOpen(false);
-                            handleLogout();
-                          }}
-                          className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
-                        >
-                          <LogOut className="w-4 h-4" />
-                          <span>Sign Out</span>
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <div className="flex items-center gap-2">
-                  <Link
-                    to="/login"
-                    className="text-xs font-bold text-slate-700 hover:text-teal-600 px-3 py-1.5 rounded-lg hover:bg-slate-100 transition-colors"
-                  >
-                    {t('nav.login', 'Sign In')}
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="text-xs font-bold bg-teal-600 hover:bg-teal-700 text-white px-3.5 py-1.5 rounded-xl shadow-xs transition-all"
-                  >
-                    {t('nav.register', 'Register')}
-                  </Link>
-                </div>
-              )}
-            </div>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 border-t border-slate-100 cursor-pointer"
+                    >
+                      <LogOut className="w-4 h-4 text-rose-500" />
+                      <span>Sign Out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                to="/login"
+                className="px-3.5 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-all"
+              >
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </div>
 
-          {/* Mobile & Tablet Slide Drawer (Slide from Left) */}
+      {/* Mobile Drawer Menu */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden flex justify-start">
-          {/* Backdrop overlay */}
-          <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
-            onClick={() => setIsMobileMenuOpen(false)}
-            aria-hidden="true"
-          />
-
-          {/* Drawer Sheet */}
-          <div
-            className="relative w-[88vw] max-w-sm h-full bg-white shadow-2xl flex flex-col z-50 overflow-hidden border-r border-slate-200 animate-in slide-in-from-left duration-250"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobile Navigation Drawer"
-          >
-            {/* Drawer Header */}
-            <div className="px-4 py-3.5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 shrink-0">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-brand-600 to-teal-400 flex items-center justify-center text-white font-bold text-xs shadow-sm">
-                  <Activity className="w-4 h-4 stroke-[2.2]" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-extrabold text-sm tracking-tight text-slate-900 flex items-center gap-1.5">
-                    PFIS Menu
-                  </span>
-                  <span className="text-[10px] text-slate-400">Healthcare Accessibility</span>
-                </div>
+        <div className="lg:hidden fixed inset-0 top-16 z-50 bg-slate-950/40 backdrop-blur-xs">
+          <div className="w-4/5 max-w-xs h-full bg-white border-r border-slate-200 p-5 shadow-2xl flex flex-col justify-between overflow-y-auto">
+            <div className="space-y-4">
+              <div className="pb-3 border-b border-slate-100">
+                <span className="text-xs font-black uppercase tracking-wider text-slate-400">
+                  {user?.role ? `${user.role.toUpperCase()} NAVIGATION` : 'NAVIGATION'}
+                </span>
               </div>
+              <div className="flex flex-col gap-1" onClick={() => setIsMobileMenuOpen(false)}>
+                {renderTopLinks()}
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-slate-100 space-y-2">
               <button
                 type="button"
-                onClick={() => setIsMobileMenuOpen(false)}
-                aria-label="Close navigation menu"
-                className="touch-target flex items-center justify-center p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-200/60 transition-colors"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  openElevenLabsCalling();
+                }}
+                className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-teal-50 text-teal-800 font-bold text-xs border border-teal-200"
               >
-                <X className="w-5 h-5" />
+                <Phone className="w-4 h-4 text-teal-600" />
+                <span>AI Voice Assistant</span>
               </button>
-            </div>
 
-            {/* Scrollable Drawer Body */}
-            <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
-              {/* Profile Card / Auth Section */}
-              {isAuthenticated && user ? (
-                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-slate-800 to-slate-700 text-white flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
-                      {user.role === 'hospital' ? (
-                        <Building2 className="w-5 h-5 text-teal-300" />
-                      ) : user.role === 'admin' ? (
-                        <Shield className="w-5 h-5 text-amber-300" />
-                      ) : (
-                        <UserIcon className="w-5 h-5 text-white" />
-                      )}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-slate-900 truncate">
-                        {user.name}
-                      </p>
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-teal-100 text-teal-800">
-                          {user.role}
-                        </span>
-                        <span className="text-[11px] text-slate-400 truncate">
-                          {user.email}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="pt-2 border-t border-slate-200 flex gap-2">
-                    <Link
-                      to={
-                        user.role === 'patient'
-                          ? '/patient/profile'
-                          : user.role === 'hospital'
-                          ? '/hospital/profile'
-                          : '/admin/dashboard'
-                      }
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex-1 text-center py-1.5 text-xs font-semibold rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-50"
-                    >
-                      View Profile
-                    </Link>
-                    <Link
-                      to={
-                        user.role === 'patient'
-                          ? '/patient/settings'
-                          : user.role === 'hospital'
-                          ? '/hospital/settings'
-                          : '/admin/settings'
-                      }
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 flex items-center justify-center"
-                      title="Settings"
-                    >
-                      <SettingsIcon className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  <Link
-                    to="/login"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-full flex items-center justify-center min-h-[44px] px-4 py-2.5 rounded-xl font-bold text-xs bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-sm"
-                  >
-                    <UserIcon className="w-4 h-4 mr-2 text-teal-300" />
-                    Sign In
-                  </Link>
-                  <Link
-                    to="/register"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="w-full flex items-center justify-center min-h-[44px] px-4 py-2.5 rounded-xl font-bold text-xs bg-teal-600 text-white hover:bg-teal-700 transition-colors shadow-sm"
-                  >
-                    {t('nav.register', 'Register New Patient / Hospital')}
-                  </Link>
-                </div>
-              )}
-
-              {/* Mobile Dedicated Healthcare Assistance Cards (Emergency & Non-Emergency) */}
-              <div className="pt-2 space-y-2.5">
-                {/* 108 Emergency */}
-                <div className="p-3 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0">
-                      <Ambulance className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-red-600 block">
-                        108 Emergency
-                      </span>
-                      <p className="text-xs font-bold text-slate-900">
-                        For immediate emergencies
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      setIsEmergencyModalOpen(true);
-                    }}
-                    className="px-3 py-1.5 rounded-xl bg-red-600 text-white text-xs font-black tracking-wider shadow-xs cursor-pointer select-none"
-                  >
-                    108 SOS
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-center -my-1 text-slate-400 font-black text-xs">
-                  ↓
-                </div>
-
-                {/* AI Call & Appointment Assistance */}
-                <div className="p-3 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-teal-600 text-white flex items-center justify-center shrink-0">
-                      <span className="text-sm" role="img" aria-label="phone">📞</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-black uppercase tracking-wider text-teal-800 block">
-                        AI Call & Appointment
-                      </span>
-                      <p className="text-[11px] text-slate-600 leading-tight">
-                        Get help booking, rescheduling, or finding a healthcare appointment.
-                      </p>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsMobileMenuOpen(false);
-                      openElevenLabsCalling();
-                    }}
-                    className="w-9 h-9 rounded-xl bg-teal-600 active:scale-95 text-white text-base shadow-xs flex items-center justify-center cursor-pointer select-none shrink-0"
-                    title="Call with ElevenLabs Healthcare AI"
-                  >
-                    📞
-                  </button>
-                </div>
-              </div>
-
-              {/* Navigation Links Group */}
-              <div className="space-y-1 pt-1">
-                <p className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Navigation
-                </p>
-
-                {/* Common Primary Links */}
-                <Link
-                  to="/patient/hospitals"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                    isActive('/patient/hospitals')
-                      ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <MapPin className="w-4 h-4 text-teal-600 shrink-0" />
-                  <span>Find Hospitals & Doctors</span>
-                </Link>
-
-                <Link
-                  to="/assessment"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                    isActive('/assessment')
-                      ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <Activity className="w-4 h-4 text-teal-600 shrink-0" />
-                  <span>Patient Access Assessment</span>
-                </Link>
-
-                <Link
-                  to="/architecture"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                    isActive('/architecture')
-                      ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <Layers className="w-4 h-4 text-teal-600 shrink-0" />
-                  <span>System Architecture</span>
-                </Link>
-
-                <Link
-                  to="/about"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                    isActive('/about')
-                      ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <Building2 className="w-4 h-4 text-slate-500 shrink-0" />
-                  <span>About Platform</span>
-                </Link>
-
-                <Link
-                  to={user?.role === 'hospital' ? '/hospital/teleconsult' : '/patient/teleconsult'}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                    isActive('/patient/teleconsult') || isActive('/hospital/teleconsult')
-                      ? 'bg-blue-50 text-blue-700 border border-blue-200'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <Laptop className="w-4 h-4 text-blue-600 shrink-0" />
-                  <span>Live Teleconsult</span>
-                </Link>
-
-                <Link
-                  to={user?.role === 'admin' ? '/admin/digital-twin' : '/patient/digital-twin'}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                    isActive('/patient/digital-twin') || isActive('/admin/digital-twin')
-                      ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <Sliders className="w-4 h-4 text-amber-500 shrink-0" />
-                  <span>Digital Twin Simulator</span>
-                </Link>
-
-                {/* Dashboard Link */}
-                <Link
-                  to={
-                    user?.role === 'patient'
-                      ? '/patient/dashboard'
-                      : user?.role === 'hospital'
-                      ? '/hospital/dashboard'
-                      : '/admin/dashboard'
-                  }
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                    isActive('/patient/dashboard') ||
-                    isActive('/hospital/dashboard') ||
-                    isActive('/admin/dashboard')
-                      ? 'bg-slate-100 text-slate-900 font-bold'
-                      : 'text-slate-700 hover:bg-slate-100'
-                  }`}
-                >
-                  <LayoutDashboard className="w-4 h-4 text-slate-500 shrink-0" />
-                  <span>{t('nav.dashboard', 'Dashboard')}</span>
-                </Link>
-
-                {/* Public Health & Universal Access */}
-                <div className="pt-2 border-t border-slate-100">
-                  <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
-                    Public Health Network Grid
-                  </p>
-
-
-                  <Link
-                    to="/patient/triage"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                      isActive('/patient/triage')
-                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <Activity className="w-4 h-4 text-teal-600 shrink-0" />
-                    <span>Digital Triage & Tier Router</span>
-                  </Link>
-
-                  <Link
-                    to="/patient/referrals"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                      isActive('/patient/referrals')
-                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <GitFork className="w-4 h-4 text-blue-600 shrink-0" />
-                    <span>Referral Tracking Hub</span>
-                  </Link>
-
-                  <Link
-                    to="/patient/health-records"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                      isActive('/patient/health-records')
-                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <FileText className="w-4 h-4 text-indigo-600 shrink-0" />
-                    <span>Health Records & ABHA</span>
-                  </Link>
-
-                  <Link
-                    to="/patient/medicines"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                      isActive('/patient/medicines')
-                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <Pill className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>e-Aushadhi Medicine Stock</span>
-                  </Link>
-
-                  <Link
-                    to="/patient/diagnostics"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                      isActive('/patient/diagnostics')
-                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <Activity className="w-4 h-4 text-purple-600 shrink-0" />
-                    <span>Diagnostic Network & Uptime</span>
-                  </Link>
-
-                  <Link
-                    to="/patient/high-risk"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                      isActive('/patient/high-risk')
-                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <HeartPulse className="w-4 h-4 text-rose-500 shrink-0" />
-                    <span>High-Risk Care Registry</span>
-                  </Link>
-
-                  <Link
-                    to="/patient/frontline"
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                      isActive('/patient/frontline')
-                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <HeartHandshake className="w-4 h-4 text-amber-600 shrink-0" />
-                    <span>ASHA Frontline Seva Portal</span>
-                  </Link>
-
-                  <Link
-                    to={
-                      user?.role === 'hospital'
-                        ? '/hospital/facility-metrics'
-                        : user?.role === 'admin'
-                        ? '/admin/facility-metrics'
-                        : '/patient/facility-metrics'
-                    }
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold transition-colors ${
-                      isActive('/patient/facility-metrics') ||
-                      isActive('/hospital/facility-metrics') ||
-                      isActive('/admin/facility-metrics')
-                        ? 'bg-teal-50 text-teal-700 border border-teal-200'
-                        : 'text-slate-700 hover:bg-slate-100'
-                    }`}
-                  >
-                    <BarChart3 className="w-4 h-4 text-teal-600 shrink-0" />
-                    <span>Facility Quality & NQAS Index</span>
-                  </Link>
-                </div>
-
-                {/* Patient Role Specific */}
-                {user?.role === 'patient' && (
-                  <>
-                    <Link
-                      to="/patient/friction"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                    >
-                      <Activity className="w-4 h-4 text-teal-600 shrink-0" />
-                      <span>{t('nav.frictionProfile', 'Friction Profile')}</span>
-                    </Link>
-                    <Link
-                      to="/patient/risk"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                    >
-                      <Shield className="w-4 h-4 text-rose-500 shrink-0" />
-                      <span>{t('nav.accessibilityRisk', 'Accessibility Risk')}</span>
-                    </Link>
-                    <Link
-                      to="/patient/requests"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                    >
-                      <Layers className="w-4 h-4 text-blue-500 shrink-0" />
-                      <span>{t('nav.myRequests', 'My Hospital Requests')}</span>
-                    </Link>
-                    <Link
-                      to="/patient/documents"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                    >
-                      <Layers className="w-4 h-4 text-emerald-500 shrink-0" />
-                      <span>{t('nav.myDocuments', 'Document Vault')}</span>
-                    </Link>
-                  </>
-                )}
-
-                {/* Hospital Role Specific */}
-                {user?.role === 'hospital' && (
-                  <>
-                    <Link
-                      to="/hospital/requests"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                    >
-                      <Layers className="w-4 h-4 text-teal-600 shrink-0" />
-                      <span>{t('nav.triageQueue', 'Patient Requests Queue')}</span>
-                    </Link>
-                    <Link
-                      to="/hospital/departments"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                    >
-                      <Building2 className="w-4 h-4 text-blue-500 shrink-0" />
-                      <span>{t('nav.opdManagement', 'Departments & OPD')}</span>
-                    </Link>
-                  </>
-                )}
-
-                {/* Admin Role Specific */}
-                {user?.role === 'admin' && (
-                  <>
-                    <Link
-                      to="/admin/judge-mode"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200"
-                    >
-                      <BarChart3 className="w-4 h-4 text-teal-600 shrink-0" />
-                      <span>System Impact Evaluation</span>
-                    </Link>
-                    <Link
-                      to="/admin/simulator"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                    >
-                      <Cpu className="w-4 h-4 text-teal-600 shrink-0" />
-                      <span>What-If Simulator</span>
-                    </Link>
-                    <Link
-                      to="/admin/interventions"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                    >
-                      <Layers className="w-4 h-4 text-amber-500 shrink-0" />
-                      <span>Budget Optimizer</span>
-                    </Link>
-                    <Link
-                      to="/admin/friction-map"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                    >
-                      <MapPin className="w-4 h-4 text-rose-500 shrink-0" />
-                      <span>Population Friction Map</span>
-                    </Link>
-                  </>
-                )}
-
-                {/* Public Visitor Extra Links */}
-                {!isAuthenticated && (
-                  <>
-                    <Link
-                      to="/architecture"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-teal-700 bg-teal-50 border border-teal-200"
-                    >
-                      <Layers className="w-4 h-4 text-teal-600 shrink-0" />
-                      <span>System Architecture</span>
-                    </Link>
-                    <Link
-                      to="/about"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                    >
-                      <span>About Platform</span>
-                    </Link>
-                  </>
-                )}
-              </div>
-
-              {/* Notifications Accordion (Mobile) */}
               {isAuthenticated && (
-                <div className="pt-2 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setIsMobileNotifExpanded(!isMobileNotifExpanded)}
-                    className="w-full flex items-center justify-between px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 bg-slate-50"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <Bell className="w-4 h-4 text-slate-500" />
-                      <span>{t('nav.notifications', 'Notifications')}</span>
-                    </div>
-                    <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-rose-500 text-white">
-                      {unreadCount}
-                    </span>
-                  </button>
-
-                  {isMobileNotifExpanded && (
-                    <div className="mt-2 space-y-1.5 max-h-48 overflow-y-auto px-1">
-                      {notifications.length === 0 ? (
-                        <p className="text-xs text-slate-400 p-3 text-center">No notifications yet.</p>
-                      ) : (
-                        notifications.map((notif) => (
-                          <div
-                            key={notif._id}
-                            onClick={() => {
-                              markAsRead(notif._id);
-                              if (notif.actionUrl) {
-                                setIsMobileMenuOpen(false);
-                                navigate(notif.actionUrl);
-                              }
-                            }}
-                            className={`p-2.5 rounded-xl border text-left cursor-pointer transition-colors ${
-                              !notif.isRead
-                                ? 'bg-teal-50 border-teal-200'
-                                : 'bg-white border-slate-200'
-                            }`}
-                          >
-                            <p className="text-xs font-bold text-slate-900 truncate">
-                              {notif.title}
-                            </p>
-                            <p className="text-[11px] text-slate-500 line-clamp-2">
-                              {notif.message}
-                            </p>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Preferences & Language Group */}
-              <div className="pt-2 border-t border-slate-100 space-y-3">
-                <p className="px-2 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Language Preferences
-                </p>
-
-                {/* Language Selector (Full-Width) */}
-                <div className="px-1">
-                  <LanguageSelector fullWidth={true} />
-                </div>
-
-                {/* Settings link */}
-                <Link
-                  to={
-                    user?.role === 'patient'
-                      ? '/patient/settings'
-                      : user?.role === 'hospital'
-                      ? '/hospital/settings'
-                      : '/admin/settings'
-                  }
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="flex items-center gap-3 px-3 py-2.5 min-h-[44px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100"
-                >
-                  <SettingsIcon className="w-4 h-4 text-slate-500" />
-                  <span>{t('nav.settings', 'Settings & Accessibility')}</span>
-                </Link>
-              </div>
-            </div>
-
-            {/* Drawer Footer (Sign Out or Security Disclaimer) */}
-            <div className="p-4 border-t border-slate-100 bg-slate-50/80 shrink-0">
-              {isAuthenticated ? (
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 min-h-[44px] px-4 py-2.5 rounded-xl font-bold text-xs bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100 transition-colors"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-rose-50 text-rose-700 font-bold text-xs border border-rose-200"
                 >
                   <LogOut className="w-4 h-4" />
-                  <span>{t('nav.logout', 'Sign Out of System')}</span>
+                  <span>Sign Out</span>
                 </button>
-              ) : (
-                <p className="text-[11px] text-slate-400">
-                  Patient Friction Index System • Non-Clinical Access Platform
-                </p>
               )}
             </div>
           </div>
         </div>
       )}
+
       {/* Emergency SOS Modal */}
       <EmergencySOSModal
         isOpen={isEmergencyModalOpen}

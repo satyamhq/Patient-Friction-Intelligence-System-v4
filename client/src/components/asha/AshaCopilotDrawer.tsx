@@ -104,19 +104,20 @@ export const AshaCopilotDrawer: React.FC<AshaCopilotDrawerProps> = ({ isOpen, on
           </div>
         </div>
 
-        {/* Quick Suggestion Chips */}
+        {/* Quick Suggestion Chips (Bilingual Hindi + English matching Phase 18) */}
         <div className="p-3 bg-slate-50 border-b border-slate-200 flex gap-1.5 overflow-x-auto text-[11px]">
           {[
-            'Who should I visit today?',
-            'High-risk pregnancies due',
-            'Pending child immunizations',
+            'Mere area mein aaj kisko visit karna chahiye?',
+            'Kaunse patients ka follow-up pending hai?',
+            'High-risk pregnancies due this week',
+            'Kal ke visits plan karo',
             'Stalled hospital referrals',
           ].map((chip, idx) => (
             <button
               key={idx}
               type="button"
               onClick={() => handleSend(chip)}
-              className="px-2.5 py-1 rounded-full bg-white border border-slate-300 hover:border-teal-600 text-slate-700 whitespace-nowrap transition-colors cursor-pointer"
+              className="px-2.5 py-1 rounded-full bg-white border border-slate-300 hover:border-teal-600 hover:bg-teal-50 text-slate-700 whitespace-nowrap transition-colors cursor-pointer"
             >
               {chip}
             </button>

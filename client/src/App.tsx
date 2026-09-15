@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import { LocationProvider } from './context/LocationContext';
@@ -10,8 +10,9 @@ import { FirstVisitLanguageModal } from './components/common/FirstVisitLanguageM
 import { AccessibilityToolbar } from './components/common/AccessibilityToolbar';
 import { ElevenLabsWidget } from './components/common/ElevenLabsWidget';
 import { MobileBottomBar } from './components/layout/MobileBottomBar';
+import { LoadingSkeleton } from './components/common/LoadingSkeleton';
 
-// Layouts
+// Layouts (Static for fast initial frame render)
 import { MainLayout } from './layouts/MainLayout';
 import { PatientLayout } from './layouts/PatientLayout';
 import { HospitalLayout } from './layouts/HospitalLayout';
@@ -21,117 +22,140 @@ import { DoctorLayout } from './layouts/DoctorLayout';
 import { AshaLayout } from './layouts/AshaLayout';
 import { GovernmentLayout } from './layouts/GovernmentLayout';
 
-// Public Pages
-import { LandingPage } from './pages/LandingPage';
-import { Login } from './pages/auth/Login';
-import { Register } from './pages/auth/Register';
-import { ForgotPassword } from './pages/auth/ForgotPassword';
-import { ResetPassword } from './pages/auth/ResetPassword';
-import { GoogleCallback } from './pages/auth/GoogleCallback';
-import { About } from './pages/public/About';
-import { Contact } from './pages/public/Contact';
-import { NotFound } from './pages/public/NotFound';
-import { SystemArchitecture } from './pages/public/SystemArchitecture';
+// Dynamic Named Import Helper for Route Code-Splitting
+const lazyNamed = <T extends Record<string, any>>(
+  factory: () => Promise<T>,
+  name: keyof T
+) =>
+  React.lazy(() =>
+    factory().then((module) => ({
+      default: module[name] as React.ComponentType<any>,
+    }))
+  );
 
-// Patient Pages
-import { PatientDashboard } from './pages/patient/PatientDashboard';
-import { PatientProfile } from './pages/patient/PatientProfile';
-import { NearbyHospitals } from './pages/patient/NearbyHospitals';
-import { HospitalDetails } from './pages/patient/HospitalDetails';
-import { PatientRequests } from './pages/patient/PatientRequests';
-import { RequestDetails } from './pages/patient/RequestDetails';
-import { PatientDocuments } from './pages/patient/PatientDocuments';
-import { FrictionFingerprint } from './pages/patient/FrictionFingerprint';
-import { AccessibilityRisk } from './pages/patient/AccessibilityRisk';
-import { DigitalTwinSimulator } from './pages/patient/DigitalTwinSimulator';
-import { TeleconsultationRoom } from './pages/patient/TeleconsultationRoom';
-import { PatientNotifications } from './pages/patient/PatientNotifications';
-import { PatientSettings } from './pages/patient/PatientSettings';
-import { DigitalTriagePage } from './pages/patient/DigitalTriagePage';
-import { ReferralTrackingPage } from './pages/patient/ReferralTrackingPage';
-import { LongitudinalRecordsPage } from './pages/patient/LongitudinalRecordsPage';
-import { DiagnosticsPage } from './pages/patient/DiagnosticsPage';
-import { MedicineAvailabilityPage } from './pages/patient/MedicineAvailabilityPage';
-import { HighRiskFollowUpPage } from './pages/patient/HighRiskFollowUpPage';
-import { FrontlineWorkerPortal } from './pages/patient/FrontlineWorkerPortal';
-import { PatientFrictionReportPage } from './pages/patient/PatientFrictionReportPage';
-import { PatientAccessAssessment } from './pages/patient/PatientAccessAssessment';
+// Public Pages (Lazy Loaded)
+const LandingPage = lazyNamed(() => import('./pages/LandingPage'), 'LandingPage');
+const Login = lazyNamed(() => import('./pages/auth/Login'), 'Login');
+const Register = lazyNamed(() => import('./pages/auth/Register'), 'Register');
+const ForgotPassword = lazyNamed(() => import('./pages/auth/ForgotPassword'), 'ForgotPassword');
+const ResetPassword = lazyNamed(() => import('./pages/auth/ResetPassword'), 'ResetPassword');
+const GoogleCallback = lazyNamed(() => import('./pages/auth/GoogleCallback'), 'GoogleCallback');
+const About = lazyNamed(() => import('./pages/public/About'), 'About');
+const Contact = lazyNamed(() => import('./pages/public/Contact'), 'Contact');
+const NotFound = lazyNamed(() => import('./pages/public/NotFound'), 'NotFound');
+const SystemArchitecture = lazyNamed(() => import('./pages/public/SystemArchitecture'), 'SystemArchitecture');
 
-// Hospital Pages
-import { HospitalDashboard } from './pages/hospital/HospitalDashboard';
-import { HospitalRequests } from './pages/hospital/HospitalRequests';
-import { HospitalRequestDetails } from './pages/hospital/HospitalRequestDetails';
-import { HospitalDepartments } from './pages/hospital/HospitalDepartments';
-import { HospitalProfile } from './pages/hospital/HospitalProfile';
-import { FacilityQualityDashboard } from './pages/hospital/FacilityQualityDashboard';
+// Patient Pages (Lazy Loaded)
+const PatientDashboard = lazyNamed(() => import('./pages/patient/PatientDashboard'), 'PatientDashboard');
+const PatientProfile = lazyNamed(() => import('./pages/patient/PatientProfile'), 'PatientProfile');
+const NearbyHospitals = lazyNamed(() => import('./pages/patient/NearbyHospitals'), 'NearbyHospitals');
+const HospitalDetails = lazyNamed(() => import('./pages/patient/HospitalDetails'), 'HospitalDetails');
+const PatientRequests = lazyNamed(() => import('./pages/patient/PatientRequests'), 'PatientRequests');
+const RequestDetails = lazyNamed(() => import('./pages/patient/RequestDetails'), 'RequestDetails');
+const PatientDocuments = lazyNamed(() => import('./pages/patient/PatientDocuments'), 'PatientDocuments');
+const FrictionFingerprint = lazyNamed(() => import('./pages/patient/FrictionFingerprint'), 'FrictionFingerprint');
+const AccessibilityRisk = lazyNamed(() => import('./pages/patient/AccessibilityRisk'), 'AccessibilityRisk');
+const DigitalTwinSimulator = lazyNamed(() => import('./pages/patient/DigitalTwinSimulator'), 'DigitalTwinSimulator');
+const TeleconsultationRoom = lazyNamed(() => import('./pages/patient/TeleconsultationRoom'), 'TeleconsultationRoom');
+const PatientNotifications = lazyNamed(() => import('./pages/patient/PatientNotifications'), 'PatientNotifications');
+const PatientSettings = lazyNamed(() => import('./pages/patient/PatientSettings'), 'PatientSettings');
+const DigitalTriagePage = lazyNamed(() => import('./pages/patient/DigitalTriagePage'), 'DigitalTriagePage');
+const ReferralTrackingPage = lazyNamed(() => import('./pages/patient/ReferralTrackingPage'), 'ReferralTrackingPage');
+const LongitudinalRecordsPage = lazyNamed(() => import('./pages/patient/LongitudinalRecordsPage'), 'LongitudinalRecordsPage');
+const DiagnosticsPage = lazyNamed(() => import('./pages/patient/DiagnosticsPage'), 'DiagnosticsPage');
+const MedicineAvailabilityPage = lazyNamed(() => import('./pages/patient/MedicineAvailabilityPage'), 'MedicineAvailabilityPage');
+const HighRiskFollowUpPage = lazyNamed(() => import('./pages/patient/HighRiskFollowUpPage'), 'HighRiskFollowUpPage');
+const FrontlineWorkerPortal = lazyNamed(() => import('./pages/patient/FrontlineWorkerPortal'), 'FrontlineWorkerPortal');
+const PatientFrictionReportPage = lazyNamed(() => import('./pages/patient/PatientFrictionReportPage'), 'PatientFrictionReportPage');
+const PatientAccessAssessment = lazyNamed(() => import('./pages/patient/PatientAccessAssessment'), 'PatientAccessAssessment');
 
-// Admin Pages
-import { AdminDashboard } from './pages/admin/AdminDashboard';
-import { PopulationFrictionMap } from './pages/admin/PopulationFrictionMap';
-import { WhatIfSimulator } from './pages/admin/WhatIfSimulator';
-import { InterventionOptimizer } from './pages/admin/InterventionOptimizer';
-import { CareLeakage } from './pages/admin/CareLeakage';
-import { CareFailure } from './pages/admin/CareFailure';
-import { AdminPatients } from './pages/admin/AdminPatients';
-import { AdminHospitals } from './pages/admin/AdminHospitals';
-import { AuditLogs } from './pages/admin/AuditLogs';
-import { AdminFeatureFlags } from './pages/admin/AdminFeatureFlags';
-import { AdminUsers } from './pages/admin/AdminUsers';
-import { JudgeImpactDashboard } from './pages/admin/JudgeImpactDashboard';
+// Hospital Pages (Lazy Loaded)
+const HospitalDashboard = lazyNamed(() => import('./pages/hospital/HospitalDashboard'), 'HospitalDashboard');
+const HospitalRequests = lazyNamed(() => import('./pages/hospital/HospitalRequests'), 'HospitalRequests');
+const HospitalRequestDetails = lazyNamed(() => import('./pages/hospital/HospitalRequestDetails'), 'HospitalRequestDetails');
+const HospitalDepartments = lazyNamed(() => import('./pages/hospital/HospitalDepartments'), 'HospitalDepartments');
+const HospitalProfile = lazyNamed(() => import('./pages/hospital/HospitalProfile'), 'HospitalProfile');
+const FacilityQualityDashboard = lazyNamed(() => import('./pages/hospital/FacilityQualityDashboard'), 'FacilityQualityDashboard');
 
-// Doctor Pages
-import { DoctorDashboard } from './pages/doctor/DoctorDashboard';
-import { DoctorProfile } from './pages/doctor/DoctorProfile';
-import { DoctorPatients } from './pages/doctor/DoctorPatients';
-import { DoctorConsultationWorkspace } from './pages/doctor/DoctorConsultationWorkspace';
-import { DoctorOPDQueue } from './pages/doctor/DoctorOPDQueue';
-import { DoctorPrescriptions } from './pages/doctor/DoctorPrescriptions';
-import { DoctorLabOrders } from './pages/doctor/DoctorLabOrders';
-import { DoctorReferrals } from './pages/doctor/DoctorReferrals';
-import { DoctorFollowUps } from './pages/doctor/DoctorFollowUps';
-import { DoctorSchedule } from './pages/doctor/DoctorSchedule';
+// Doctor Pages (Lazy Loaded)
+const DoctorDashboard = lazyNamed(() => import('./pages/doctor/DoctorDashboard'), 'DoctorDashboard');
+const DoctorProfile = lazyNamed(() => import('./pages/doctor/DoctorProfile'), 'DoctorProfile');
+const DoctorPatients = lazyNamed(() => import('./pages/doctor/DoctorPatients'), 'DoctorPatients');
+const DoctorConsultationWorkspace = lazyNamed(() => import('./pages/doctor/DoctorConsultationWorkspace'), 'DoctorConsultationWorkspace');
+const DoctorOPDQueue = lazyNamed(() => import('./pages/doctor/DoctorOPDQueue'), 'DoctorOPDQueue');
+const DoctorPrescriptions = lazyNamed(() => import('./pages/doctor/DoctorPrescriptions'), 'DoctorPrescriptions');
+const DoctorLabOrders = lazyNamed(() => import('./pages/doctor/DoctorLabOrders'), 'DoctorLabOrders');
+const DoctorReferrals = lazyNamed(() => import('./pages/doctor/DoctorReferrals'), 'DoctorReferrals');
+const DoctorFollowUps = lazyNamed(() => import('./pages/doctor/DoctorFollowUps'), 'DoctorFollowUps');
+const DoctorSchedule = lazyNamed(() => import('./pages/doctor/DoctorSchedule'), 'DoctorSchedule');
 
-// ASHA Worker Pages
-import { AshaDashboard } from './pages/asha/AshaDashboard';
-import { AshaPatients } from './pages/asha/AshaPatients';
-import { AshaHouseholds } from './pages/asha/AshaHouseholds';
-import { AshaFieldVisits } from './pages/asha/AshaFieldVisits';
-import { AshaEscalations } from './pages/asha/AshaEscalations';
-import { AshaFrontlineDesk } from './pages/asha/AshaFrontlineDesk';
-import { AshaAppointments } from './pages/asha/AshaAppointments';
-import { AshaOPDTokens } from './pages/asha/AshaOPDTokens';
-import { AshaReferrals } from './pages/asha/AshaReferrals';
-import { AshaFollowUps } from './pages/asha/AshaFollowUps';
-import { AshaTeleconsult } from './pages/asha/AshaTeleconsult';
-import { AshaAccessBarriers } from './pages/asha/AshaAccessBarriers';
-import { AshaDocuments } from './pages/asha/AshaDocuments';
-import { AshaOfflineSync } from './pages/asha/AshaOfflineSync';
-import { AshaNotifications } from './pages/asha/AshaNotifications';
-import { AshaAuditTrail } from './pages/asha/AshaAuditTrail';
-import { AshaSettings } from './pages/asha/AshaSettings';
+// ASHA Worker Pages (Lazy Loaded)
+const AshaDashboard = lazyNamed(() => import('./pages/asha/AshaDashboard'), 'AshaDashboard');
+const AshaPatients = lazyNamed(() => import('./pages/asha/AshaPatients'), 'AshaPatients');
+const AshaHouseholds = lazyNamed(() => import('./pages/asha/AshaHouseholds'), 'AshaHouseholds');
+const AshaFieldVisits = lazyNamed(() => import('./pages/asha/AshaFieldVisits'), 'AshaFieldVisits');
+const AshaEscalations = lazyNamed(() => import('./pages/asha/AshaEscalations'), 'AshaEscalations');
+const AshaFrontlineDesk = lazyNamed(() => import('./pages/asha/AshaFrontlineDesk'), 'AshaFrontlineDesk');
+const AshaAppointments = lazyNamed(() => import('./pages/asha/AshaAppointments'), 'AshaAppointments');
+const AshaOPDTokens = lazyNamed(() => import('./pages/asha/AshaOPDTokens'), 'AshaOPDTokens');
+const AshaReferrals = lazyNamed(() => import('./pages/asha/AshaReferrals'), 'AshaReferrals');
+const AshaFollowUps = lazyNamed(() => import('./pages/asha/AshaFollowUps'), 'AshaFollowUps');
+const AshaTeleconsult = lazyNamed(() => import('./pages/asha/AshaTeleconsult'), 'AshaTeleconsult');
+const AshaAccessBarriers = lazyNamed(() => import('./pages/asha/AshaAccessBarriers'), 'AshaAccessBarriers');
+const AshaDocuments = lazyNamed(() => import('./pages/asha/AshaDocuments'), 'AshaDocuments');
+const AshaOfflineSync = lazyNamed(() => import('./pages/asha/AshaOfflineSync'), 'AshaOfflineSync');
+const AshaNotifications = lazyNamed(() => import('./pages/asha/AshaNotifications'), 'AshaNotifications');
+const AshaAuditTrail = lazyNamed(() => import('./pages/asha/AshaAuditTrail'), 'AshaAuditTrail');
+const AshaSettings = lazyNamed(() => import('./pages/asha/AshaSettings'), 'AshaSettings');
 
-// Government Pages
-import { GovernmentDashboard } from './pages/government/GovernmentDashboard';
-import { GovernmentHospitals } from './pages/government/GovernmentHospitals';
-import { GovernmentBeds } from './pages/government/GovernmentBeds';
-import { GovernmentReferrals } from './pages/government/GovernmentReferrals';
-import { GovernmentServices } from './pages/government/GovernmentServices';
-import { GovernmentOPDAnalytics } from './pages/government/GovernmentOPDAnalytics';
-import { GovernmentLabs } from './pages/government/GovernmentLabs';
-import { GovernmentPharmacy } from './pages/government/GovernmentPharmacy';
-import { GovernmentAshaCoverage } from './pages/government/GovernmentAshaCoverage';
-import { GovernmentDistrictComparison } from './pages/government/GovernmentDistrictComparison';
-import { GovernmentActionCenter } from './pages/government/GovernmentActionCenter';
-import { GovernmentReports } from './pages/government/GovernmentReports';
-import { GovernmentAuditLogs } from './pages/government/GovernmentAuditLogs';
+// Government Pages (Lazy Loaded)
+const GovernmentDashboard = lazyNamed(() => import('./pages/government/GovernmentDashboard'), 'GovernmentDashboard');
+const GovernmentHospitals = lazyNamed(() => import('./pages/government/GovernmentHospitals'), 'GovernmentHospitals');
+const GovernmentBeds = lazyNamed(() => import('./pages/government/GovernmentBeds'), 'GovernmentBeds');
+const GovernmentReferrals = lazyNamed(() => import('./pages/government/GovernmentReferrals'), 'GovernmentReferrals');
+const GovernmentServices = lazyNamed(() => import('./pages/government/GovernmentServices'), 'GovernmentServices');
+const GovernmentOPDAnalytics = lazyNamed(() => import('./pages/government/GovernmentOPDAnalytics'), 'GovernmentOPDAnalytics');
+const GovernmentLabs = lazyNamed(() => import('./pages/government/GovernmentLabs'), 'GovernmentLabs');
+const GovernmentPharmacy = lazyNamed(() => import('./pages/government/GovernmentPharmacy'), 'GovernmentPharmacy');
+const GovernmentAshaCoverage = lazyNamed(() => import('./pages/government/GovernmentAshaCoverage'), 'GovernmentAshaCoverage');
+const GovernmentDistrictComparison = lazyNamed(() => import('./pages/government/GovernmentDistrictComparison'), 'GovernmentDistrictComparison');
+const GovernmentActionCenter = lazyNamed(() => import('./pages/government/GovernmentActionCenter'), 'GovernmentActionCenter');
+const GovernmentReports = lazyNamed(() => import('./pages/government/GovernmentReports'), 'GovernmentReports');
+const GovernmentAuditLogs = lazyNamed(() => import('./pages/government/GovernmentAuditLogs'), 'GovernmentAuditLogs');
 
-// Admin Strategic Intelligence Pages
-import { AdminStateCommand } from './pages/admin/AdminStateCommand';
-import { AdminIntegrationCenter } from './pages/admin/AdminIntegrationCenter';
-import { AdminDataQuality } from './pages/admin/AdminDataQuality';
-import { AdminPermissions } from './pages/admin/AdminPermissions';
-import { AdminSystemHealth } from './pages/admin/AdminSystemHealth';
-import { AdminReports } from './pages/admin/AdminReports';
+// Admin Pages (Lazy Loaded)
+const AdminDashboard = lazyNamed(() => import('./pages/admin/AdminDashboard'), 'AdminDashboard');
+const PopulationFrictionMap = lazyNamed(() => import('./pages/admin/PopulationFrictionMap'), 'PopulationFrictionMap');
+const WhatIfSimulator = lazyNamed(() => import('./pages/admin/WhatIfSimulator'), 'WhatIfSimulator');
+const InterventionOptimizer = lazyNamed(() => import('./pages/admin/InterventionOptimizer'), 'InterventionOptimizer');
+const CareLeakage = lazyNamed(() => import('./pages/admin/CareLeakage'), 'CareLeakage');
+const CareFailure = lazyNamed(() => import('./pages/admin/CareFailure'), 'CareFailure');
+const AdminPatients = lazyNamed(() => import('./pages/admin/AdminPatients'), 'AdminPatients');
+const AdminHospitals = lazyNamed(() => import('./pages/admin/AdminHospitals'), 'AdminHospitals');
+const AuditLogs = lazyNamed(() => import('./pages/admin/AuditLogs'), 'AuditLogs');
+const AdminFeatureFlags = lazyNamed(() => import('./pages/admin/AdminFeatureFlags'), 'AdminFeatureFlags');
+const AdminUsers = lazyNamed(() => import('./pages/admin/AdminUsers'), 'AdminUsers');
+const JudgeImpactDashboard = lazyNamed(() => import('./pages/admin/JudgeImpactDashboard'), 'JudgeImpactDashboard');
+const AdminStateCommand = lazyNamed(() => import('./pages/admin/AdminStateCommand'), 'AdminStateCommand');
+const AdminIntegrationCenter = lazyNamed(() => import('./pages/admin/AdminIntegrationCenter'), 'AdminIntegrationCenter');
+const AdminDataQuality = lazyNamed(() => import('./pages/admin/AdminDataQuality'), 'AdminDataQuality');
+const AdminPermissions = lazyNamed(() => import('./pages/admin/AdminPermissions'), 'AdminPermissions');
+const AdminSystemHealth = lazyNamed(() => import('./pages/admin/AdminSystemHealth'), 'AdminSystemHealth');
+const AdminReports = lazyNamed(() => import('./pages/admin/AdminReports'), 'AdminReports');
+
+// Route Loading Fallback Skeleton
+const PageFallback: React.FC = () => (
+  <div className="p-6 max-w-7xl mx-auto space-y-6 animate-pulse" aria-label="Loading content">
+    <div className="h-28 bg-slate-200/80 rounded-3xl" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="h-24 bg-slate-200/70 rounded-2xl" />
+      <div className="h-24 bg-slate-200/70 rounded-2xl" />
+      <div className="h-24 bg-slate-200/70 rounded-2xl" />
+      <div className="h-24 bg-slate-200/70 rounded-2xl" />
+    </div>
+    <div className="h-64 bg-slate-200/60 rounded-3xl" />
+  </div>
+);
 
 export const App: React.FC = () => {
   return (
@@ -151,200 +175,210 @@ export const App: React.FC = () => {
                   <AccessibilityToolbar />
                   <ElevenLabsWidget />
                   <MobileBottomBar />
-                  <Routes>
-                    {/* Public Main Layout */}
-                    <Route element={<MainLayout />}>
-                      <Route path="/" element={<LandingPage />} />
-                      <Route path="/about" element={<About />} />
-                      <Route path="/contact" element={<Contact />} />
-                      <Route path="/architecture" element={<SystemArchitecture />} />
-                      <Route path="/system-architecture" element={<Navigate to="/architecture" replace />} />
-                      <Route path="/assessment" element={<PatientAccessAssessment />} />
-                      <Route path="/hospitals" element={<Navigate to="/patient/hospitals" replace />} />
-                    </Route>
 
-                    {/* Auth Layout */}
-                    <Route element={<AuthLayout />}>
-                      <Route path="/login" element={<Login />} />
-                      <Route path="/auth/login" element={<Navigate to="/login" replace />} />
-                      <Route path="/register" element={<Register />} />
-                      <Route path="/auth/register" element={<Navigate to="/register" replace />} />
-                      <Route path="/forgot-password" element={<ForgotPassword />} />
-                      <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-                      <Route path="/reset-password" element={<ResetPassword />} />
-                      <Route path="/auth/reset-password" element={<ResetPassword />} />
-                    </Route>
-                    <Route path="/auth/google/callback" element={<GoogleCallback />} />
+                  <main id="main-content" tabIndex={-1} className="outline-none">
+                    <Suspense fallback={<PageFallback />}>
+                      <Routes>
+                        {/* Public Main Layout */}
+                        <Route element={<MainLayout />}>
+                          <Route path="/" element={<LandingPage />} />
+                          <Route path="/about" element={<About />} />
+                          <Route path="/contact" element={<Contact />} />
+                          <Route path="/architecture" element={<SystemArchitecture />} />
+                          <Route path="/system-architecture" element={<Navigate to="/architecture" replace />} />
+                          <Route path="/assessment" element={<PatientAccessAssessment />} />
+                          <Route path="/hospitals" element={<Navigate to="/patient/hospitals" replace />} />
+                        </Route>
 
-                    {/* Patient Portal */}
-                    <Route path="/patient" element={<PatientLayout />}>
-                      <Route index element={<Navigate to="/patient/dashboard" replace />} />
-                      <Route path="dashboard" element={<PatientDashboard />} />
-                      <Route path="triage" element={<DigitalTriagePage />} />
-                      <Route path="referrals" element={<ReferralTrackingPage />} />
-                      <Route path="health-records" element={<LongitudinalRecordsPage />} />
-                      <Route path="diagnostics" element={<DiagnosticsPage />} />
-                      <Route path="medicines" element={<MedicineAvailabilityPage />} />
-                      <Route path="high-risk" element={<HighRiskFollowUpPage />} />
-                      <Route path="frontline" element={<FrontlineWorkerPortal />} />
-                      <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
-                      <Route path="profile" element={<PatientProfile />} />
-                      <Route path="hospitals" element={<NearbyHospitals />} />
-                      <Route path="hospitals/:id" element={<HospitalDetails />} />
-                      <Route path="requests" element={<PatientRequests />} />
-                      <Route path="requests/:id" element={<RequestDetails />} />
-                      <Route path="documents" element={<PatientDocuments />} />
-                      <Route path="friction" element={<FrictionFingerprint />} />
-                      <Route path="risk" element={<AccessibilityRisk />} />
-                      <Route path="digital-twin" element={<DigitalTwinSimulator />} />
-                      <Route path="teleconsult" element={<TeleconsultationRoom />} />
-                      <Route path="consent" element={<Navigate to="/patient/dashboard" replace />} />
-                      <Route path="report-friction" element={<PatientFrictionReportPage />} />
-                      <Route path="assessment" element={<PatientAccessAssessment />} />
-                      <Route path="notifications" element={<PatientNotifications />} />
-                      <Route path="settings" element={<PatientSettings />} />
-                    </Route>
+                        {/* Auth Layout */}
+                        <Route element={<AuthLayout />}>
+                          <Route path="/login" element={<Login />} />
+                          <Route path="/auth/login" element={<Navigate to="/login" replace />} />
+                          <Route path="/register" element={<Register />} />
+                          <Route path="/auth/register" element={<Navigate to="/register" replace />} />
+                          <Route path="/forgot-password" element={<ForgotPassword />} />
+                          <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+                          <Route path="/reset-password" element={<ResetPassword />} />
+                          <Route path="/auth/reset-password" element={<ResetPassword />} />
+                        </Route>
+                        <Route path="/auth/google/callback" element={<GoogleCallback />} />
 
-                    {/* Hospital Portal */}
-                    <Route path="/hospital" element={<HospitalLayout />}>
-                      <Route index element={<Navigate to="/hospital/dashboard" replace />} />
-                      <Route path="dashboard" element={<HospitalDashboard />} />
-                      <Route path="triage" element={<DigitalTriagePage />} />
-                      <Route path="referrals" element={<ReferralTrackingPage />} />
-                      <Route path="health-records" element={<LongitudinalRecordsPage />} />
-                      <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
-                      <Route path="medicines" element={<MedicineAvailabilityPage />} />
-                      <Route path="diagnostics" element={<DiagnosticsPage />} />
-                      <Route path="high-risk" element={<HighRiskFollowUpPage />} />
-                      <Route path="frontline" element={<FrontlineWorkerPortal />} />
-                      <Route path="requests" element={<HospitalRequests />} />
-                      <Route path="requests/:id" element={<HospitalRequestDetails />} />
-                      <Route path="departments" element={<HospitalDepartments />} />
-                      <Route path="teleconsult" element={<TeleconsultationRoom />} />
-                      <Route path="hospitals" element={<NearbyHospitals />} />
-                      <Route path="digital-twin" element={<DigitalTwinSimulator />} />
-                      <Route path="profile" element={<HospitalProfile />} />
-                      <Route path="notifications" element={<PatientNotifications />} />
-                      <Route path="settings" element={<PatientSettings />} />
-                    </Route>
+                        {/* Patient Portal */}
+                        <Route path="/patient" element={<PatientLayout />}>
+                          <Route index element={<Navigate to="/patient/dashboard" replace />} />
+                          <Route path="dashboard" element={<PatientDashboard />} />
+                          <Route path="triage" element={<DigitalTriagePage />} />
+                          <Route path="referrals" element={<ReferralTrackingPage />} />
+                          <Route path="health-records" element={<LongitudinalRecordsPage />} />
+                          <Route path="records" element={<Navigate to="/patient/health-records" replace />} />
+                          <Route path="appointments" element={<Navigate to="/patient/requests" replace />} />
+                          <Route path="diagnostics" element={<DiagnosticsPage />} />
+                          <Route path="medicines" element={<MedicineAvailabilityPage />} />
+                          <Route path="high-risk" element={<HighRiskFollowUpPage />} />
+                          <Route path="frontline" element={<FrontlineWorkerPortal />} />
+                          <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
+                          <Route path="profile" element={<PatientProfile />} />
+                          <Route path="hospitals" element={<NearbyHospitals />} />
+                          <Route path="hospitals/:id" element={<HospitalDetails />} />
+                          <Route path="requests" element={<PatientRequests />} />
+                          <Route path="requests/:id" element={<RequestDetails />} />
+                          <Route path="documents" element={<PatientDocuments />} />
+                          <Route path="friction" element={<FrictionFingerprint />} />
+                          <Route path="risk" element={<AccessibilityRisk />} />
+                          <Route path="digital-twin" element={<DigitalTwinSimulator />} />
+                          <Route path="teleconsult" element={<TeleconsultationRoom />} />
+                          <Route path="consent" element={<Navigate to="/patient/dashboard" replace />} />
+                          <Route path="report-friction" element={<PatientFrictionReportPage />} />
+                          <Route path="assessment" element={<PatientAccessAssessment />} />
+                          <Route path="notifications" element={<PatientNotifications />} />
+                          <Route path="settings" element={<PatientSettings />} />
+                        </Route>
 
-                    {/* Doctor Portal */}
-                    <Route path="/doctor" element={<DoctorLayout />}>
-                      <Route index element={<Navigate to="/doctor/dashboard" replace />} />
-                      <Route path="dashboard" element={<DoctorDashboard />} />
-                      <Route path="consultation" element={<DoctorConsultationWorkspace />} />
-                      <Route path="profile" element={<DoctorProfile />} />
-                      <Route path="patients" element={<DoctorPatients />} />
-                      <Route path="opd-queue" element={<DoctorOPDQueue />} />
-                      <Route path="prescriptions" element={<DoctorPrescriptions />} />
-                      <Route path="lab-orders" element={<DoctorLabOrders />} />
-                      <Route path="referrals" element={<DoctorReferrals />} />
-                      <Route path="follow-ups" element={<DoctorFollowUps />} />
-                      <Route path="schedule" element={<DoctorSchedule />} />
-                      <Route path="teleconsult" element={<TeleconsultationRoom />} />
-                      <Route path="health-records" element={<LongitudinalRecordsPage />} />
-                      <Route path="triage" element={<DigitalTriagePage />} />
-                      <Route path="diagnostics" element={<DiagnosticsPage />} />
-                      <Route path="notifications" element={<PatientNotifications />} />
-                      <Route path="settings" element={<PatientSettings />} />
-                    </Route>
+                        {/* Hospital Portal */}
+                        <Route path="/hospital" element={<HospitalLayout />}>
+                          <Route index element={<Navigate to="/hospital/dashboard" replace />} />
+                          <Route path="dashboard" element={<HospitalDashboard />} />
+                          <Route path="triage" element={<DigitalTriagePage />} />
+                          <Route path="referrals" element={<ReferralTrackingPage />} />
+                          <Route path="health-records" element={<LongitudinalRecordsPage />} />
+                          <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
+                          <Route path="quality" element={<Navigate to="/hospital/facility-metrics" replace />} />
+                          <Route path="opd" element={<Navigate to="/hospital/requests" replace />} />
+                          <Route path="opd-queue" element={<Navigate to="/hospital/requests" replace />} />
+                          <Route path="medicines" element={<MedicineAvailabilityPage />} />
+                          <Route path="diagnostics" element={<DiagnosticsPage />} />
+                          <Route path="high-risk" element={<HighRiskFollowUpPage />} />
+                          <Route path="frontline" element={<FrontlineWorkerPortal />} />
+                          <Route path="requests" element={<HospitalRequests />} />
+                          <Route path="requests/:id" element={<HospitalRequestDetails />} />
+                          <Route path="departments" element={<HospitalDepartments />} />
+                          <Route path="teleconsult" element={<TeleconsultationRoom />} />
+                          <Route path="hospitals" element={<NearbyHospitals />} />
+                          <Route path="digital-twin" element={<DigitalTwinSimulator />} />
+                          <Route path="profile" element={<HospitalProfile />} />
+                          <Route path="notifications" element={<PatientNotifications />} />
+                          <Route path="settings" element={<PatientSettings />} />
+                        </Route>
 
-                    {/* ASHA Worker Portal */}
-                    <Route path="/asha" element={<AshaLayout />}>
-                      <Route index element={<Navigate to="/asha/dashboard" replace />} />
-                      <Route path="dashboard" element={<AshaDashboard />} />
-                      <Route path="patients" element={<AshaPatients />} />
-                      <Route path="households" element={<AshaHouseholds />} />
-                      <Route path="visits" element={<AshaFieldVisits />} />
-                      <Route path="escalations" element={<AshaEscalations />} />
-                      <Route path="high-risk" element={<AshaEscalations />} />
-                      <Route path="desk" element={<AshaFrontlineDesk />} />
-                      <Route path="frontline" element={<AshaFrontlineDesk />} />
-                      <Route path="appointments" element={<AshaAppointments />} />
-                      <Route path="opd-tokens" element={<AshaOPDTokens />} />
-                      <Route path="referrals" element={<AshaReferrals />} />
-                      <Route path="follow-ups" element={<AshaFollowUps />} />
-                      <Route path="teleconsult" element={<AshaTeleconsult />} />
-                      <Route path="access-barriers" element={<AshaAccessBarriers />} />
-                      <Route path="documents" element={<AshaDocuments />} />
-                      <Route path="sync" element={<AshaOfflineSync />} />
-                      <Route path="notifications" element={<AshaNotifications />} />
-                      <Route path="audit" element={<AshaAuditTrail />} />
-                      <Route path="settings" element={<AshaSettings />} />
-                    </Route>
+                        {/* Doctor Portal */}
+                        <Route path="/doctor" element={<DoctorLayout />}>
+                          <Route index element={<Navigate to="/doctor/dashboard" replace />} />
+                          <Route path="dashboard" element={<DoctorDashboard />} />
+                          <Route path="consultation" element={<DoctorConsultationWorkspace />} />
+                          <Route path="profile" element={<DoctorProfile />} />
+                          <Route path="patients" element={<DoctorPatients />} />
+                          <Route path="opd-queue" element={<DoctorOPDQueue />} />
+                          <Route path="queue" element={<Navigate to="/doctor/opd-queue" replace />} />
+                          <Route path="prescriptions" element={<DoctorPrescriptions />} />
+                          <Route path="lab-orders" element={<DoctorLabOrders />} />
+                          <Route path="referrals" element={<DoctorReferrals />} />
+                          <Route path="follow-ups" element={<DoctorFollowUps />} />
+                          <Route path="schedule" element={<DoctorSchedule />} />
+                          <Route path="teleconsult" element={<TeleconsultationRoom />} />
+                          <Route path="health-records" element={<LongitudinalRecordsPage />} />
+                          <Route path="triage" element={<DigitalTriagePage />} />
+                          <Route path="diagnostics" element={<DiagnosticsPage />} />
+                          <Route path="notifications" element={<PatientNotifications />} />
+                          <Route path="settings" element={<PatientSettings />} />
+                        </Route>
 
-                    {/* Government Portal */}
-                    <Route path="/government" element={<GovernmentLayout />}>
-                      <Route index element={<Navigate to="/government/dashboard" replace />} />
-                      <Route path="dashboard" element={<GovernmentDashboard />} />
-                      <Route path="hospitals" element={<GovernmentHospitals />} />
-                      <Route path="beds" element={<GovernmentBeds />} />
-                      <Route path="friction-map" element={<PopulationFrictionMap />} />
-                      <Route path="interventions" element={<InterventionOptimizer />} />
-                      <Route path="referrals" element={<GovernmentReferrals />} />
-                      <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
-                      <Route path="services" element={<GovernmentServices />} />
-                      <Route path="opd-analytics" element={<GovernmentOPDAnalytics />} />
-                      <Route path="labs" element={<GovernmentLabs />} />
-                      <Route path="pharmacy" element={<GovernmentPharmacy />} />
-                      <Route path="asha-coverage" element={<GovernmentAshaCoverage />} />
-                      <Route path="district-comparison" element={<GovernmentDistrictComparison />} />
-                      <Route path="alerts" element={<GovernmentActionCenter />} />
-                      <Route path="reports" element={<GovernmentReports />} />
-                      <Route path="audit-logs" element={<GovernmentAuditLogs />} />
-                      <Route path="notifications" element={<PatientNotifications />} />
-                      <Route path="settings" element={<PatientSettings />} />
-                    </Route>
+                        {/* ASHA Worker Portal */}
+                        <Route path="/asha" element={<AshaLayout />}>
+                          <Route index element={<Navigate to="/asha/dashboard" replace />} />
+                          <Route path="dashboard" element={<AshaDashboard />} />
+                          <Route path="today" element={<Navigate to="/asha/dashboard" replace />} />
+                          <Route path="patients" element={<AshaPatients />} />
+                          <Route path="households" element={<AshaHouseholds />} />
+                          <Route path="visits" element={<AshaFieldVisits />} />
+                          <Route path="field-visits" element={<Navigate to="/asha/visits" replace />} />
+                          <Route path="escalations" element={<AshaEscalations />} />
+                          <Route path="high-risk" element={<AshaEscalations />} />
+                          <Route path="desk" element={<AshaFrontlineDesk />} />
+                          <Route path="frontline" element={<AshaFrontlineDesk />} />
+                          <Route path="appointments" element={<AshaAppointments />} />
+                          <Route path="opd-tokens" element={<AshaOPDTokens />} />
+                          <Route path="referrals" element={<AshaReferrals />} />
+                          <Route path="follow-ups" element={<AshaFollowUps />} />
+                          <Route path="teleconsult" element={<AshaTeleconsult />} />
+                          <Route path="access-barriers" element={<AshaAccessBarriers />} />
+                          <Route path="documents" element={<AshaDocuments />} />
+                          <Route path="sync" element={<AshaOfflineSync />} />
+                          <Route path="notifications" element={<AshaNotifications />} />
+                          <Route path="audit" element={<AshaAuditTrail />} />
+                          <Route path="settings" element={<AshaSettings />} />
+                        </Route>
 
-                    {/* Admin Intelligence Suite */}
-                    <Route path="/admin" element={<AdminLayout />}>
-                      <Route index element={<Navigate to="/admin/dashboard" replace />} />
-                      <Route path="dashboard" element={<AdminDashboard />} />
-                      <Route path="state-command" element={<AdminStateCommand />} />
-                      {/* Platform Impact Evaluation Route */}
-                      <Route path="judge-mode" element={<JudgeImpactDashboard />} />
-                      <Route path="judge-mode/" element={<Navigate to="/admin/judge-mode" replace />} />
-                      <Route path="judgeMode" element={<Navigate to="/admin/judge-mode" replace />} />
-                      <Route path="judge" element={<Navigate to="/admin/judge-mode" replace />} />
-                      <Route path="triage" element={<DigitalTriagePage />} />
-                      <Route path="referrals" element={<ReferralTrackingPage />} />
-                      <Route path="health-records" element={<LongitudinalRecordsPage />} />
-                      <Route path="medicines" element={<MedicineAvailabilityPage />} />
-                      <Route path="diagnostics" element={<DiagnosticsPage />} />
-                      <Route path="high-risk" element={<HighRiskFollowUpPage />} />
-                      <Route path="frontline" element={<FrontlineWorkerPortal />} />
-                      <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
-                      <Route path="friction-map" element={<PopulationFrictionMap />} />
-                      <Route path="simulator" element={<WhatIfSimulator />} />
-                      <Route path="digital-twin" element={<DigitalTwinSimulator />} />
-                      <Route path="teleconsult" element={<TeleconsultationRoom />} />
-                      <Route path="interventions" element={<InterventionOptimizer />} />
-                      <Route path="care-leakage" element={<CareLeakage />} />
-                      <Route path="care-failure" element={<CareFailure />} />
-                      <Route path="patients" element={<AdminPatients />} />
-                      <Route path="hospitals" element={<AdminHospitals />} />
-                      <Route path="users" element={<AdminUsers />} />
-                      <Route path="permissions" element={<AdminPermissions />} />
-                      <Route path="integrations" element={<AdminIntegrationCenter />} />
-                      <Route path="data-quality" element={<AdminDataQuality />} />
-                      <Route path="audit-logs" element={<AuditLogs />} />
-                      <Route path="system-health" element={<AdminSystemHealth />} />
-                      <Route path="reports" element={<AdminReports />} />
-                      <Route path="feature-flags" element={<AdminFeatureFlags />} />
-                      <Route path="settings" element={<PatientSettings />} />
-                    </Route>
+                        {/* Government Portal */}
+                        <Route path="/government" element={<GovernmentLayout />}>
+                          <Route index element={<Navigate to="/government/dashboard" replace />} />
+                          <Route path="dashboard" element={<GovernmentDashboard />} />
+                          <Route path="hospitals" element={<GovernmentHospitals />} />
+                          <Route path="beds" element={<GovernmentBeds />} />
+                          <Route path="friction-map" element={<PopulationFrictionMap />} />
+                          <Route path="interventions" element={<InterventionOptimizer />} />
+                          <Route path="referrals" element={<GovernmentReferrals />} />
+                          <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
+                          <Route path="services" element={<GovernmentServices />} />
+                          <Route path="opd-analytics" element={<GovernmentOPDAnalytics />} />
+                          <Route path="labs" element={<GovernmentLabs />} />
+                          <Route path="pharmacy" element={<GovernmentPharmacy />} />
+                          <Route path="asha-coverage" element={<GovernmentAshaCoverage />} />
+                          <Route path="district-comparison" element={<GovernmentDistrictComparison />} />
+                          <Route path="alerts" element={<GovernmentActionCenter />} />
+                          <Route path="reports" element={<GovernmentReports />} />
+                          <Route path="audit-logs" element={<GovernmentAuditLogs />} />
+                          <Route path="notifications" element={<PatientNotifications />} />
+                          <Route path="settings" element={<PatientSettings />} />
+                        </Route>
 
-                    {/* Top-Level Judge Mode Direct Access & Case Normalization */}
-                    <Route path="/judge-mode" element={<Navigate to="/admin/judge-mode" replace />} />
-                    <Route path="/Admin/judge-mode" element={<Navigate to="/admin/judge-mode" replace />} />
-                    <Route path="/Admin/judge-mode/" element={<Navigate to="/admin/judge-mode" replace />} />
-                    <Route path="/Admin/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
-                    <Route path="/Admin" element={<Navigate to="/admin/dashboard" replace />} />
+                        {/* Admin Intelligence Suite */}
+                        <Route path="/admin" element={<AdminLayout />}>
+                          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+                          <Route path="dashboard" element={<AdminDashboard />} />
+                          <Route path="state-command" element={<AdminStateCommand />} />
+                          <Route path="judge-mode" element={<JudgeImpactDashboard />} />
+                          <Route path="judge-mode/" element={<Navigate to="/admin/judge-mode" replace />} />
+                          <Route path="judgeMode" element={<Navigate to="/admin/judge-mode" replace />} />
+                          <Route path="judge" element={<Navigate to="/admin/judge-mode" replace />} />
+                          <Route path="triage" element={<DigitalTriagePage />} />
+                          <Route path="referrals" element={<ReferralTrackingPage />} />
+                          <Route path="health-records" element={<LongitudinalRecordsPage />} />
+                          <Route path="medicines" element={<MedicineAvailabilityPage />} />
+                          <Route path="diagnostics" element={<DiagnosticsPage />} />
+                          <Route path="high-risk" element={<HighRiskFollowUpPage />} />
+                          <Route path="frontline" element={<FrontlineWorkerPortal />} />
+                          <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
+                          <Route path="friction-map" element={<PopulationFrictionMap />} />
+                          <Route path="simulator" element={<WhatIfSimulator />} />
+                          <Route path="digital-twin" element={<DigitalTwinSimulator />} />
+                          <Route path="teleconsult" element={<TeleconsultationRoom />} />
+                          <Route path="interventions" element={<InterventionOptimizer />} />
+                          <Route path="care-leakage" element={<CareLeakage />} />
+                          <Route path="care-failure" element={<CareFailure />} />
+                          <Route path="patients" element={<AdminPatients />} />
+                          <Route path="hospitals" element={<AdminHospitals />} />
+                          <Route path="users" element={<AdminUsers />} />
+                          <Route path="permissions" element={<AdminPermissions />} />
+                          <Route path="integrations" element={<AdminIntegrationCenter />} />
+                          <Route path="data-quality" element={<AdminDataQuality />} />
+                          <Route path="audit-logs" element={<AuditLogs />} />
+                          <Route path="system-health" element={<AdminSystemHealth />} />
+                          <Route path="reports" element={<AdminReports />} />
+                          <Route path="feature-flags" element={<AdminFeatureFlags />} />
+                          <Route path="settings" element={<PatientSettings />} />
+                        </Route>
 
-                    {/* 404 Catch All */}
-                    <Route path="*" element={<NotFound />} />
+                        {/* Fallbacks and legacy redirects */}
+                        <Route path="/judge-mode" element={<Navigate to="/admin/judge-mode" replace />} />
+                        <Route path="/Admin/judge-mode" element={<Navigate to="/admin/judge-mode" replace />} />
+                        <Route path="/Admin/dashboard" element={<Navigate to="/admin/dashboard" replace />} />
+                        <Route path="/Admin" element={<Navigate to="/admin/dashboard" replace />} />
 
-                  </Routes>
+                        {/* 404 Catch All */}
+                        <Route path="*" element={<NotFound />} />
+                      </Routes>
+                    </Suspense>
+                  </main>
                 </NotificationProvider>
               </LocationProvider>
             </AuthProvider>
@@ -354,4 +388,3 @@ export const App: React.FC = () => {
     </BrowserRouter>
   );
 };
-

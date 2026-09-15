@@ -103,6 +103,30 @@
   z-index: 10;
 }
 
+/* WCAG 2.1 AA Accessible Focus Rings */
+*:focus-visible {
+  outline: 2px solid #0d9488 !important;
+  outline-offset: 2px !important;
+}
+
+/* Accessible Skip Navigation Link */
+.skip-link {
+  position: absolute;
+  top: -9999px;
+  left: 1rem;
+  z-index: 9999;
+  padding: 0.75rem 1.25rem;
+  background-color: #0d9488;
+  color: #ffffff;
+  font-weight: 700;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+  transition: top 0.15s ease-in-out;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
 /* WCAG High Contrast Mode */
 html.high-contrast {
   filter: contrast(115%);
@@ -124,5 +148,58 @@ html.reduced-motion *::after {
   animation-iteration-count: 1 !important;
   transition-duration: 0.001ms !important;
   scroll-behavior: auto !important;
+}
+
+/* Low-Literacy / Simple Mode Enhancements */
+.simple-mode-active {
+  font-size: 105%;
+}
+.simple-mode-active h1,
+.simple-mode-active h2,
+.simple-mode-active h3 {
+  letter-spacing: normal !important;
+}
+.simple-mode-active button,
+.simple-mode-active a.touch-target {
+  min-height: 48px;
+}
+
+/* Responsive Accessible Table Wrapper */
+.pfis-table-container {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 1rem;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+}
+.pfis-table-container table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.pfis-table-container th {
+  background-color: #f8fafc;
+  color: #475569;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+.pfis-table-container td {
+  padding: 0.875rem 1rem;
+  font-size: 0.875rem;
+  color: #1e293b;
+  border-bottom: 1px solid #f1f5f9;
+}
+.pfis-table-container tr:last-child td {
+  border-bottom: none;
+}
+.pfis-table-container tr:hover td {
+  background-color: #f8fafc;
 }
 

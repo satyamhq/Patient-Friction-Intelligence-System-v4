@@ -41,7 +41,7 @@ import { EmergencySOSModal } from '../../components/common/EmergencySOSModal';
 export const PatientDashboard: React.FC = () => {
   const { t } = useTranslation();
   const { user, profile } = useAuth();
-  const { currentLanguage } = useLanguage();
+  const { currentLanguage, simpleLanguageMode } = useLanguage();
   const { coords } = useLocation();
 
   const [patient, setPatient] = useState<Patient | null>(profile || null);
@@ -200,10 +200,10 @@ export const PatientDashboard: React.FC = () => {
             </div>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-teal-700 transition-colors">
-                Book Appointment
+                {simpleLanguageMode ? 'Book Doctor Visit' : 'Book Appointment'}
               </h3>
               <p className="text-xs text-slate-500 mt-1 leading-snug">
-                Doctor visit & OPD token
+                {simpleLanguageMode ? 'Get token for clinic' : 'Doctor visit & OPD token'}
               </p>
             </div>
           </Link>
@@ -218,10 +218,10 @@ export const PatientDashboard: React.FC = () => {
             </div>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-blue-700 transition-colors">
-                Start Health Check
+                {simpleLanguageMode ? 'Check My Symptoms' : 'Start Health Check'}
               </h3>
               <p className="text-xs text-slate-500 mt-1 leading-snug">
-                Symptom check & guidance
+                {simpleLanguageMode ? 'Simple health questions' : 'Symptom check & guidance'}
               </p>
             </div>
           </Link>
@@ -236,10 +236,10 @@ export const PatientDashboard: React.FC = () => {
             </div>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-emerald-700 transition-colors">
-                Find Facility
+                {simpleLanguageMode ? 'Find Nearby Clinic' : 'Find Facility'}
               </h3>
               <p className="text-xs text-slate-500 mt-1 leading-snug">
-                Nearby PHCs & Hospitals
+                {simpleLanguageMode ? 'Hospitals close to me' : 'Nearby PHCs & Hospitals'}
               </p>
             </div>
           </Link>
@@ -254,10 +254,10 @@ export const PatientDashboard: React.FC = () => {
             </div>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-purple-700 transition-colors">
-                Track Referral
+                {simpleLanguageMode ? 'My Hospital Transfer' : 'Track Referral'}
               </h3>
               <p className="text-xs text-slate-500 mt-1 leading-snug">
-                Hospital transfer status
+                {simpleLanguageMode ? 'See where paper went' : 'Hospital transfer status'}
               </p>
             </div>
           </Link>
@@ -273,10 +273,10 @@ export const PatientDashboard: React.FC = () => {
             </div>
             <div>
               <h3 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-emerald-700 transition-colors">
-                Call Healthcare
+                {simpleLanguageMode ? 'Call Health Worker' : 'Call Healthcare'}
               </h3>
               <p className="text-xs text-slate-500 mt-1 leading-snug">
-                Instant AI voice assist
+                {simpleLanguageMode ? 'Speak in your language' : 'Instant AI voice assist'}
               </p>
             </div>
           </button>
@@ -498,7 +498,7 @@ export const PatientDashboard: React.FC = () => {
             </p>
           </div>
           <Link
-            to="/patient/records"
+            to="/patient/health-records"
             className="text-xs font-bold text-teal-700 hover:underline flex items-center gap-1"
           >
             <span>View Complete Records</span>

@@ -14,6 +14,7 @@ import {
   Check,
   X,
 } from 'lucide-react';
+import { CareRecoveryDashboard } from '../../components/common/CareRecoveryDashboard';
 
 export const GovernmentActionCenter: React.FC = () => {
   const { user } = useAuth();
@@ -93,6 +94,9 @@ export const GovernmentActionCenter: React.FC = () => {
           <span>Refresh Actions</span>
         </button>
       </div>
+
+      {/* Autonomous Care Recovery & Outbound AI Calling Desk (Phases 12 & 17) */}
+      <CareRecoveryDashboard />
 
       {/* Filter Tabs */}
       <div className="flex items-center gap-2">

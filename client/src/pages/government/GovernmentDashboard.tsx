@@ -22,7 +22,10 @@ import {
   Sliders,
   Check,
   X,
+  Sparkles,
+  Search,
 } from 'lucide-react';
+import { PublicHealthAiCommand } from '../../components/government/PublicHealthAiCommand';
 
 export const GovernmentDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -140,6 +143,8 @@ export const GovernmentDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+      {/* Ask Public Health AI Command Center (Phase 19) */}
+      <PublicHealthAiCommand district={profile?.district || 'Kapurthala'} />
 
       {/* Real Backend Operational Metrics Grid with Data Provenance */}
       <div className="space-y-2">
