@@ -29,6 +29,8 @@ services:
         sync: false
       - key: ELEVENLABS_AGENT_ID
         value: agent_2901m2hw983kfcesprd47f904gbk
+      - key: ELEVENLABS_API_KEY
+        sync: false
       - key: MAX_FILE_SIZE_MB
         value: "10"
 

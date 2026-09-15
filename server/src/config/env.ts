@@ -70,7 +70,7 @@ export const config = {
   maxFileSizeMb: parseInt(sanitizeEnv(process.env.MAX_FILE_SIZE_MB) || '10', 10),
   geminiApiKey: sanitizeEnv(process.env.GEMINI_API_KEY),
   elevenLabsAgentId: sanitizeEnv(process.env.ELEVENLABS_AGENT_ID) || 'agent_2901m2hw983kfcesprd47f904gbk',
-  elevenLabsApiKey: sanitizeEnv(process.env.ELEVENLABS_API_KEY),
+  elevenLabsApiKey: sanitizeEnv(process.env.ELEVENLABS_API_KEY || process.env.ELEVEN_LABS_API_KEY || process.env.ELEVENLABS_API),
   twilioAccountSid: sanitizeEnv(process.env.TWILIO_ACCOUNT_SID),
   twilioAuthToken: sanitizeEnv(process.env.TWILIO_AUTH_TOKEN),
 };
