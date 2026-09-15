@@ -108,6 +108,25 @@ class EmbeddedSQLDriver implements IDatabaseClient {
     high_risk_registry: [],
     frontline_tasks: [],
     emergency_dispatches: [],
+    // Doctor Clinical Module Tables
+    doctor_prescriptions: [],
+    doctor_lab_orders: [],
+    doctor_follow_ups: [],
+    doctor_schedules: [],
+    queue_tokens: [],
+    // ASHA & Frontline Operational Module Tables
+    frontline_visits: [],
+    frontline_households: [],
+    access_barriers: [],
+    frontline_sync_operations: [],
+    frontline_audit_events: [],
+    doorstep_visit_requests: [],
+    escalations: [],
+    // Government & Health Administration Module Tables
+    government_actions: [],
+    facility_verifications: [],
+    operational_interventions: [],
+    system_integrations: [],
   };
 
   constructor() {

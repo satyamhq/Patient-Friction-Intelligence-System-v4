@@ -54,28 +54,28 @@ export const DoctorPatients: React.FC = () => {
   }, [patients, searchQuery, riskFilter]);
 
   const RISK_BADGE: Record<string, string> = {
-    CRITICAL: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-800',
-    HIGH: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-800',
-    MEDIUM: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800',
-    LOW: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800',
+    CRITICAL: 'bg-red-50 text-red-700 border-red-200',
+    HIGH: 'bg-orange-50 text-orange-700 border-orange-200',
+    MEDIUM: 'bg-amber-50 text-amber-700 border-amber-200',
+    LOW: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   };
 
   return (
     <div className="space-y-6 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Users className="w-6 h-6 text-teal-600 dark:text-teal-400" />
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <Users className="w-6 h-6 text-teal-600" />
             Assigned Patient Cohort & Clinical Queue
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-sm text-slate-500 mt-1">
             Real-time longitudinal view of patients undergoing active treatment, referrals, and teleconsultations.
           </p>
         </div>
         <button
           onClick={fetchPatients}
           disabled={isLoading}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-all"
+          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 shadow-sm transition-all"
         >
           <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh Queue
@@ -83,7 +83,7 @@ export const DoctorPatients: React.FC = () => {
       </div>
 
       {/* Filter and Search */}
-      <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row gap-4">
+      <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
@@ -91,7 +91,7 @@ export const DoctorPatients: React.FC = () => {
             placeholder="Search by patient name, primary condition, or symptoms..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-900 dark:text-white"
+            className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-900"
           />
         </div>
 
@@ -100,7 +100,7 @@ export const DoctorPatients: React.FC = () => {
           <select
             value={riskFilter}
             onChange={(e) => setRiskFilter(e.target.value)}
-            className="px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-900 dark:text-white"
+            className="px-3 py-2 text-sm bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-900"
           >
             <option value="ALL">All Clinical Tiers</option>
             <option value="CRITICAL">Critical Priority</option>
@@ -113,12 +113,12 @@ export const DoctorPatients: React.FC = () => {
 
       {/* Patients Grid */}
       {isLoading ? (
-        <div className="p-12 text-center text-slate-500 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700">
+        <div className="p-12 text-center text-slate-500 bg-white rounded-3xl border border-slate-200">
           <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-3 text-teal-600" />
           Loading patient cohort...
         </div>
       ) : filteredPatients.length === 0 ? (
-        <div className="p-12 text-center text-slate-500 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700">
+        <div className="p-12 text-center text-slate-500 bg-white rounded-3xl border border-slate-200">
           No patients match the current search filters.
         </div>
       ) : (
@@ -126,12 +126,12 @@ export const DoctorPatients: React.FC = () => {
           {filteredPatients.map((p, idx) => (
             <div
               key={p.id || idx}
-              className="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+              className="p-5 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
             >
               <div className="space-y-3">
                 <div className="flex items-start justify-between gap-2">
                   <div>
-                    <h3 className="font-bold text-slate-900 dark:text-white text-base">{p.name}</h3>
+                    <h3 className="font-bold text-slate-900 text-base">{p.name}</h3>
                     <p className="text-xs text-slate-500 mt-0.5">
                       {p.age ? `${p.age} yrs` : 'Adult'} • {p.gender || 'Patient'}
                     </p>
@@ -145,10 +145,10 @@ export const DoctorPatients: React.FC = () => {
                   </span>
                 </div>
 
-                <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
+                <div className="p-3 bg-slate-50 rounded-xl space-y-1.5 text-xs text-slate-600">
                   <div className="flex justify-between">
                     <span className="text-slate-400">Condition:</span>
-                    <span className="font-semibold text-slate-900 dark:text-white">{p.condition || 'Under Evaluation'}</span>
+                    <span className="font-semibold text-slate-900">{p.condition || 'Under Evaluation'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-slate-400">Friction Score:</span>
@@ -161,17 +161,17 @@ export const DoctorPatients: React.FC = () => {
                 </div>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-2">
+              <div className="pt-4 mt-4 border-t border-slate-100 flex items-center justify-between gap-2">
                 <Link
                   to="/doctor/teleconsult"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 dark:bg-teal-950/40 dark:text-teal-300 text-xs font-semibold rounded-lg transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-teal-50 hover:bg-teal-100 text-teal-700 text-xs font-semibold rounded-lg transition-colors"
                 >
                   <Video className="w-3.5 h-3.5" />
                   Teleconsult
                 </Link>
                 <Link
                   to="/doctor/health-records"
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-slate-600 hover:text-slate-900 dark:text-slate-300 text-xs font-semibold rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-slate-600 hover:text-slate-900 text-xs font-semibold rounded-lg hover:bg-slate-100 transition-colors"
                 >
                   <FileText className="w-3.5 h-3.5" />
                   EHR & ABHA

@@ -270,44 +270,44 @@ export const TeleconsultationRoom: React.FC = () => {
   return (
     <div className="space-y-6 max-w-6xl mx-auto pb-12">
       {/* Top Bar Header */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-4 sm:p-5 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-4 sm:p-5 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
           <div className="w-12 h-12 rounded-2xl bg-teal-600 text-white flex items-center justify-center font-bold shadow-md shadow-teal-600/20">
             <Stethoscope className="w-6 h-6" />
           </div>
           <div>
             <div className="flex flex-wrap items-center gap-2">
-              <h1 className="text-lg font-bold text-slate-900 dark:text-white">
+              <h1 className="text-lg font-bold text-slate-900">
                 Live Tele-Triage Room • Dr. Gurpreet Singh, MD
               </h1>
               {callState === 'CONNECTED' ? (
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
                   <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                   Live consultation connected
                 </span>
               ) : callState === 'CONNECTING' ? (
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-800">
                   <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping"></span>
                   Connecting to Doctor...
                 </span>
               ) : callState === 'DOCTOR_UNAVAILABLE' ? (
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-800">
                   Doctor is unavailable
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700">
                   Ready to Connect
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-500 mt-0.5">
               Civil Hospital Sub-Divisional Unit • Non-Clinical Healthcare Logistics & Triage Clearance
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3 self-end sm:self-auto">
-          <div className="px-3.5 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-xl text-xs font-mono font-bold text-slate-700 dark:text-slate-300 flex items-center gap-1.5 border border-slate-200 dark:border-slate-700">
+          <div className="px-3.5 py-1.5 bg-slate-100 rounded-xl text-xs font-mono font-bold text-slate-700 flex items-center gap-1.5 border border-slate-200">
             <Clock className="w-4 h-4 text-teal-600" />
             <span>{formatTime(callDuration)}</span>
           </div>
@@ -316,7 +316,7 @@ export const TeleconsultationRoom: React.FC = () => {
 
       {/* Permission Warning Alert if Denied */}
       {permissionError && (
-        <div className="p-4 bg-rose-50 dark:bg-rose-950/40 rounded-2xl border border-rose-200 dark:border-rose-800 text-xs text-rose-800 dark:text-rose-300 flex items-center gap-2.5">
+        <div className="p-4 bg-rose-50 rounded-2xl border border-rose-200 text-xs text-rose-800 flex items-center gap-2.5">
           <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
           <span>{permissionError}</span>
         </div>
@@ -530,24 +530,24 @@ export const TeleconsultationRoom: React.FC = () => {
           )}
 
           {/* Friction Mitigation Impact Card */}
-          <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-3xl border border-emerald-200 dark:border-emerald-800 text-xs space-y-2">
-            <div className="flex items-center justify-between text-emerald-900 dark:text-emerald-200 font-bold">
+          <div className="p-4 bg-emerald-50 rounded-3xl border border-emerald-200 text-xs space-y-2">
+            <div className="flex items-center justify-between text-emerald-900 font-bold">
               <span className="flex items-center gap-1.5">
                 <ShieldCheck className="w-4 h-4 text-emerald-600" />
                 Non-Clinical Access Obstacles Mitigated:
               </span>
-              <span className="text-[10px] bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-200 px-2.5 py-0.5 rounded-full font-bold">
+              <span className="text-[10px] bg-emerald-200 text-emerald-900 px-2.5 py-0.5 rounded-full font-bold">
                 100% Barrier Cleared
               </span>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px] text-emerald-800 dark:text-emerald-300">
-              <div className="p-2.5 bg-white/80 dark:bg-slate-900 rounded-xl border border-emerald-100 dark:border-emerald-900">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-1 text-[11px] text-emerald-800">
+              <div className="p-2.5 bg-white/80 rounded-xl border border-emerald-100">
                 <strong>🚗 Transit Saved:</strong> {selectedReason.logisticsPass.transitSaved}
               </div>
-              <div className="p-2.5 bg-white/80 dark:bg-slate-900 rounded-xl border border-emerald-100 dark:border-emerald-900">
+              <div className="p-2.5 bg-white/80 rounded-xl border border-emerald-100">
                 <strong>💵 Cost Saved:</strong> ~₹450 bus/auto fares saved
               </div>
-              <div className="p-2.5 bg-white/80 dark:bg-slate-900 rounded-xl border border-emerald-100 dark:border-emerald-900">
+              <div className="p-2.5 bg-white/80 rounded-xl border border-emerald-100">
                 <strong>⏰ Wage Protected:</strong> {selectedReason.logisticsPass.wageSaved}
               </div>
             </div>
@@ -557,18 +557,18 @@ export const TeleconsultationRoom: React.FC = () => {
         {/* Right Column (5 Cols): Live Session Summary & Non-Clinical Triage Clearance Pass */}
         <div className="lg:col-span-5 space-y-4 flex flex-col justify-between">
           {/* Active Session Info */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-card space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
-              <span className="font-bold text-xs text-slate-900 dark:text-white flex items-center gap-1.5">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-card space-y-3">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <span className="font-bold text-xs text-slate-900 flex items-center gap-1.5">
                 <Stethoscope className="w-4 h-4 text-teal-600" />
                 Live Consultation Protocol
               </span>
-              <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded font-mono">
+              <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-mono">
                 Session #TC-2026-LIVE
               </span>
             </div>
 
-            <div className="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+            <div className="space-y-2 text-xs text-slate-600">
               <p>
                 <strong>Duty Physician:</strong> Dr. Gurpreet Singh, MD (Reg #PB-MED-8422)
               </p>
@@ -583,8 +583,8 @@ export const TeleconsultationRoom: React.FC = () => {
               </p>
             </div>
 
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
-              <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+            <div className="pt-2 border-t border-slate-100">
+              <label className="block text-[11px] font-bold text-slate-700 mb-1">
                 Optional Patient Note for Doctor:
               </label>
               <textarea
@@ -592,29 +592,29 @@ export const TeleconsultationRoom: React.FC = () => {
                 placeholder="Type any specific details you want the doctor to note during consultation..."
                 value={customBarrierNote}
                 onChange={(e) => setCustomBarrierNote(e.target.value)}
-                className="w-full text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-1 focus:ring-teal-500"
+                className="w-full text-xs p-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 focus:outline-none focus:ring-1 focus:ring-teal-500"
               />
             </div>
           </div>
 
           {/* Dynamic Non-Clinical Triage Clearance Pass */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-card space-y-3 text-xs">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2.5">
-              <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-5 shadow-card space-y-3 text-xs">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-2.5">
+              <span className="font-bold text-slate-900 flex items-center gap-1.5">
                 <FileBadge className="w-4 h-4 text-teal-600" />
                 Live Non-Clinical Triage & Logistics Slip
               </span>
-              <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-lg font-mono font-bold">
+              <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded-lg font-mono font-bold">
                 {selectedReason.logisticsPass.authNumber}
               </span>
             </div>
 
-            <div className="space-y-2 text-[11px] text-slate-600 dark:text-slate-300">
-              <div className="p-2.5 bg-slate-50 dark:bg-slate-800/60 rounded-xl border border-slate-100 dark:border-slate-800">
-                <p className="font-bold text-slate-900 dark:text-white mb-0.5">
+            <div className="space-y-2 text-[11px] text-slate-600">
+              <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-100">
+                <p className="font-bold text-slate-900 mb-0.5">
                   {selectedReason.logisticsPass.title}
                 </p>
-                <p className="text-teal-700 dark:text-teal-300 font-medium">
+                <p className="text-teal-700 font-medium">
                   {selectedReason.logisticsPass.mitigation}
                 </p>
               </div>
@@ -630,7 +630,7 @@ export const TeleconsultationRoom: React.FC = () => {
               </p>
             </div>
 
-            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex gap-2">
+            <div className="pt-2 border-t border-slate-100 flex gap-2">
               <Button
                 variant="outline"
                 size="sm"

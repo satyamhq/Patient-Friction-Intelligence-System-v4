@@ -2,16 +2,23 @@ import axios from 'axios';
 
 const rawEnvApiUrl = (import.meta as any).env?.VITE_API_URL || (import.meta as any).env?.VITE_API_BASE_URL;
 
+const PROD_BACKEND_URL = 'https://pfis-patient-friction-intelligence-system.onrender.com/api';
+
+const isProductionHost =
+  typeof window !== 'undefined' &&
+  (window.location.hostname.endsWith('onrender.com') ||
+    window.location.hostname === 'pfis-patient-friction-intelligence.onrender.com');
+
 // Normalize API base url to include /api path safely
 export const API_BASE_URL = rawEnvApiUrl
   ? (rawEnvApiUrl.replace(/\/+$/, '').endsWith('/api')
       ? rawEnvApiUrl.replace(/\/+$/, '')
       : `${rawEnvApiUrl.replace(/\/+$/, '')}/api`)
-  : '/api';
+  : (isProductionHost ? PROD_BACKEND_URL : '/api');
 
 export const SERVER_ORIGIN = rawEnvApiUrl
   ? rawEnvApiUrl.replace(/\/+$/, '').replace(/\/api$/, '')
-  : '';
+  : (isProductionHost ? 'https://pfis-patient-friction-intelligence-system.onrender.com' : '');
 
 export const api = axios.create({
   baseURL: API_BASE_URL,

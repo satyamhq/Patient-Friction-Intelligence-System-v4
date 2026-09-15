@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import { getDB } from '../database/db.js';
 import { UserRepository } from '../database/repositories/UserRepository.js';
 import { PatientRepository } from '../database/repositories/PatientRepository.js';
 import { HospitalRepository } from '../database/repositories/HospitalRepository.js';
@@ -29,6 +30,8 @@ export const runRelationalSeed = async (): Promise<void> => {
     if (existingAdmin) {
       console.log('[Seed] Relational database already seeded. Checking SIH public health modules...');
       await seedPublicHealthData();
+      await seedDoctorClinicalData();
+      await seedAshaData();
       return;
     }
 
@@ -584,4 +587,658 @@ async function seedPublicHealthData(): Promise<void> {
     console.error('[Seed Error] Failed to seed public health data:', error.message);
   }
 }
+
+export async function seedDoctorClinicalData(): Promise<void> {
+  try {
+    const db = getDB();
+    const docUser = await UserRepository.findByEmail('doctor@pfis.org');
+    const doctorId = docUser?.id || '9106dae7-84f6-41e4-beb4-c8da8336cdc3';
+    const doctorName = docUser?.name || 'Dr. Priya Sharma (Clinical Lead)';
+
+    // 1. Doctor Profile
+    const existingProfiles = await db.query(`SELECT * FROM doctor_profiles`);
+    if (existingProfiles.rows.length === 0) {
+      await db.query(
+        `INSERT INTO doctor_profiles (id, user_id, doctor_code, name, specialization, qualification, license_number, registration_number, hospital_id, hospital_name, hospital_affiliation, experience, experience_years, languages, phone, email, consultation_fee, opd_timings, available_days, total_patients_seen, bio, is_verified, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)`,
+        [
+          'doc-priya-sharma',
+          doctorId,
+          'DOC-2026-081',
+          'Dr. Priya Sharma',
+          'General Medicine',
+          'MBBS, MD (Internal Medicine)',
+          'MCI-2018-77492',
+          'MCI-2018-77492',
+          'hosp-default',
+          'District Civil Hospital & Community Health Network',
+          'District Civil Hospital & Community Health Network',
+          8,
+          8,
+          JSON.stringify(['Hindi', 'Punjabi', 'English']),
+          '+91 98765 22334',
+          'doctor@pfis.org',
+          300,
+          '09:00 AM – 05:00 PM',
+          JSON.stringify(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']),
+          1420,
+          'Senior Medical Officer & Clinical Specialist with 8+ years experience in managing chronic non-communicable diseases, public health OPDs, and rural patient triage.',
+          true,
+          true,
+        ]
+      );
+      console.log('[Seed] Doctor profile seeded for Dr. Priya Sharma');
+    }
+
+    // 2. Doctor Schedule
+    const existingSchedules = await db.query(`SELECT * FROM doctor_schedules`);
+    if (existingSchedules.rows.length === 0) {
+      await db.query(
+        `INSERT INTO doctor_schedules (id, doctor_id, doctor_name, working_days, opd_start, opd_end, break_start, break_end, slot_duration_minutes, teleconsult_available, teleconsult_days, teleconsult_start, teleconsult_end, unavailable_dates, max_patients_per_day, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)`,
+        [
+          'sch-priya-01',
+          doctorId,
+          doctorName,
+          JSON.stringify(['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']),
+          '09:00',
+          '17:00',
+          '13:00',
+          '14:00',
+          15,
+          true,
+          JSON.stringify(['Tuesday', 'Thursday']),
+          '17:00',
+          '18:00',
+          JSON.stringify([]),
+          30,
+          true,
+        ]
+      );
+      console.log('[Seed] Doctor schedule seeded');
+    }
+
+    // 3. Queue Tokens
+    const existingTokens = await db.query(`SELECT * FROM queue_tokens`);
+    if (existingTokens.rows.length < 3) {
+      const tokensToSeed = [
+        { id: 'tok-104', tokenNumber: 104, patientId: 'df934545-a5e1-4ed7-a0b4-faed1d13facb', patientName: 'Sunita Devi', visitReason: 'Hypertension Follow-up & BP Monitoring', priority: 'STANDARD', status: 'SERVING', doctorName, wait: 0 },
+        { id: 'tok-105', tokenNumber: 105, patientId: 'pt-harpreet', patientName: 'Harpreet Singh', visitReason: 'Cardiology Referral Check', priority: 'STANDARD', status: 'WAITING', doctorName: null, wait: 12 },
+        { id: 'tok-106', tokenNumber: 106, patientId: 'pt-amrik', patientName: 'Amrik Chand', visitReason: 'Diabetes Review & High Glycemia', priority: 'URGENT', status: 'WAITING', doctorName: null, wait: 24 },
+        { id: 'tok-107', tokenNumber: 107, patientId: 'pt-kavita', patientName: 'Kavita Singh', visitReason: 'ANC Checkup & Nutrition Counsel', priority: 'STANDARD', status: 'WAITING', doctorName: null, wait: 36 },
+        { id: 'tok-108', tokenNumber: 108, patientId: 'pt-ranjit', patientName: 'Ranjit Kumar', visitReason: 'Fever & Respiratory Symptoms', priority: 'STANDARD', status: 'WAITING', doctorName: null, wait: 48 },
+      ];
+      for (const t of tokensToSeed) {
+        await db.query(
+          `INSERT INTO queue_tokens (id, tokennumber, patientid, patientname, hospitalid, hospitalname, department, priority, status, doctorname, visit_reason, estimatedwaitminutes, issuetime) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+          [t.id, t.tokenNumber, t.patientId, t.patientName, 'hosp-default', 'District Civil Hospital', 'General Medicine OPD', t.priority, t.status, t.doctorName, t.visitReason, t.wait, new Date().toISOString()]
+        );
+      }
+      console.log('[Seed] Queue tokens seeded');
+    }
+
+    // 4. Prescriptions
+    const existingRx = await db.query(`SELECT * FROM doctor_prescriptions`);
+    if (existingRx.rows.length === 0) {
+      const rxToSeed = [
+        {
+          id: 'rx-001',
+          patientId: 'df934545-a5e1-4ed7-a0b4-faed1d13facb',
+          patientName: 'Sunita Devi',
+          tokenNumber: '104',
+          items: JSON.stringify([
+            { medicine: 'Tab. Telmisartan 40mg', dosage: '1 Tab', frequency: 'Once daily (Morning)', duration: '30 Days', instructions: 'Take with water after breakfast' },
+            { medicine: 'Tab. Paracetamol 650mg', dosage: '1 Tab', frequency: 'As needed (SOS)', duration: '5 Days', instructions: 'For pain or fever only' }
+          ]),
+          notes: 'Essential Stage-2 Hypertension managed. Continue antihypertensive therapy, low sodium diet, and weekly BP tracking.',
+          assessment: 'Hypertension under pharmacological control.',
+          plan: '1. Telmisartan 40mg daily\n2. Low salt diet\n3. Follow-up after 2 weeks with BP log',
+          status: 'Issued',
+        },
+        {
+          id: 'rx-002',
+          patientId: 'pt-amrik',
+          patientName: 'Amrik Chand',
+          tokenNumber: '106',
+          items: JSON.stringify([
+            { medicine: 'Tab. Metformin 500mg ER', dosage: '1 Tab', frequency: 'Twice daily (with meals)', duration: '30 Days', instructions: 'Take immediately with meal' }
+          ]),
+          notes: 'Type 2 Diabetes Mellitus — glycemic control adjustment. Fasting sugar review scheduled.',
+          assessment: 'Suboptimal glycemic control. HbA1c elevated.',
+          plan: 'Increase Metformin to twice daily. Dietary counseling arranged with ASHA.',
+          status: 'Confirmed',
+        },
+        {
+          id: 'rx-003',
+          patientId: 'pt-harpreet',
+          patientName: 'Harpreet Singh',
+          tokenNumber: '105',
+          items: JSON.stringify([
+            { medicine: 'Tab. Aspirin 75mg', dosage: '1 Tab', frequency: 'Once daily (after lunch)', duration: '90 Days', instructions: 'Take with meal' }
+          ]),
+          notes: 'Post-cardiac evaluation — antiplatelet therapy initiated awaiting formal cardiology consult.',
+          assessment: 'Mild atypical angina on exertion.',
+          plan: 'Cardiology referral generated; baseline antiplatelet therapy started.',
+          status: 'Draft',
+        }
+      ];
+      for (const r of rxToSeed) {
+        await db.query(
+          `INSERT INTO doctor_prescriptions (id, doctor_id, doctor_name, patient_id, patient_name, token_number, items, clinical_notes, assessment, plan, status, issued_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
+          [r.id, doctorId, doctorName, r.patientId, r.patientName, r.tokenNumber, r.items, r.notes, r.assessment, r.plan, r.status, r.status === 'Issued' ? new Date().toISOString() : null]
+        );
+      }
+      console.log('[Seed] Doctor prescriptions seeded');
+    }
+
+    // 5. Lab Orders
+    const existingLabs = await db.query(`SELECT * FROM doctor_lab_orders`);
+    if (existingLabs.rows.length === 0) {
+      const labsToSeed = [
+        { id: 'lab-001', patientId: 'pt-amrik', patientName: 'Amrik Chand', testName: 'HbA1c (Glycated Haemoglobin)', category: 'Pathology', instructions: 'Fasting sample required', priority: 'Urgent', status: 'Ready', isCritical: true, report: 'HbA1c: 10.4% (Critical — above 9.0%)' },
+        { id: 'lab-002', patientId: 'df934545-a5e1-4ed7-a0b4-faed1d13facb', patientName: 'Sunita Devi', testName: 'Serum Creatinine & BUN', category: 'Pathology', instructions: 'Renal profile assessment', priority: 'Routine', status: 'Processing', isCritical: false, report: null },
+        { id: 'lab-003', patientId: 'pt-harpreet', patientName: 'Harpreet Singh', testName: 'ECG (12 Lead) + 2D Echo', category: 'Cardiology', instructions: 'Pre-referral baseline cardiac assessment', priority: 'Urgent', status: 'Ordered', isCritical: false, report: null },
+        { id: 'lab-004', patientId: 'df934545-a5e1-4ed7-a0b4-faed1d13facb', patientName: 'Sunita Devi', testName: 'Complete Blood Count (CBC) with Platelets', category: 'Pathology', instructions: 'Routine check', priority: 'Routine', status: 'Ready', isCritical: false, report: 'Hb: 11.2 g/dL, TLC: 7,400 /mcL, Platelets: 2.1 Lakh/mcL (Normal)' },
+      ];
+      for (const l of labsToSeed) {
+        await db.query(
+          `INSERT INTO doctor_lab_orders (id, doctor_id, doctor_name, patient_id, patient_name, test_name, category, instructions, priority, status, is_critical, report_summary, ordered_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+          [l.id, doctorId, doctorName, l.patientId, l.patientName, l.testName, l.category, l.instructions, l.priority, l.status, l.isCritical, l.report, new Date().toISOString()]
+        );
+      }
+      console.log('[Seed] Doctor lab orders seeded');
+    }
+
+    // 6. Follow-ups
+    const existingFu = await db.query(`SELECT * FROM doctor_follow_ups`);
+    if (existingFu.rows.length === 0) {
+      const fuToSeed = [
+        { id: 'fu-001', patientId: 'df934545-a5e1-4ed7-a0b4-faed1d13facb', patientName: 'Sunita Devi', dueDate: '2026-09-15', reason: 'Blood pressure recheck + medication adjustment review', priority: 'High', status: 'Upcoming', instructions: 'Bring previous 2-week BP log and fasting readings' },
+        { id: 'fu-002', patientId: 'pt-amrik', patientName: 'Amrik Chand', dueDate: '2026-09-10', reason: 'HbA1c result review & insulin dosage adjustment', priority: 'Urgent', status: 'Overdue', instructions: 'Fasting blood sugar test before OPD visit' },
+        { id: 'fu-003', patientId: 'pt-harpreet', patientName: 'Harpreet Singh', dueDate: '2026-09-22', reason: 'Post-referral cardiology follow-up review', priority: 'Medium', status: 'Upcoming', instructions: 'Bring all specialist consultation notes and echo reports' },
+        { id: 'fu-004', patientId: 'pt-kavita', patientName: 'Kavita Singh', dueDate: '2026-09-28', reason: 'Antenatal care 3rd trimester checkup & iron supplementation', priority: 'High', status: 'Upcoming', instructions: 'Bring ultrasound scan and maternal health card' },
+      ];
+      for (const f of fuToSeed) {
+        await db.query(
+          `INSERT INTO doctor_follow_ups (id, doctor_id, doctor_name, patient_id, patient_name, due_date, reason, department, instructions, priority, status) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)`,
+          [f.id, doctorId, doctorName, f.patientId, f.patientName, f.dueDate, f.reason, 'General Medicine', f.instructions, f.priority, f.status]
+        );
+      }
+      console.log('[Seed] Doctor follow-ups seeded');
+    }
+  } catch (err: any) {
+    console.error('[Seed Error] Failed to seed doctor clinical data:', err.message);
+  }
+}
+
+export async function seedAshaData(): Promise<void> {
+  try {
+    const db = getDB();
+    const ashaUser = await UserRepository.findByEmail('asha@pfis.org');
+    const ashaId = ashaUser?.id || 'asha-kavita-devi';
+    const ashaName = ashaUser?.name || 'Kavita Devi (ASHA Sangini)';
+
+    // 1. ASHA Worker Profile
+    const existingProfile = await db.query(`SELECT * FROM asha_profiles`);
+    if (existingProfile.rows.length === 0) {
+      await db.query(
+        `INSERT INTO asha_profiles (id, user_id, asha_code, name, phone, email, zone, district, state, village, sub_centre, phc, block, assigned_area, assigned_villages, supervisor_name, supervisor_phone, total_patients_tracked, high_risk_patient_count, referrals_made, field_visits_this_month, certification_level, is_active) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)`,
+        [
+          'asha-kavita-profile',
+          ashaId,
+          'ASHA-PB-KPT-104',
+          'Kavita Devi',
+          '+91 98765 33445',
+          'asha@pfis.org',
+          'Phagwara Rural Health Zone',
+          'Kapurthala',
+          'Punjab',
+          'Rampur Kalan',
+          'Rampur Sub-Centre',
+          'Phagwara Rural PHC',
+          'Phagwara',
+          'Ward 4 & 5 (Households HH-01 to HH-15)',
+          JSON.stringify(['Rampur Kalan', 'Dhadde', 'Bhojowal']),
+          'Sister Nirmal Kaur (ANM)',
+          '+91 98765 11223',
+          48,
+          6,
+          11,
+          24,
+          'Advanced',
+          true,
+        ]
+      );
+      console.log('[Seed] ASHA profile seeded for Kavita Devi');
+    }
+
+    // 2. Frontline Households
+    const existingHouseholds = await db.query(`SELECT * FROM frontline_households`);
+    if (existingHouseholds.rows.length === 0) {
+      const householdsToSeed = [
+        {
+          id: 'hh-001',
+          householdId: 'HH-PB-01',
+          address: 'House 12, Ward 4, Rampur Kalan',
+          villageName: 'Rampur Kalan',
+          subCentre: 'Rampur Sub-Centre',
+          phc: 'Phagwara Rural PHC',
+          block: 'Phagwara',
+          district: 'Kapurthala',
+          state: 'Punjab',
+          assignedWorkerId: ashaId,
+          assignedWorkerName: 'Kavita Devi',
+          familyHead: 'Mohan Lal Sharma',
+          familyHeadPhone: '+91 98765 44001',
+          totalMembers: 4,
+          members: JSON.stringify([
+            { patientId: 'pt-demo-01', name: 'Mohan Lal Sharma', age: 62, gender: 'Male', relation: 'Head', chronicConditions: ['Hypertension'] },
+            { patientId: 'pt-demo-02', name: 'Kamla Sharma', age: 58, gender: 'Female', relation: 'Wife', chronicConditions: ['Osteoarthritis'] },
+            { name: 'Rajesh Sharma', age: 34, gender: 'Male', relation: 'Son' },
+            { name: 'Pooja Sharma', age: 30, gender: 'Female', relation: 'Daughter-in-law' },
+          ]),
+          lastVisitDate: '2026-09-08',
+          nextPlannedVisit: '2026-09-18',
+          pendingTasksCount: 1,
+          accessBarriers: JSON.stringify(['Transport cost to Civil Hospital']),
+          coordinationStatus: 'Active',
+          accessFrictionLevel: 'Moderate',
+        },
+        {
+          id: 'hh-002',
+          householdId: 'HH-PB-02',
+          address: 'House 24, Near Gurudwara, Ward 4, Rampur Kalan',
+          villageName: 'Rampur Kalan',
+          subCentre: 'Rampur Sub-Centre',
+          phc: 'Phagwara Rural PHC',
+          block: 'Phagwara',
+          district: 'Kapurthala',
+          state: 'Punjab',
+          assignedWorkerId: ashaId,
+          assignedWorkerName: 'Kavita Devi',
+          familyHead: 'Sunita Devi',
+          familyHeadPhone: '+91 98765 44002',
+          totalMembers: 3,
+          members: JSON.stringify([
+            { patientId: 'df934545-a5e1-4ed7-a0b4-faed1d13facb', name: 'Sunita Devi', age: 60, gender: 'Female', relation: 'Head', chronicConditions: ['Hypertension', 'T2DM'] },
+            { name: 'Gurpreet Singh', age: 38, gender: 'Male', relation: 'Son' },
+            { name: 'Simran Kaur', age: 34, gender: 'Female', relation: 'Daughter-in-law' },
+          ]),
+          lastVisitDate: '2026-09-11',
+          nextPlannedVisit: '2026-09-15',
+          pendingTasksCount: 2,
+          accessBarriers: JSON.stringify(['Long distance to Civil Hospital', 'Transport unavailability']),
+          coordinationStatus: 'Needs Assistance',
+          accessFrictionLevel: 'High',
+        },
+        {
+          id: 'hh-003',
+          householdId: 'HH-PB-03',
+          address: 'House 7, Post Office Gali, Ward 5, Rampur Kalan',
+          villageName: 'Rampur Kalan',
+          subCentre: 'Rampur Sub-Centre',
+          phc: 'Phagwara Rural PHC',
+          block: 'Phagwara',
+          district: 'Kapurthala',
+          state: 'Punjab',
+          assignedWorkerId: ashaId,
+          assignedWorkerName: 'Kavita Devi',
+          familyHead: 'Amrik Chand',
+          familyHeadPhone: '+91 98765 44003',
+          totalMembers: 5,
+          members: JSON.stringify([
+            { patientId: 'pt-amrik', name: 'Amrik Chand', age: 64, gender: 'Male', relation: 'Head', chronicConditions: ['Uncontrolled Type 2 Diabetes', 'Diabetic Neuropathy'] },
+            { name: 'Bimla Rani', age: 60, gender: 'Female', relation: 'Wife' },
+            { name: 'Suresh Kumar', age: 36, gender: 'Male', relation: 'Son' },
+            { name: 'Neetu Rani', age: 32, gender: 'Female', relation: 'Daughter-in-law' },
+            { name: 'Master Rohit', age: 6, gender: 'Male', relation: 'Grandson' },
+          ]),
+          lastVisitDate: '2026-09-09',
+          nextPlannedVisit: '2026-09-12',
+          pendingTasksCount: 2,
+          accessBarriers: JSON.stringify(['Digital literacy barrier for OPD booking']),
+          coordinationStatus: 'Follow-up Due',
+          accessFrictionLevel: 'High',
+        },
+        {
+          id: 'hh-004',
+          householdId: 'HH-PB-04',
+          address: 'House 41, Canal Road, Ward 5, Rampur Kalan',
+          villageName: 'Rampur Kalan',
+          subCentre: 'Rampur Sub-Centre',
+          phc: 'Phagwara Rural PHC',
+          block: 'Phagwara',
+          district: 'Kapurthala',
+          state: 'Punjab',
+          assignedWorkerId: ashaId,
+          assignedWorkerName: 'Kavita Devi',
+          familyHead: 'Harpreet Singh',
+          familyHeadPhone: '+91 98765 44004',
+          totalMembers: 4,
+          members: JSON.stringify([
+            { patientId: 'pt-harpreet', name: 'Harpreet Singh', age: 52, gender: 'Male', relation: 'Head', chronicConditions: ['Post-Cardiac Evaluation', 'Angina'] },
+            { name: 'Manjit Kaur', age: 48, gender: 'Female', relation: 'Wife' },
+            { name: 'Jaspreet Singh', age: 24, gender: 'Male', relation: 'Son' },
+            { name: 'Navneet Kaur', age: 20, gender: 'Female', relation: 'Daughter' },
+          ]),
+          lastVisitDate: '2026-09-05',
+          nextPlannedVisit: '2026-09-13',
+          pendingTasksCount: 1,
+          accessBarriers: JSON.stringify(['Specialist cardiologist appointment delay']),
+          coordinationStatus: 'Needs Assistance',
+          accessFrictionLevel: 'High',
+        },
+        {
+          id: 'hh-005',
+          householdId: 'HH-PB-05',
+          address: 'House 18, Ward 4, Rampur Kalan',
+          villageName: 'Rampur Kalan',
+          subCentre: 'Rampur Sub-Centre',
+          phc: 'Phagwara Rural PHC',
+          block: 'Phagwara',
+          district: 'Kapurthala',
+          state: 'Punjab',
+          assignedWorkerId: ashaId,
+          assignedWorkerName: 'Kavita Devi',
+          familyHead: 'Balwinder Kaur',
+          familyHeadPhone: '+91 98765 44005',
+          totalMembers: 2,
+          members: JSON.stringify([
+            { patientId: 'pt-balwinder', name: 'Balwinder Kaur', age: 68, gender: 'Female', relation: 'Head', chronicConditions: ['Hypertension', 'Elderly Mobility Limitation'] },
+            { name: 'Daljit Singh', age: 42, gender: 'Male', relation: 'Son' },
+          ]),
+          lastVisitDate: '2026-09-07',
+          nextPlannedVisit: '2026-09-17',
+          pendingTasksCount: 1,
+          accessBarriers: JSON.stringify(['Elderly mobility constraint']),
+          coordinationStatus: 'Active',
+          accessFrictionLevel: 'Moderate',
+        },
+        {
+          id: 'hh-006',
+          householdId: 'HH-PB-06',
+          address: 'House 55, Primary School Road, Rampur Kalan',
+          villageName: 'Rampur Kalan',
+          subCentre: 'Rampur Sub-Centre',
+          phc: 'Phagwara Rural PHC',
+          block: 'Phagwara',
+          district: 'Kapurthala',
+          state: 'Punjab',
+          assignedWorkerId: ashaId,
+          assignedWorkerName: 'Kavita Devi',
+          familyHead: 'Deepak Shinde',
+          familyHeadPhone: '+91 98765 44006',
+          totalMembers: 3,
+          members: JSON.stringify([
+            { name: 'Deepak Shinde', age: 28, gender: 'Male', relation: 'Head' },
+            { patientId: 'pt-anandi', name: 'Anandi Shinde', age: 24, gender: 'Female', relation: 'Wife', chronicConditions: ['3rd Trimester High-Risk Pregnancy', 'Severe Anemia'] },
+            { name: 'Master Aarav Shinde', age: 2, gender: 'Male', relation: 'Son' },
+          ]),
+          lastVisitDate: '2026-09-10',
+          nextPlannedVisit: '2026-09-14',
+          pendingTasksCount: 2,
+          accessBarriers: JSON.stringify(['Private diagnostic ultrasound cost']),
+          coordinationStatus: 'Needs Assistance',
+          accessFrictionLevel: 'Critical',
+        },
+      ];
+
+      for (const h of householdsToSeed) {
+        await db.query(
+          `INSERT INTO frontline_households (id, household_id, address, village_name, sub_centre, phc, block, district, state, assigned_worker_id, assigned_worker_name, family_head, family_head_phone, total_members, members, last_visit_date, next_planned_visit, pending_tasks_count, access_barriers, coordination_status, access_friction_level) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21)`,
+          [h.id, h.householdId, h.address, h.villageName, h.subCentre, h.phc, h.block, h.district, h.state, h.assignedWorkerId, h.assignedWorkerName, h.familyHead, h.familyHeadPhone, h.totalMembers, h.members, h.lastVisitDate, h.nextPlannedVisit, h.pendingTasksCount, h.accessBarriers, h.coordinationStatus, h.accessFrictionLevel]
+        );
+      }
+      console.log('[Seed] Frontline households seeded');
+    }
+
+    // 3. Frontline Visits
+    const existingVisits = await db.query(`SELECT * FROM frontline_visits`);
+    if (existingVisits.rows.length === 0) {
+      const visitsToSeed = [
+        {
+          id: 'fv-101',
+          household_id: 'HH-PB-02',
+          patient_id: 'df934545-a5e1-4ed7-a0b4-faed1d13facb',
+          patient_name: 'Sunita Devi',
+          village_name: 'Rampur Kalan',
+          assigned_worker_id: ashaId,
+          assigned_worker_name: 'Kavita Devi',
+          facility_id: 'hosp-phc',
+          facility_name: 'Phagwara Rural PHC',
+          visit_type: 'ANC & NCD Doorstep Check',
+          scheduled_date: 'Today, 10:30 AM',
+          status: 'IN_PROGRESS',
+          priority: 'Urgent',
+          accessibility_barriers: JSON.stringify(['Long distance to Civil Hospital', 'Public transport delay']),
+          transport_barriers: 'No morning direct bus to Phagwara PHC',
+          notes: 'Record digital BP, verify Amlodipine 5mg stock, assist with doctor follow-up.',
+          started_at: new Date().toISOString(),
+        },
+        {
+          id: 'fv-102',
+          household_id: 'HH-PB-03',
+          patient_id: 'pt-amrik',
+          patient_name: 'Amrik Chand',
+          village_name: 'Rampur Kalan',
+          assigned_worker_id: ashaId,
+          assigned_worker_name: 'Kavita Devi',
+          facility_id: 'hosp-phc',
+          facility_name: 'Phagwara Rural PHC',
+          visit_type: 'T2DM Medicine Adherence & Diet Guidance',
+          scheduled_date: 'Today, 02:00 PM',
+          status: 'SCHEDULED',
+          priority: 'High',
+          accessibility_barriers: JSON.stringify(['Digital literacy barrier for OPD booking']),
+          transport_barriers: 'None',
+          notes: 'Check fasting glucose log, guide on foot care, generate live OPD token #106.',
+        },
+        {
+          id: 'fv-103',
+          household_id: 'HH-PB-06',
+          patient_id: 'pt-aarav',
+          patient_name: 'Master Aarav Shinde',
+          village_name: 'Rampur Kalan',
+          assigned_worker_id: ashaId,
+          assigned_worker_name: 'Kavita Devi',
+          facility_id: 'hosp-phc',
+          facility_name: 'Phagwara Rural PHC',
+          visit_type: 'National Immunization Follow-up',
+          scheduled_date: 'Today, 04:30 PM',
+          status: 'COMPLETED',
+          priority: 'Routine',
+          accessibility_barriers: JSON.stringify([]),
+          transport_barriers: 'None',
+          notes: 'Verified Pentavalent-3 and OPV-3 in MCP card at Anganwadi-2. Mother briefed on mild fever protocol.',
+          completed_at: new Date().toISOString(),
+        },
+        {
+          id: 'fv-104',
+          household_id: 'HH-PB-04',
+          patient_id: 'pt-harpreet',
+          patient_name: 'Harpreet Singh',
+          village_name: 'Rampur Kalan',
+          assigned_worker_id: ashaId,
+          assigned_worker_name: 'Kavita Devi',
+          facility_id: 'hosp-default',
+          facility_name: 'Civil Hospital Kapurthala',
+          visit_type: 'Post-Cardiac Discharge Follow-up',
+          scheduled_date: 'Yesterday, 11:00 AM',
+          status: 'MISSED',
+          priority: 'Urgent',
+          accessibility_barriers: JSON.stringify(['Emergency transport difficulty', 'Specialist appointment delay']),
+          transport_barriers: 'Canal road bus suspension',
+          notes: 'Patient was out of station for family emergency. Rescheduled for tomorrow morning with assisted appointment.',
+        },
+        {
+          id: 'fv-105',
+          household_id: 'HH-PB-06',
+          patient_id: 'pt-anandi',
+          patient_name: 'Anandi Shinde',
+          village_name: 'Rampur Kalan',
+          assigned_worker_id: ashaId,
+          assigned_worker_name: 'Kavita Devi',
+          facility_id: 'hosp-default',
+          facility_name: 'Civil Hospital Kapurthala',
+          visit_type: 'Maternal ANC Guidance & Transport Readiness',
+          scheduled_date: 'Tomorrow, 10:00 AM',
+          status: 'SCHEDULED',
+          priority: 'High',
+          accessibility_barriers: JSON.stringify(['Private diagnostic ultrasound cost']),
+          transport_barriers: 'Janani Shishu 102 route confirmation needed',
+          notes: 'Verify IFA tablet consumption, check pedal edema, confirm 102 ambulance route for delivery preparedness.',
+        },
+      ];
+
+      for (const v of visitsToSeed) {
+        await db.query(
+          `INSERT INTO frontline_visits (id, household_id, patient_id, patient_name, village_name, assigned_worker_id, assigned_worker_name, facility_id, facility_name, visit_type, scheduled_date, status, priority, accessibility_barriers, transport_barriers, notes, started_at, completed_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)`,
+          [v.id, v.household_id, v.patient_id, v.patient_name, v.village_name, v.assigned_worker_id, v.assigned_worker_name, v.facility_id, v.facility_name, v.visit_type, v.scheduled_date, v.status, v.priority, v.accessibility_barriers, v.transport_barriers, v.notes, v.started_at || null, v.completed_at || null]
+        );
+      }
+      console.log('[Seed] Frontline visits seeded');
+    }
+
+    // 4. Access Barriers
+    const existingBarriers = await db.query(`SELECT * FROM access_barriers`);
+    if (existingBarriers.rows.length === 0) {
+      const barriersToSeed = [
+        {
+          id: 'bar-01',
+          workerId: ashaId,
+          workerName: 'Kavita Devi',
+          patientId: 'df934545-a5e1-4ed7-a0b4-faed1d13facb',
+          patientName: 'Sunita Devi',
+          householdId: 'HH-PB-02',
+          villageName: 'Rampur Kalan',
+          category: 'TRANSPORT',
+          barrierType: 'Long travel distance (32 km to Civil Hospital with no direct morning bus)',
+          details: 'Patient misses scheduled morning OPD sessions due to lack of morning bus frequency.',
+          frictionScore: 'High',
+          status: 'Action Plan Created',
+          actionTaken: 'Enrolled for 102 Janani Shishu shared transport & assisted local PHC teleconsultation.',
+        },
+        {
+          id: 'bar-02',
+          workerId: ashaId,
+          workerName: 'Kavita Devi',
+          patientId: 'pt-anandi',
+          patientName: 'Anandi Shinde',
+          householdId: 'HH-PB-06',
+          villageName: 'Rampur Kalan',
+          category: 'COST',
+          barrierType: 'Diagnostic test fee affordability issue for ultrasound & renal Doppler',
+          details: 'Unable to afford private imaging centre charges after referral.',
+          frictionScore: 'Moderate',
+          status: 'Coordination In Progress',
+          actionTaken: 'Routed to Civil Hospital free NCD diagnostic scheme under Ayushman Bharat.',
+        },
+        {
+          id: 'bar-03',
+          workerId: ashaId,
+          workerName: 'Kavita Devi',
+          patientId: 'pt-amrik',
+          patientName: 'Amrik Chand',
+          householdId: 'HH-PB-03',
+          villageName: 'Rampur Kalan',
+          category: 'DIGITAL ACCESS',
+          barrierType: 'No smartphone or internet access for digital token booking',
+          details: 'Family head does not possess a smartphone; reliant on frontline worker for queue tokens.',
+          frictionScore: 'Moderate',
+          status: 'Resolved',
+          actionTaken: 'ASHA generated live OPD Token #106 directly through frontline desk.',
+        },
+        {
+          id: 'bar-04',
+          workerId: ashaId,
+          workerName: 'Kavita Devi',
+          patientId: 'pt-harpreet',
+          patientName: 'Harpreet Singh',
+          householdId: 'HH-PB-04',
+          villageName: 'Rampur Kalan',
+          category: 'AVAILABILITY',
+          barrierType: 'Specialist cardiologist OPD slots fully booked for next 3 weeks',
+          details: 'Patient discharged after acute cardiac event requires urgent specialist review within 7 days.',
+          frictionScore: 'High',
+          status: 'Action Plan Created',
+          actionTaken: 'Submitted priority referral escalation to Nodal Medical Officer.',
+        },
+      ];
+
+      for (const b of barriersToSeed) {
+        await db.query(
+          `INSERT INTO access_barriers (id, worker_id, worker_name, patient_id, patient_name, household_id, village_name, category, barrier_type, details, friction_score, status, action_taken, reported_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)`,
+          [b.id, b.workerId, b.workerName, b.patientId, b.patientName, b.householdId, b.villageName, b.category, b.barrierType, b.details, b.frictionScore, b.status, b.actionTaken, new Date().toISOString()]
+        );
+      }
+      console.log('[Seed] Access barriers seeded');
+    }
+
+    // 5. Escalations
+    const existingEscalations = await db.query(`SELECT * FROM escalations`);
+    if (existingEscalations.rows.length === 0) {
+      const escalationsToSeed = [
+        {
+          id: 'esc-01',
+          worker_id: ashaId,
+          worker_name: 'Kavita Devi',
+          patient_id: 'df934545-a5e1-4ed7-a0b4-faed1d13facb',
+          patient_name: 'Sunita Devi',
+          household_id: 'HH-PB-02',
+          village_name: 'Rampur Kalan',
+          type: 'HIGH_ACCESS_PRIORITY',
+          urgency: 'High',
+          reason: 'Bridge repair on Phagwara rural canal road completely blocking public transit access to Sub-centre.',
+          reported_observations: 'Patient unable to reach monthly hypertensive review due to 12km transit blockage.',
+          routed_to_role: 'Block Health Officer',
+          status: 'Dispatched',
+        },
+        {
+          id: 'esc-02',
+          worker_id: ashaId,
+          worker_name: 'Kavita Devi',
+          patient_id: 'pt-amrik',
+          patient_name: 'Amrik Chand',
+          household_id: 'HH-PB-03',
+          village_name: 'Rampur Kalan',
+          type: 'CLINICAL_CONCERN',
+          urgency: 'Emergency',
+          reason: 'Beneficiary reports sudden blurred vision and bilateral severe pedal swelling with blood pressure 178/104 mmHg.',
+          reported_observations: 'Marked pedal edema extending to mid-calf, patient reports dizziness and fatigue.',
+          routed_to_role: 'Doctor',
+          routed_to_facility: 'Phagwara Rural PHC',
+          clinical_review_status: 'Under Clinical Evaluation',
+          clinical_notes: 'Referred to Dr. Priya Sharma for immediate emergency glycemic stabilization.',
+          status: 'In Review',
+        },
+      ];
+
+      for (const e of escalationsToSeed) {
+        await db.query(
+          `INSERT INTO escalations (id, worker_id, worker_name, patient_id, patient_name, household_id, village_name, type, urgency, reason, reported_observations, routed_to_role, routed_to_facility, clinical_review_status, clinical_notes, status, created_at) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)`,
+          [e.id, e.worker_id, e.worker_name, e.patient_id, e.patient_name, e.household_id, e.village_name, e.type, e.urgency, e.reason, e.reported_observations, e.routed_to_role, e.routed_to_facility || null, e.clinical_review_status || null, e.clinical_notes || null, e.status, new Date().toISOString()]
+        );
+      }
+      console.log('[Seed] Escalations seeded');
+    }
+
+    // 6. Frontline Audit Events
+    const existingAudits = await db.query(`SELECT * FROM frontline_audit_events`);
+    if (existingAudits.rows.length === 0) {
+      const auditsToSeed = [
+        { id: 'aud-fl-01', resource_type: 'VISIT', resource_id: 'fv-101', actor_id: ashaId, actor_name: 'Kavita Devi', actor_role: 'ASHA', action: 'VISIT_STARTED', previous_status: 'SCHEDULED', new_status: 'IN_PROGRESS', notes: 'Field visit started at Sunita Devi household (Ward 4)' },
+        { id: 'aud-fl-02', resource_type: 'BARRIER', resource_id: 'bar-01', actor_id: ashaId, actor_name: 'Kavita Devi', actor_role: 'ASHA', action: 'BARRIER_RECORDED', previous_status: null, new_status: 'Identified', notes: 'Transport barrier recorded: 32km distance to Civil Hospital' },
+        { id: 'aud-fl-03', resource_type: 'TOKEN', resource_id: 'tok-106', actor_id: ashaId, actor_name: 'Kavita Devi', actor_role: 'ASHA', action: 'TOKEN_REQUESTED', previous_status: null, new_status: 'WAITING', notes: 'OPD Token #106 generated on behalf of Amrik Chand' },
+      ];
+      for (const a of auditsToSeed) {
+        await db.query(
+          `INSERT INTO frontline_audit_events (id, resource_type, resource_id, actor_id, actor_name, actor_role, action, previous_status, new_status, notes) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
+          [a.id, a.resource_type, a.resource_id, a.actor_id, a.actor_name, a.actor_role, a.action, a.previous_status, a.new_status, a.notes]
+        );
+      }
+      console.log('[Seed] Frontline audit events seeded');
+    }
+  } catch (err: any) {
+    console.error('[Seed Error] Failed to seed ASHA frontline data:', err.message);
+  }
+}
+
 

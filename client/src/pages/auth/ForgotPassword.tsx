@@ -70,7 +70,7 @@ export const ForgotPassword = () => {
         </div>
 
         {/* Form Card */}
-        <div className="bg-white/10 dark:bg-slate-900/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
+        <div className="bg-white/10 backdrop-blur-xl border border-white/10 rounded-3xl p-6 sm:p-8 shadow-2xl">
           {errorMessage && (
             <div className="mb-5 p-3.5 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-200 text-xs flex items-center gap-2.5">
               <AlertCircle className="w-4 h-4 flex-shrink-0 text-rose-400" />

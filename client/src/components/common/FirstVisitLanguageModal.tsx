@@ -26,15 +26,15 @@ export const FirstVisitLanguageModal: React.FC = () => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-xl rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-6 sm:p-8">
+      <div className="relative w-full max-w-xl rounded-2xl bg-white border border-slate-200 shadow-2xl p-6 sm:p-8">
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-50 dark:bg-teal-950/50 text-teal-600 dark:text-teal-400 mb-3 shadow-inner">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 mb-3 shadow-inner">
             <Globe className="w-8 h-8 animate-spin-slow" />
           </div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+          <h2 className="text-2xl font-bold text-slate-900">
             {t('modals.chooseLanguage', 'Choose Your Preferred Language')}
           </h2>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1">
+          <p className="text-sm text-slate-600 mt-1">
             {t(
               'modals.chooseLanguageSubtitle',
               'Select the language you want to use across the PFIS healthcare platform'
@@ -52,15 +52,15 @@ export const FirstVisitLanguageModal: React.FC = () => {
                 onClick={() => setSelectedLang(lang.code)}
                 className={`flex flex-col items-start p-3 rounded-xl border text-left transition-all ${
                   isSelected
-                    ? 'border-teal-500 bg-teal-50/70 text-teal-900 dark:bg-teal-950/50 dark:text-teal-200 shadow-sm ring-2 ring-teal-500/20'
-                    : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 hover:border-slate-300 dark:hover:border-slate-700'
+                    ? 'border-teal-500 bg-teal-50/70 text-teal-900 shadow-sm ring-2 ring-teal-500/20'
+                    : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300'
                 }`}
               >
                 <div className="flex items-center justify-between w-full">
                   <span className="text-base font-bold">{lang.nativeName}</span>
                   {isSelected && <Check className="w-4 h-4 text-teal-600" />}
                 </div>
-                <span className="text-xs text-slate-500 dark:text-slate-400">{lang.name}</span>
+                <span className="text-xs text-slate-500">{lang.name}</span>
               </button>
             );
           })}

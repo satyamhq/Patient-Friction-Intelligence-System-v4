@@ -314,17 +314,17 @@ export const PatientAccessAssessment: React.FC = () => {
   return (
     <div className="space-y-8 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* 1. Header & Non-Clinical Mandate Banner */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-card space-y-4">
-        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-card space-y-4">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-slate-100 pb-4">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-xs font-bold border border-teal-200 dark:border-teal-800">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-800 text-xs font-bold border border-teal-200">
               <Compass className="w-3.5 h-3.5 text-teal-600" />
               <span>Section 5 & 6 • Patient Access & Logistics Assessment</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Patient Access Friction Assessment
             </h1>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-600">
               Systematic evaluation of non-clinical barriers (transportation, distance, cost, documentation, wage loss, digital access, and mobility) that prevent care completion.
             </p>
           </div>
@@ -334,7 +334,7 @@ export const PatientAccessAssessment: React.FC = () => {
             <button
               type="button"
               onClick={() => setForm(DEMO_SCENARIO_STATE)}
-              className="px-3.5 py-2 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-900 dark:text-amber-200 text-xs font-bold border border-amber-300 dark:border-amber-700 hover:bg-amber-100 flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+              className="px-3.5 py-2 rounded-xl bg-amber-50 text-amber-900 text-xs font-bold border border-amber-300 hover:bg-amber-100 flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
               title="Load realistic scenario where hospital exists but high barriers prevent completion"
             >
               <Activity className="w-3.5 h-3.5 text-amber-600" />
@@ -344,7 +344,7 @@ export const PatientAccessAssessment: React.FC = () => {
             <button
               type="button"
               onClick={() => setForm(DEFAULT_STATE)}
-              className="px-3 py-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="px-3 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-semibold hover:bg-slate-200 flex items-center gap-1.5 transition-colors cursor-pointer"
               title="Reset assessment inputs"
             >
               <RotateCcw className="w-3 h-3 text-slate-500" />
@@ -377,8 +377,8 @@ export const PatientAccessAssessment: React.FC = () => {
         {/* LEFT COLUMN: The 7 Assessment Input Categories */}
         <div className="lg:col-span-7 space-y-6">
           {/* Category 1: TRANSPORTATION */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-card space-y-4">
-            <div className="flex items-center gap-2 text-teal-700 dark:text-teal-400 font-bold text-sm border-b border-slate-100 dark:border-slate-800 pb-2.5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-card space-y-4">
+            <div className="flex items-center gap-2 text-teal-700 font-bold text-sm border-b border-slate-100 pb-2.5">
               <Bus className="w-4 h-4 text-teal-600" />
               <span>1. Transportation Mode & Commute Option</span>
             </div>
@@ -396,8 +396,8 @@ export const PatientAccessAssessment: React.FC = () => {
                   onClick={() => setForm({ ...form, transportMode: opt.id as any })}
                   className={`p-3 rounded-xl border text-left font-medium transition-all cursor-pointer ${
                     form.transportMode === opt.id
-                      ? 'bg-teal-50 dark:bg-teal-950/50 border-teal-500 text-teal-900 dark:text-teal-200 font-bold shadow-xs'
-                      : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50'
+                      ? 'bg-teal-50 border-teal-500 text-teal-900 font-bold shadow-xs'
+                      : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
                   } ${opt.id === 'no_reliable' ? 'sm:col-span-2' : ''}`}
                 >
                   {opt.label}
@@ -407,14 +407,14 @@ export const PatientAccessAssessment: React.FC = () => {
           </div>
 
           {/* Category 2: DISTANCE & TRAVEL TIME */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-card space-y-4">
-            <div className="flex items-center gap-2 text-teal-700 dark:text-teal-400 font-bold text-sm border-b border-slate-100 dark:border-slate-800 pb-2.5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-card space-y-4">
+            <div className="flex items-center gap-2 text-teal-700 font-bold text-sm border-b border-slate-100 pb-2.5">
               <MapPin className="w-4 h-4 text-teal-600" />
               <span>2. Distance, Travel Time & Route Transfers</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Approx. Distance (km):
                 </label>
                 <input
@@ -423,12 +423,12 @@ export const PatientAccessAssessment: React.FC = () => {
                   max={250}
                   value={form.distanceKm}
                   onChange={(e) => setForm({ ...form, distanceKm: Number(e.target.value) || 0 })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   One-Way Transit Time (mins):
                 </label>
                 <input
@@ -437,18 +437,18 @@ export const PatientAccessAssessment: React.FC = () => {
                   max={480}
                   value={form.travelTimeMinutes}
                   onChange={(e) => setForm({ ...form, travelTimeMinutes: Number(e.target.value) || 0 })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Vehicle Transfers:
                 </label>
                 <select
                   value={form.transfersCount}
                   onChange={(e) => setForm({ ...form, transfersCount: Number(e.target.value) })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 >
                   <option value={0}>0 (Direct Route)</option>
                   <option value={1}>1 Transfer</option>
@@ -460,14 +460,14 @@ export const PatientAccessAssessment: React.FC = () => {
           </div>
 
           {/* Category 3: COST BURDEN */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-card space-y-4">
-            <div className="flex items-center gap-2 text-teal-700 dark:text-teal-400 font-bold text-sm border-b border-slate-100 dark:border-slate-800 pb-2.5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-card space-y-4">
+            <div className="flex items-center gap-2 text-teal-700 font-bold text-sm border-b border-slate-100 pb-2.5">
               <Coins className="w-4 h-4 text-teal-600" />
               <span>3. Financial & Out-of-Pocket Cost Burden</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Round-Trip Travel Fare (₹):
                 </label>
                 <input
@@ -475,12 +475,12 @@ export const PatientAccessAssessment: React.FC = () => {
                   min={0}
                   value={form.travelCostInr}
                   onChange={(e) => setForm({ ...form, travelCostInr: Number(e.target.value) || 0 })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Non-Clinical Expenses (₹):
                 </label>
                 <input
@@ -488,18 +488,18 @@ export const PatientAccessAssessment: React.FC = () => {
                   min={0}
                   value={form.appointmentCostInr}
                   onChange={(e) => setForm({ ...form, appointmentCostInr: Number(e.target.value) || 0 })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Affordability Concern:
                 </label>
                 <select
                   value={form.affordabilityConcern}
                   onChange={(e) => setForm({ ...form, affordabilityConcern: e.target.value as any })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 >
                   <option value="none">None (Comfortable)</option>
                   <option value="moderate">Moderate Expense</option>
@@ -510,20 +510,20 @@ export const PatientAccessAssessment: React.FC = () => {
           </div>
 
           {/* Category 4: DOCUMENTATION */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-card space-y-4">
-            <div className="flex items-center gap-2 text-teal-700 dark:text-teal-400 font-bold text-sm border-b border-slate-100 dark:border-slate-800 pb-2.5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-card space-y-4">
+            <div className="flex items-center gap-2 text-teal-700 font-bold text-sm border-b border-slate-100 pb-2.5">
               <FileCheck2 className="w-4 h-4 text-teal-600" />
               <span>4. Scheme & Paperwork Documentation Readiness</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Required ID & Scheme Cards (Ayushman/PM-JAY):
                 </label>
                 <select
                   value={form.documentsAvailable}
                   onChange={(e) => setForm({ ...form, documentsAvailable: e.target.value as any })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 >
                   <option value="all_ready">All Documents Ready & Linked</option>
                   <option value="partially_missing">Missing Aadhaar / Card Linkage</option>
@@ -532,13 +532,13 @@ export const PatientAccessAssessment: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Past Referrals & Prescriptions:
                 </label>
                 <select
                   value={form.recordsReadiness}
                   onChange={(e) => setForm({ ...form, recordsReadiness: e.target.value as any })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 >
                   <option value="ready">Ready with Patient</option>
                   <option value="hard_to_obtain">Difficult to Obtain / Scattered</option>
@@ -549,20 +549,20 @@ export const PatientAccessAssessment: React.FC = () => {
           </div>
 
           {/* Category 5: TIME & WORK CONSTRAINTS */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-card space-y-4">
-            <div className="flex items-center gap-2 text-teal-700 dark:text-teal-400 font-bold text-sm border-b border-slate-100 dark:border-slate-800 pb-2.5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-card space-y-4">
+            <div className="flex items-center gap-2 text-teal-700 font-bold text-sm border-b border-slate-100 pb-2.5">
               <Clock className="w-4 h-4 text-teal-600" />
               <span>5. Working-Hour & Wage-Loss Constraints</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Shift Timing vs Clinic Hours:
                 </label>
                 <select
                   value={form.workDuringClinicHours}
                   onChange={(e) => setForm({ ...form, workDuringClinicHours: e.target.value as any })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 >
                   <option value="no">Not Working / Free During Clinic Hours</option>
                   <option value="flexible_leave">Can Take Flexible Leave</option>
@@ -571,13 +571,13 @@ export const PatientAccessAssessment: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Expected Wage Loss from Clinic Queue:
                 </label>
                 <select
                   value={form.expectedWageLoss}
                   onChange={(e) => setForm({ ...form, expectedWageLoss: e.target.value as any })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 >
                   <option value="none">No Wage Loss</option>
                   <option value="partial_day">Half-Day Daily Wage Lost</option>
@@ -588,20 +588,20 @@ export const PatientAccessAssessment: React.FC = () => {
           </div>
 
           {/* Category 6: DIGITAL ACCESS */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-card space-y-4">
-            <div className="flex items-center gap-2 text-teal-700 dark:text-teal-400 font-bold text-sm border-b border-slate-100 dark:border-slate-800 pb-2.5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-card space-y-4">
+            <div className="flex items-center gap-2 text-teal-700 font-bold text-sm border-b border-slate-100 pb-2.5">
               <Laptop className="w-4 h-4 text-teal-600" />
               <span>6. Digital Connectivity & Device Availability</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Device Type:
                 </label>
                 <select
                   value={form.deviceType}
                   onChange={(e) => setForm({ ...form, deviceType: e.target.value as any })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 >
                   <option value="smartphone">Smartphone</option>
                   <option value="feature_phone">Basic Feature Phone</option>
@@ -610,13 +610,13 @@ export const PatientAccessAssessment: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Internet Connection:
                 </label>
                 <select
                   value={form.internetConnectivity}
                   onChange={(e) => setForm({ ...form, internetConnectivity: e.target.value as any })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 >
                   <option value="reliable">Reliable 4G/5G</option>
                   <option value="spotty">Spotty / Weak Network</option>
@@ -625,13 +625,13 @@ export const PatientAccessAssessment: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Self-Booking Comfort:
                 </label>
                 <select
                   value={form.digitalBookingComfort}
                   onChange={(e) => setForm({ ...form, digitalBookingComfort: e.target.value as any })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 >
                   <option value="comfortable">Comfortable</option>
                   <option value="needs_help">Needs Assistance</option>
@@ -642,20 +642,20 @@ export const PatientAccessAssessment: React.FC = () => {
           </div>
 
           {/* Category 7: MOBILITY & COMMUNICATION */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-card space-y-4">
-            <div className="flex items-center gap-2 text-teal-700 dark:text-teal-400 font-bold text-sm border-b border-slate-100 dark:border-slate-800 pb-2.5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-card space-y-4">
+            <div className="flex items-center gap-2 text-teal-700 font-bold text-sm border-b border-slate-100 pb-2.5">
               <Accessibility className="w-4 h-4 text-teal-600" />
               <span>7. Physical Mobility & Communication Accessibility</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Mobility Assistance Requirement:
                 </label>
                 <select
                   value={form.mobilityRequirement}
                   onChange={(e) => setForm({ ...form, mobilityRequirement: e.target.value as any })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 >
                   <option value="none">None (Walks Independently)</option>
                   <option value="walking_cane">Walking Support / Cane</option>
@@ -665,13 +665,13 @@ export const PatientAccessAssessment: React.FC = () => {
               </div>
 
               <div className="space-y-1.5">
-                <label className="font-semibold text-slate-700 dark:text-slate-300 block">
+                <label className="font-semibold text-slate-700 block">
                   Communication Needs:
                 </label>
                 <select
                   value={form.communicationNeed}
                   onChange={(e) => setForm({ ...form, communicationNeed: e.target.value as any })}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-bold text-slate-900 dark:text-white"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white font-bold text-slate-900"
                 >
                   <option value="standard">Standard Hindi / English</option>
                   <option value="dialect_only">Regional Dialect Only (e.g. Santali/Bhojpuri)</option>
@@ -758,9 +758,9 @@ export const PatientAccessAssessment: React.FC = () => {
           </div>
 
           {/* Barrier Breakdown & Prioritization Card (Section 8 & 9) */}
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-card space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-              <h4 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-1.5">
+          <div className="bg-white rounded-2xl border border-slate-200/80 p-5 sm:p-6 shadow-card space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <h4 className="font-bold text-sm text-slate-900 flex items-center gap-1.5">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
                 <span>Prioritized Barrier Breakdown</span>
               </h4>
@@ -773,10 +773,10 @@ export const PatientAccessAssessment: React.FC = () => {
               {results.topBarriers.map((b, idx) => (
                 <div
                   key={b.name}
-                  className="p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-850 space-y-2 text-xs"
+                  className="p-3.5 rounded-xl border border-slate-200/80 bg-slate-50/70 space-y-2 text-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-slate-900 dark:text-white flex items-center gap-1.5">
+                    <span className="font-bold text-slate-900 flex items-center gap-1.5">
                       <span className="w-5 h-5 rounded-full bg-teal-600 text-white flex items-center justify-center text-[10px] font-black shrink-0">
                         #{idx + 1}
                       </span>
@@ -784,18 +784,18 @@ export const PatientAccessAssessment: React.FC = () => {
                     </span>
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                       b.score >= 70
-                        ? 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
-                        : 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
+                        ? 'bg-rose-100 text-rose-800'
+                        : 'bg-amber-100 text-amber-800'
                     }`}>
                       {b.score >= 70 ? 'High Severity' : 'Moderate Severity'} ({b.score}/100)
                     </span>
                   </div>
 
-                  <p className="text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
+                  <p className="text-slate-600 text-[11px] leading-relaxed">
                     <strong>Reason:</strong> {b.reason}
                   </p>
 
-                  <div className="p-2 rounded-lg bg-teal-50 dark:bg-teal-950/40 border border-teal-200/80 dark:border-teal-800 text-[11px] text-teal-900 dark:text-teal-200">
+                  <div className="p-2 rounded-lg bg-teal-50 border border-teal-200/80 text-[11px] text-teal-900">
                     <strong>Possible Non-Clinical Intervention:</strong> {b.intervention}
                   </div>
                 </div>
@@ -820,7 +820,7 @@ export const PatientAccessAssessment: React.FC = () => {
                   type="button"
                   onClick={handleSaveToProfile}
                   disabled={isSaving}
-                  className="w-full py-2 px-3 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2 px-3 text-xs font-semibold text-slate-700 hover:bg-slate-100 rounded-xl border border-slate-200 transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <CheckCircle2 className={`w-3.5 h-3.5 ${saveSuccess ? 'text-emerald-500' : 'text-slate-400'}`} />
                   <span>

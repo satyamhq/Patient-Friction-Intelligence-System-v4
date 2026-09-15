@@ -200,10 +200,13 @@ CREATE INDEX IF NOT EXISTS idx_notifications_user ON notifications(user_id);
 CREATE TABLE IF NOT EXISTS audit_logs (
     id VARCHAR(64) PRIMARY KEY,
     user_id VARCHAR(64) REFERENCES users(id) ON DELETE SET NULL,
+    actor_role VARCHAR(64) DEFAULT 'system',
     action VARCHAR(128) NOT NULL,
     entity_type VARCHAR(64) NOT NULL,
     entity_id VARCHAR(64),
     ip_address VARCHAR(64),
+    user_agent VARCHAR(255),
+    details TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

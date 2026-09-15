@@ -33,14 +33,14 @@ export const VoiceSearchButton: React.FC<VoiceSearchButtonProps> = ({
       className={`relative inline-flex items-center justify-center p-2 rounded-lg transition-all ${
         isListening
           ? 'bg-rose-500 text-white animate-pulse shadow-md shadow-rose-500/30 ring-2 ring-rose-300'
-          : 'bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700'
+          : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
       } ${className}`}
       title={isListening ? t('common.listening', 'Listening...') : t('common.speak', 'Speak')}
     >
       {isListening ? (
         <Mic className="w-4 h-4 animate-bounce" />
       ) : (
-        <Mic className="w-4 h-4 text-teal-600 dark:text-teal-400" />
+        <Mic className="w-4 h-4 text-teal-600" />
       )}
     </button>
   );

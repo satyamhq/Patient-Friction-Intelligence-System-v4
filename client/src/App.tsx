@@ -8,6 +8,7 @@ import { AccessibilityProvider } from './context/AccessibilityContext';
 import { ToastProvider } from './context/ToastContext';
 import { FirstVisitLanguageModal } from './components/common/FirstVisitLanguageModal';
 import { AccessibilityToolbar } from './components/common/AccessibilityToolbar';
+import { GeminiChatbot } from './components/common/GeminiChatbot';
 
 // Layouts
 import { MainLayout } from './layouts/MainLayout';
@@ -82,14 +83,54 @@ import { DoctorDashboard } from './pages/doctor/DoctorDashboard';
 import { DoctorProfile } from './pages/doctor/DoctorProfile';
 import { DoctorPatients } from './pages/doctor/DoctorPatients';
 import { DoctorConsultationWorkspace } from './pages/doctor/DoctorConsultationWorkspace';
+import { DoctorOPDQueue } from './pages/doctor/DoctorOPDQueue';
+import { DoctorPrescriptions } from './pages/doctor/DoctorPrescriptions';
+import { DoctorLabOrders } from './pages/doctor/DoctorLabOrders';
+import { DoctorReferrals } from './pages/doctor/DoctorReferrals';
+import { DoctorFollowUps } from './pages/doctor/DoctorFollowUps';
+import { DoctorSchedule } from './pages/doctor/DoctorSchedule';
 
 // ASHA Worker Pages
 import { AshaDashboard } from './pages/asha/AshaDashboard';
 import { AshaPatients } from './pages/asha/AshaPatients';
+import { AshaHouseholds } from './pages/asha/AshaHouseholds';
+import { AshaFieldVisits } from './pages/asha/AshaFieldVisits';
+import { AshaEscalations } from './pages/asha/AshaEscalations';
+import { AshaFrontlineDesk } from './pages/asha/AshaFrontlineDesk';
+import { AshaAppointments } from './pages/asha/AshaAppointments';
+import { AshaOPDTokens } from './pages/asha/AshaOPDTokens';
+import { AshaReferrals } from './pages/asha/AshaReferrals';
+import { AshaFollowUps } from './pages/asha/AshaFollowUps';
+import { AshaTeleconsult } from './pages/asha/AshaTeleconsult';
+import { AshaAccessBarriers } from './pages/asha/AshaAccessBarriers';
+import { AshaDocuments } from './pages/asha/AshaDocuments';
+import { AshaOfflineSync } from './pages/asha/AshaOfflineSync';
+import { AshaNotifications } from './pages/asha/AshaNotifications';
+import { AshaAuditTrail } from './pages/asha/AshaAuditTrail';
+import { AshaSettings } from './pages/asha/AshaSettings';
 
 // Government Pages
 import { GovernmentDashboard } from './pages/government/GovernmentDashboard';
 import { GovernmentHospitals } from './pages/government/GovernmentHospitals';
+import { GovernmentBeds } from './pages/government/GovernmentBeds';
+import { GovernmentReferrals } from './pages/government/GovernmentReferrals';
+import { GovernmentServices } from './pages/government/GovernmentServices';
+import { GovernmentOPDAnalytics } from './pages/government/GovernmentOPDAnalytics';
+import { GovernmentLabs } from './pages/government/GovernmentLabs';
+import { GovernmentPharmacy } from './pages/government/GovernmentPharmacy';
+import { GovernmentAshaCoverage } from './pages/government/GovernmentAshaCoverage';
+import { GovernmentDistrictComparison } from './pages/government/GovernmentDistrictComparison';
+import { GovernmentActionCenter } from './pages/government/GovernmentActionCenter';
+import { GovernmentReports } from './pages/government/GovernmentReports';
+import { GovernmentAuditLogs } from './pages/government/GovernmentAuditLogs';
+
+// Admin Strategic Intelligence Pages
+import { AdminStateCommand } from './pages/admin/AdminStateCommand';
+import { AdminIntegrationCenter } from './pages/admin/AdminIntegrationCenter';
+import { AdminDataQuality } from './pages/admin/AdminDataQuality';
+import { AdminPermissions } from './pages/admin/AdminPermissions';
+import { AdminSystemHealth } from './pages/admin/AdminSystemHealth';
+import { AdminReports } from './pages/admin/AdminReports';
 
 export const App: React.FC = () => {
   return (
@@ -107,6 +148,7 @@ export const App: React.FC = () => {
                 <NotificationProvider>
                   <FirstVisitLanguageModal />
                   <AccessibilityToolbar />
+                  <GeminiChatbot />
                   <Routes>
                     {/* Public Main Layout */}
                     <Route element={<MainLayout />}>
@@ -191,6 +233,12 @@ export const App: React.FC = () => {
                       <Route path="consultation" element={<DoctorConsultationWorkspace />} />
                       <Route path="profile" element={<DoctorProfile />} />
                       <Route path="patients" element={<DoctorPatients />} />
+                      <Route path="opd-queue" element={<DoctorOPDQueue />} />
+                      <Route path="prescriptions" element={<DoctorPrescriptions />} />
+                      <Route path="lab-orders" element={<DoctorLabOrders />} />
+                      <Route path="referrals" element={<DoctorReferrals />} />
+                      <Route path="follow-ups" element={<DoctorFollowUps />} />
+                      <Route path="schedule" element={<DoctorSchedule />} />
                       <Route path="teleconsult" element={<TeleconsultationRoom />} />
                       <Route path="health-records" element={<LongitudinalRecordsPage />} />
                       <Route path="triage" element={<DigitalTriagePage />} />
@@ -204,11 +252,23 @@ export const App: React.FC = () => {
                       <Route index element={<Navigate to="/asha/dashboard" replace />} />
                       <Route path="dashboard" element={<AshaDashboard />} />
                       <Route path="patients" element={<AshaPatients />} />
-                      <Route path="high-risk" element={<HighRiskFollowUpPage />} />
-                      <Route path="frontline" element={<FrontlineWorkerPortal />} />
-                      <Route path="referrals" element={<ReferralTrackingPage />} />
-                      <Route path="notifications" element={<PatientNotifications />} />
-                      <Route path="settings" element={<PatientSettings />} />
+                      <Route path="households" element={<AshaHouseholds />} />
+                      <Route path="visits" element={<AshaFieldVisits />} />
+                      <Route path="escalations" element={<AshaEscalations />} />
+                      <Route path="high-risk" element={<AshaEscalations />} />
+                      <Route path="desk" element={<AshaFrontlineDesk />} />
+                      <Route path="frontline" element={<AshaFrontlineDesk />} />
+                      <Route path="appointments" element={<AshaAppointments />} />
+                      <Route path="opd-tokens" element={<AshaOPDTokens />} />
+                      <Route path="referrals" element={<AshaReferrals />} />
+                      <Route path="follow-ups" element={<AshaFollowUps />} />
+                      <Route path="teleconsult" element={<AshaTeleconsult />} />
+                      <Route path="access-barriers" element={<AshaAccessBarriers />} />
+                      <Route path="documents" element={<AshaDocuments />} />
+                      <Route path="sync" element={<AshaOfflineSync />} />
+                      <Route path="notifications" element={<AshaNotifications />} />
+                      <Route path="audit" element={<AshaAuditTrail />} />
+                      <Route path="settings" element={<AshaSettings />} />
                     </Route>
 
                     {/* Government Portal */}
@@ -216,8 +276,20 @@ export const App: React.FC = () => {
                       <Route index element={<Navigate to="/government/dashboard" replace />} />
                       <Route path="dashboard" element={<GovernmentDashboard />} />
                       <Route path="hospitals" element={<GovernmentHospitals />} />
+                      <Route path="beds" element={<GovernmentBeds />} />
                       <Route path="friction-map" element={<PopulationFrictionMap />} />
                       <Route path="interventions" element={<InterventionOptimizer />} />
+                      <Route path="referrals" element={<GovernmentReferrals />} />
+                      <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
+                      <Route path="services" element={<GovernmentServices />} />
+                      <Route path="opd-analytics" element={<GovernmentOPDAnalytics />} />
+                      <Route path="labs" element={<GovernmentLabs />} />
+                      <Route path="pharmacy" element={<GovernmentPharmacy />} />
+                      <Route path="asha-coverage" element={<GovernmentAshaCoverage />} />
+                      <Route path="district-comparison" element={<GovernmentDistrictComparison />} />
+                      <Route path="alerts" element={<GovernmentActionCenter />} />
+                      <Route path="reports" element={<GovernmentReports />} />
+                      <Route path="audit-logs" element={<GovernmentAuditLogs />} />
                       <Route path="notifications" element={<PatientNotifications />} />
                       <Route path="settings" element={<PatientSettings />} />
                     </Route>
@@ -226,6 +298,7 @@ export const App: React.FC = () => {
                     <Route path="/admin" element={<AdminLayout />}>
                       <Route index element={<Navigate to="/admin/dashboard" replace />} />
                       <Route path="dashboard" element={<AdminDashboard />} />
+                      <Route path="state-command" element={<AdminStateCommand />} />
                       {/* Platform Impact Evaluation Route */}
                       <Route path="judge-mode" element={<JudgeImpactDashboard />} />
                       <Route path="judge-mode/" element={<Navigate to="/admin/judge-mode" replace />} />
@@ -249,7 +322,12 @@ export const App: React.FC = () => {
                       <Route path="patients" element={<AdminPatients />} />
                       <Route path="hospitals" element={<AdminHospitals />} />
                       <Route path="users" element={<AdminUsers />} />
+                      <Route path="permissions" element={<AdminPermissions />} />
+                      <Route path="integrations" element={<AdminIntegrationCenter />} />
+                      <Route path="data-quality" element={<AdminDataQuality />} />
                       <Route path="audit-logs" element={<AuditLogs />} />
+                      <Route path="system-health" element={<AdminSystemHealth />} />
+                      <Route path="reports" element={<AdminReports />} />
                       <Route path="feature-flags" element={<AdminFeatureFlags />} />
                       <Route path="settings" element={<PatientSettings />} />
                     </Route>

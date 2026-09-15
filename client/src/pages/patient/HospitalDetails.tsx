@@ -414,12 +414,12 @@ export const HospitalDetails: React.FC = () => {
           </div>
 
           {/* Hospital Transport & Doorstep Care Escort Assistance Section */}
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 space-y-4">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-4">
             <div>
-              <h4 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-2">
+              <h4 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                 <span>🚗</span> Non-Clinical Transport & Care-Attendant Assistance
               </h4>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <p className="text-xs text-slate-500">
                 Select if you have difficulty traveling to the hospital or need an attendant to accompany you.
               </p>
             </div>
@@ -430,8 +430,8 @@ export const HospitalDetails: React.FC = () => {
                 onClick={() => setNeedsAmbulance(!needsAmbulance)}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer space-y-2 ${
                   needsAmbulance
-                    ? 'bg-rose-50 dark:bg-rose-950/40 border-rose-400 ring-2 ring-rose-500/20 shadow-xs'
-                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-rose-200'
+                    ? 'bg-rose-50 border-rose-400 ring-2 ring-rose-500/20 shadow-xs'
+                    : 'bg-white border-slate-200 hover:border-rose-200'
                 }`}
               >
                 <div className="flex items-start justify-between">
@@ -442,20 +442,20 @@ export const HospitalDetails: React.FC = () => {
                       onChange={() => {}}
                       className="w-4 h-4 rounded text-rose-600 focus:ring-rose-500"
                     />
-                    <span className="font-bold text-xs text-slate-900 dark:text-white">
+                    <span className="font-bold text-xs text-slate-900">
                       🚑 Request Hospital Ambulance / Van
                     </span>
                   </div>
-                  <span className="text-[10px] font-bold bg-rose-100 dark:bg-rose-900 text-rose-800 dark:text-rose-200 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-bold bg-rose-100 text-rose-800 px-2 py-0.5 rounded-full">
                     {hospital.ambulanceService?.availableAmbulances ?? 2} Avail
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed pl-6">
+                <p className="text-[11px] text-slate-600 leading-relaxed pl-6">
                   Hospital ambulance will pick you up directly from your home address and bring you to the hospital OPD.
                 </p>
                 <div className="pl-6 text-[10px] text-slate-500 font-semibold flex items-center justify-between">
                   <span>Driver: Gurmeet Singh</span>
-                  <span className="text-rose-700 dark:text-rose-300 font-bold">ETA: ~{hospital.ambulanceService?.avgEtaMins ?? 18} mins</span>
+                  <span className="text-rose-700 font-bold">ETA: ~{hospital.ambulanceService?.avgEtaMins ?? 18} mins</span>
                 </div>
               </div>
 
@@ -464,8 +464,8 @@ export const HospitalDetails: React.FC = () => {
                 onClick={() => setNeedsCareEscort(!needsCareEscort)}
                 className={`p-3.5 rounded-xl border transition-all cursor-pointer space-y-2 ${
                   needsCareEscort
-                    ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400 ring-2 ring-emerald-500/20 shadow-xs'
-                    : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-emerald-200'
+                    ? 'bg-emerald-50 border-emerald-400 ring-2 ring-emerald-500/20 shadow-xs'
+                    : 'bg-white border-slate-200 hover:border-emerald-200'
                 }`}
               >
                 <div className="flex items-start justify-between">
@@ -476,26 +476,26 @@ export const HospitalDetails: React.FC = () => {
                       onChange={() => {}}
                       className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
                     />
-                    <span className="font-bold text-xs text-slate-900 dark:text-white">
+                    <span className="font-bold text-xs text-slate-900">
                       🤝 Request Doorstep Care Escort (Sahayak)
                     </span>
                   </div>
-                  <span className="text-[10px] font-bold bg-emerald-100 dark:bg-emerald-900 text-emerald-800 dark:text-emerald-200 px-2 py-0.5 rounded-full">
+                  <span className="text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">
                     Home Pick & Drop
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-relaxed pl-6">
+                <p className="text-[11px] text-slate-600 leading-relaxed pl-6">
                   A certified hospital health attendant will visit your home, escort you safely throughout tests, and drop you back home.
                 </p>
                 <div className="pl-6 text-[10px] text-slate-500 font-semibold flex items-center justify-between">
                   <span>Escort: Smt. Sunita Sharma</span>
-                  <span className="text-emerald-700 dark:text-emerald-300 font-bold">Safe Return Drop</span>
+                  <span className="text-emerald-700 font-bold">Safe Return Drop</span>
                 </div>
               </div>
             </div>
 
             {(needsAmbulance || needsCareEscort) && (
-              <div className="pt-2 border-t border-slate-200 dark:border-slate-700">
+              <div className="pt-2 border-t border-slate-200">
                 <Input
                   label="Pickup Home Address (Where should ambulance/attendant arrive?)"
                   value={pickupAddress}

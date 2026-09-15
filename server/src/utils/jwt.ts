@@ -1,10 +1,11 @@
 import jwt from 'jsonwebtoken';
 import { config } from '../config/env.js';
+import { UserRole } from '../models/User.js';
 
 export interface TokenPayload {
   userId: string;
   email: string;
-  role: 'patient' | 'hospital' | 'admin';
+  role: UserRole;
 }
 
 export const generateToken = (payload: TokenPayload): string => {

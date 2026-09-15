@@ -42,8 +42,8 @@ export const LandingPage: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center max-w-4xl mx-auto space-y-4 sm:space-y-6">
             {/* Tag Badge */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-xs font-semibold border border-teal-200/80 dark:border-teal-800 shadow-xs mb-2 sm:mb-3 max-w-full">
-              <Compass className="w-4 h-4 text-teal-600 dark:text-teal-400 shrink-0" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-50 text-teal-800 text-xs font-semibold border border-teal-200/80 shadow-xs mb-2 sm:mb-3 max-w-full">
+              <Compass className="w-4 h-4 text-teal-600 shrink-0" />
               <span className="truncate">Healthcare Accessibility & Logistics Intelligence</span>
             </div>
 
@@ -129,8 +129,8 @@ export const LandingPage: React.FC = () => {
               {!isAuthenticated && (
                 <div className="flex flex-wrap items-center justify-center gap-2 pt-4">
                   <Link to="/admin/judge-mode">
-                    <button className="text-xs text-teal-800 dark:text-teal-300 bg-teal-50 hover:bg-teal-100 dark:bg-teal-950/60 font-semibold px-3.5 py-1.5 rounded-lg border border-teal-200 dark:border-teal-800 transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer">
-                      <BarChart3 className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+                    <button className="text-xs text-teal-800 bg-teal-50 hover:bg-teal-100 font-semibold px-3.5 py-1.5 rounded-lg border border-teal-200 transition-colors flex items-center gap-1.5 shadow-xs cursor-pointer">
+                      <BarChart3 className="w-3.5 h-3.5 text-teal-600" />
                       <span>System Impact & Evaluation Hub →</span>
                     </button>
                   </Link>
@@ -480,16 +480,16 @@ export const LandingPage: React.FC = () => {
       {/* 5. PFIS SCORING METHODOLOGY */}
       {/* ================================================== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-card space-y-8">
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-10 shadow-card space-y-8">
           <div className="text-center max-w-3xl mx-auto space-y-2.5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/60 text-teal-800 dark:text-teal-300 text-xs font-semibold border border-teal-200 dark:border-teal-800">
-              <Sliders className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-800 text-xs font-semibold border border-teal-200">
+              <Sliders className="w-3.5 h-3.5 text-teal-600" />
               <span>Scoring Rationale</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
               Explainable Access Friction Scoring Model
             </h2>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
               Every index score is calculated with clear, explainable factors representing physical and logistical access friction only, without making medical diagnoses.
             </p>
           </div>
@@ -503,9 +503,9 @@ export const LandingPage: React.FC = () => {
               { category: 'Distance & Travel Friction', weight: '10%', desc: 'Total road kilometers and transit duration to verified centers.', color: 'text-rose-600' },
               { category: 'Digital Access Friction', weight: '10%', desc: 'Device type (feature phone vs smartphone) and digital literacy.', color: 'text-emerald-600' },
             ].map((item) => (
-              <div key={item.category} className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 space-y-1.5">
+              <div key={item.category} className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <h4 className="font-bold text-xs sm:text-sm text-slate-900 dark:text-white">{item.category}</h4>
+                  <h4 className="font-bold text-xs sm:text-sm text-slate-900">{item.category}</h4>
                   <span className={`font-black text-xs ${item.color}`}>{item.weight}</span>
                 </div>
                 <p className="text-[11px] text-slate-500 leading-relaxed">{item.desc}</p>
@@ -514,25 +514,25 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Classification Tiers */}
-          <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
-            <h4 className="font-bold text-xs text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-3">
+          <div className="pt-4 border-t border-slate-100">
+            <h4 className="font-bold text-xs text-slate-700 uppercase tracking-wider mb-3">
               Friction Level Classifications:
             </h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
-              <div className="p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800">
-                <span className="font-bold text-emerald-800 dark:text-emerald-300 block">LOW FRICTION</span>
+              <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
+                <span className="font-bold text-emerald-800 block">LOW FRICTION</span>
                 <span className="text-[11px] text-emerald-600">0 - 25</span>
               </div>
-              <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800">
-                <span className="font-bold text-amber-800 dark:text-amber-300 block">MODERATE FRICTION</span>
+              <div className="p-3 rounded-xl bg-amber-50 border border-amber-200">
+                <span className="font-bold text-amber-800 block">MODERATE FRICTION</span>
                 <span className="text-[11px] text-amber-600">26 - 50</span>
               </div>
-              <div className="p-3 rounded-xl bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800">
-                <span className="font-bold text-orange-800 dark:text-orange-300 block">HIGH FRICTION</span>
+              <div className="p-3 rounded-xl bg-orange-50 border border-orange-200">
+                <span className="font-bold text-orange-800 block">HIGH FRICTION</span>
                 <span className="text-[11px] text-orange-600">51 - 75</span>
               </div>
-              <div className="p-3 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800">
-                <span className="font-bold text-rose-800 dark:text-rose-300 block">CRITICAL BARRIER</span>
+              <div className="p-3 rounded-xl bg-rose-50 border border-rose-200">
+                <span className="font-bold text-rose-800 block">CRITICAL BARRIER</span>
                 <span className="text-[11px] text-rose-600">76 - 100</span>
               </div>
             </div>

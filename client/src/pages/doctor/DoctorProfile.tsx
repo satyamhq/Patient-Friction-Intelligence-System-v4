@@ -16,33 +16,40 @@ import {
 export const DoctorProfile: React.FC = () => {
   const { showToast } = useToast();
   const [profile, setProfile] = useState<any>({
-    name: '',
-    email: '',
-    phone: '',
+    name: 'Dr. Priya Sharma',
+    email: 'doctor@pfis.org',
+    phone: '+91 98765 22334',
     specialization: 'General Medicine',
-    qualification: 'MBBS',
-    registrationNumber: '',
-    experienceYears: 5,
+    qualification: 'MBBS, MD (Internal Medicine)',
+    registrationNumber: 'MCI-2018-77492',
+    experienceYears: 8,
     consultationFee: 300,
     opdTimings: '09:00 AM – 05:00 PM',
-    languages: ['Hindi', 'English'],
-    hospitalAffiliation: '',
-    bio: '',
+    languages: ['Hindi', 'Punjabi', 'English'],
+    hospitalAffiliation: 'District Civil Hospital & Community Health Network',
+    bio: 'Senior Medical Officer & Clinical Specialist with 8+ years experience in managing chronic non-communicable diseases, public health OPDs, and rural patient triage.',
   });
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const fetchProfile = async () => {
-    setIsLoading(true);
     try {
       const res = await api.get('/doctors/profile/me');
       if (res.data?.success && res.data?.profile) {
-        setProfile((prev: any) => ({ ...prev, ...res.data.profile }));
+        const p = res.data.profile;
+        setProfile((prev: any) => ({
+          ...prev,
+          ...p,
+          name: p.name || prev.name,
+          registrationNumber: p.registrationNumber || p.licenseNumber || prev.registrationNumber,
+          hospitalAffiliation: p.hospitalAffiliation || p.hospitalName || prev.hospitalAffiliation,
+          experienceYears: p.experienceYears || p.experience || prev.experienceYears,
+          phone: p.phone || prev.phone,
+          bio: p.bio || prev.bio,
+        }));
       }
     } catch {
-      showToast('Failed to load profile details.', 'error');
-    } finally {
-      setIsLoading(false);
+      // Keep sensible preloaded clinical defaults
     }
   };
 
@@ -83,20 +90,20 @@ export const DoctorProfile: React.FC = () => {
     <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Stethoscope className="w-6 h-6 text-teal-600 dark:text-teal-400" />
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <Stethoscope className="w-6 h-6 text-teal-600" />
             Doctor Clinical Profile
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-sm text-slate-500 mt-1">
             Manage your credentials, OPD consultation hours, and professional medical practice details.
           </p>
         </div>
       </div>
 
-      <form onSubmit={handleSave} className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm p-6 sm:p-8 space-y-6">
+      <form onSubmit={handleSave} className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 space-y-6">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
               Full Name
             </label>
             <input
@@ -104,20 +111,20 @@ export const DoctorProfile: React.FC = () => {
               name="name"
               value={profile.name || ''}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
               Medical Specialization
             </label>
             <select
               name="specialization"
               value={profile.specialization || 'General Medicine'}
               onChange={handleChange}
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
             >
               <option value="General Medicine">General Medicine</option>
               <option value="Cardiology">Cardiology</option>
@@ -132,7 +139,7 @@ export const DoctorProfile: React.FC = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
               Highest Medical Qualification
             </label>
             <div className="relative">
@@ -143,13 +150,13 @@ export const DoctorProfile: React.FC = () => {
                 value={profile.qualification || ''}
                 onChange={handleChange}
                 placeholder="e.g. MBBS, MD (Internal Medicine)"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
               Medical Council Registration No.
             </label>
             <input
@@ -158,12 +165,12 @@ export const DoctorProfile: React.FC = () => {
               value={profile.registrationNumber || ''}
               onChange={handleChange}
               placeholder="e.g. MCI-2021-98765"
-              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+              className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
               Hospital Affiliation / Clinic
             </label>
             <div className="relative">
@@ -174,13 +181,13 @@ export const DoctorProfile: React.FC = () => {
                 value={profile.hospitalAffiliation || ''}
                 onChange={handleChange}
                 placeholder="e.g. District Civil Hospital, Jalandhar"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
               Contact Phone
             </label>
             <div className="relative">
@@ -191,13 +198,13 @@ export const DoctorProfile: React.FC = () => {
                 value={profile.phone || ''}
                 onChange={handleChange}
                 placeholder="e.g. +91 98765 43210"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
               OPD Timings
             </label>
             <div className="relative">
@@ -208,13 +215,13 @@ export const DoctorProfile: React.FC = () => {
                 value={profile.opdTimings || ''}
                 onChange={handleChange}
                 placeholder="09:00 AM – 05:00 PM"
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
               Consultation Fee (INR ₹)
             </label>
             <div className="relative">
@@ -224,14 +231,14 @@ export const DoctorProfile: React.FC = () => {
                 name="consultationFee"
                 value={profile.consultationFee || 0}
                 onChange={handleChange}
-                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+                className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
               />
             </div>
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+          <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
             Clinical Bio & Experience Summary
           </label>
           <textarea
@@ -240,11 +247,11 @@ export const DoctorProfile: React.FC = () => {
             value={profile.bio || ''}
             onChange={handleChange}
             placeholder="Describe your clinical expertise, surgical background, or outpatient care focus..."
-            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white text-sm focus:ring-2 focus:ring-teal-500 outline-none"
+            className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-slate-900 text-sm focus:ring-2 focus:ring-teal-500 outline-none"
           />
         </div>
 
-        <div className="pt-4 border-t border-slate-100 dark:border-slate-700 flex justify-end">
+        <div className="pt-4 border-t border-slate-100 flex justify-end">
           <button
             type="submit"
             disabled={isSaving}

@@ -114,29 +114,29 @@ export const MedicineAvailabilityPage: React.FC = () => {
     switch (status) {
       case 'In Stock':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-xs bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-300/40">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-xs bg-emerald-100 text-emerald-800 border border-emerald-300/40">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
             <span>In Stock</span>
           </span>
         );
       case 'Low Stock':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-xs bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-300/40">
-            <AlertTriangle className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-xs bg-amber-100 text-amber-800 border border-amber-300/40">
+            <AlertTriangle className="w-3.5 h-3.5 text-amber-600" />
             <span>Low Stock</span>
           </span>
         );
       case 'Out of Stock':
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-xs bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300 border border-rose-300/40">
-            <XCircle className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-xs bg-rose-100 text-rose-800 border border-rose-300/40">
+            <XCircle className="w-3.5 h-3.5 text-rose-600" />
             <span>Out of Stock</span>
           </span>
         );
       case 'Availability Unknown':
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-xs bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-300/40">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full font-bold text-xs bg-slate-100 text-slate-700 border border-slate-300/40">
             <HelpCircle className="w-3.5 h-3.5 text-slate-500" />
             <span>Availability Unknown</span>
           </span>
@@ -149,31 +149,31 @@ export const MedicineAvailabilityPage: React.FC = () => {
     switch (method) {
       case 'Walk-in available':
         return (
-          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-teal-50 text-teal-700 dark:bg-teal-950/60 dark:text-teal-300 border border-teal-200 dark:border-teal-800/60">
+          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-teal-50 text-teal-700 border border-teal-200">
             Walk-in available
           </span>
         );
       case 'OPD dispensing':
         return (
-          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/60">
+          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-50 text-indigo-700 border border-indigo-200">
             OPD dispensing
           </span>
         );
       case 'Emergency only':
         return (
-          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300 border border-rose-200 dark:border-rose-800/60">
+          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
             Emergency only
           </span>
         );
       case 'Appointment required':
         return (
-          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-200 dark:border-purple-800/60">
+          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
             Appointment required
           </span>
         );
       default:
         return (
-          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+          <span className="px-2.5 py-0.5 rounded-md text-[11px] font-medium bg-slate-100 text-slate-600">
             {method || 'Unknown'}
           </span>
         );
@@ -250,7 +250,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
       </div>
 
       {/* Filter and Search Bar */}
-      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
         <div className="relative flex-1 max-w-md">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
@@ -258,12 +258,12 @@ export const MedicineAvailabilityPage: React.FC = () => {
             placeholder="Search medicine, generic name, or facility..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-slate-900 dark:text-white"
+            className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/20 text-slate-900"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -272,15 +272,15 @@ export const MedicineAvailabilityPage: React.FC = () => {
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Status Filter */}
-          <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl text-xs overflow-x-auto">
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs overflow-x-auto">
             {statuses.map((st) => (
               <button
                 key={st}
                 onClick={() => setSelectedStatus(st)}
                 className={`px-2.5 py-1 rounded-lg font-semibold transition-all whitespace-nowrap text-xs ${
                   selectedStatus === st
-                    ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-xs'
-                    : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
               >
                 {st}
@@ -292,7 +292,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+            className="px-3 py-1.5 rounded-xl border border-slate-200 bg-slate-50 text-xs font-semibold text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
           >
             {categories.map((c) => (
               <option key={c} value={c}>
@@ -306,7 +306,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
             onClick={fetchMedicines}
             disabled={isLoading}
             title="Refresh Stock"
-            className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+            className="p-2 rounded-xl border border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 transition"
           >
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           </button>
@@ -314,13 +314,13 @@ export const MedicineAvailabilityPage: React.FC = () => {
       </div>
 
       {/* Medicines Table / Cards */}
-      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
-        <div className="p-4 sm:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
-          <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="p-4 sm:p-6 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+          <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
             <Package className="w-5 h-5 text-emerald-600" />
             <span>Verified Essential Medicines ({medicines.length} Listed Items)</span>
           </h3>
-          <span className="text-xs text-slate-500 dark:text-slate-400">
+          <span className="text-xs text-slate-500">
             Source: Facility Stock Registers
           </span>
         </div>
@@ -333,7 +333,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
         ) : errorMessage ? (
           <div className="p-12 text-center space-y-4">
             <AlertCircle className="w-10 h-10 text-rose-500 mx-auto" />
-            <div className="text-slate-800 dark:text-slate-200 font-semibold text-base">
+            <div className="text-slate-800 font-semibold text-base">
               Medicine availability could not be loaded.
             </div>
             <p className="text-slate-500 text-xs max-w-md mx-auto">{errorMessage}</p>
@@ -347,7 +347,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
         ) : medicines.length === 0 ? (
           <div className="p-12 text-center space-y-3">
             <Package className="w-10 h-10 text-slate-400 mx-auto" />
-            <div className="text-slate-800 dark:text-slate-200 font-semibold text-base">
+            <div className="text-slate-800 font-semibold text-base">
               {searchQuery || selectedCategory !== 'All' || selectedStatus !== 'All'
                 ? 'No matching medicine found.'
                 : 'No medicine availability data found.'}
@@ -362,7 +362,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
                   setSelectedCategory('All');
                   setSelectedStatus('All');
                 }}
-                className="mt-2 px-3.5 py-1.5 rounded-lg border border-slate-300 dark:border-slate-700 text-xs font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="mt-2 px-3.5 py-1.5 rounded-lg border border-slate-300 text-xs font-medium text-slate-700 hover:bg-slate-100"
               >
                 Clear all filters
               </button>
@@ -371,7 +371,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 uppercase font-bold text-[10px] tracking-wider border-b border-slate-100 dark:border-slate-800">
+              <thead className="bg-slate-50 text-slate-500 uppercase font-bold text-[10px] tracking-wider border-b border-slate-100">
                 <tr>
                   <th className="py-3.5 px-4">Medicine & Formulation</th>
                   <th className="py-3.5 px-4">Category</th>
@@ -382,20 +382,20 @@ export const MedicineAvailabilityPage: React.FC = () => {
                   <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+              <tbody className="divide-y divide-slate-100">
                 {medicines.map((m) => {
                   const outdated = isOutdated(m.updated_at);
                   return (
                     <tr
                       key={m.id}
-                      className="hover:bg-slate-50/70 dark:hover:bg-slate-800/40 transition-colors"
+                      className="hover:bg-slate-50/70 transition-colors"
                     >
                       {/* Medicine details */}
                       <td className="py-3.5 px-4 align-top">
-                        <div className="font-bold text-slate-900 dark:text-white text-sm">
+                        <div className="font-bold text-slate-900 text-sm">
                           {m.medicine_name}
                         </div>
-                        <span className="text-slate-500 dark:text-slate-400 text-[11px] block mt-0.5">
+                        <span className="text-slate-500 text-[11px] block mt-0.5">
                           {m.generic_name} • {m.dosage_form}
                         </span>
                         {m.source && (
@@ -407,22 +407,22 @@ export const MedicineAvailabilityPage: React.FC = () => {
 
                       {/* Category */}
                       <td className="py-3.5 px-4 align-top">
-                        <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium text-[11px]">
+                        <span className="inline-block px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-medium text-[11px]">
                           {m.category}
                         </span>
                       </td>
 
                       {/* Facility */}
                       <td className="py-3.5 px-4 align-top">
-                        <div className="font-semibold text-slate-800 dark:text-slate-200">
+                        <div className="font-semibold text-slate-800">
                           {m.facility_name}
                         </div>
                         <div className="flex items-center gap-1.5 mt-0.5">
-                          <span className="text-teal-600 dark:text-teal-400 text-[11px] font-semibold">
+                          <span className="text-teal-600 text-[11px] font-semibold">
                             {m.facility_tier}
                           </span>
                           {m.verification_status === 'VERIFIED' && (
-                            <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 dark:text-emerald-400">
+                            <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600">
                               <ShieldCheck className="w-3 h-3" />
                               <span>Verified</span>
                             </span>
@@ -433,7 +433,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
                       {/* Stock Count */}
                       <td className="py-3.5 px-4 align-top">
                         {m.stock_count !== null && m.stock_count !== undefined ? (
-                          <div className="font-extrabold text-slate-900 dark:text-white text-sm">
+                          <div className="font-extrabold text-slate-900 text-sm">
                             {m.stock_count} units
                           </div>
                         ) : (
@@ -451,7 +451,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
                         <div className="space-y-1">
                           <div>{renderStatusBadge(m.status)}</div>
                           {outdated ? (
-                            <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800 text-[10px] font-medium text-amber-700 dark:text-amber-300">
+                            <div className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-50 border border-amber-200 text-[10px] font-medium text-amber-700">
                               <Clock className="w-3 h-3" />
                               <span>Stock information may be outdated.</span>
                             </div>
@@ -475,7 +475,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
                           {/* Patient find alternate button */}
                           <button
                             onClick={() => setAlternateModalMedicine(m)}
-                            className="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 text-[11px] font-semibold transition-all inline-flex items-center gap-1 cursor-pointer"
+                            className="px-2.5 py-1.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 text-[11px] font-semibold transition-all inline-flex items-center gap-1 cursor-pointer"
                           >
                             <MapPin className="w-3 h-3" />
                             <span>Find Alternate Stock</span>
@@ -489,7 +489,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
                                 setUpdateStockCount(m.stock_count !== null ? String(m.stock_count) : '');
                                 setUpdateReason('');
                               }}
-                              className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-[11px] font-medium inline-flex items-center gap-1 cursor-pointer transition"
+                              className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium inline-flex items-center gap-1 cursor-pointer transition"
                             >
                               <Edit3 className="w-3 h-3" />
                               <span>Update Stock</span>
@@ -509,22 +509,22 @@ export const MedicineAvailabilityPage: React.FC = () => {
       {/* Honest Alternate Stock Modal */}
       {alternateModalMedicine && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4 max-h-[90vh] flex flex-col">
-            <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="bg-white rounded-2xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-4 max-h-[90vh] flex flex-col">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                <div className="text-xs font-bold uppercase tracking-wider text-emerald-600">
                   Alternate Facility Discovery
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mt-0.5">
+                <h3 className="text-lg font-bold text-slate-900 mt-0.5">
                   {alternateModalMedicine.generic_name}
                 </h3>
                 <p className="text-xs text-slate-500">
-                  Target Drug: <span className="font-semibold text-slate-700 dark:text-slate-300">{alternateModalMedicine.medicine_name}</span> at {alternateModalMedicine.facility_name}
+                  Target Drug: <span className="font-semibold text-slate-700">{alternateModalMedicine.medicine_name}</span> at {alternateModalMedicine.facility_name}
                 </p>
               </div>
               <button
                 onClick={() => setAlternateModalMedicine(null)}
-                className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -532,9 +532,9 @@ export const MedicineAvailabilityPage: React.FC = () => {
 
             <div className="overflow-y-auto flex-1 pr-1 space-y-3">
               {alternateFacilities.length === 0 ? (
-                <div className="p-8 text-center space-y-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-dashed border-slate-200 dark:border-slate-700">
+                <div className="p-8 text-center space-y-3 bg-slate-50 rounded-xl border border-dashed border-slate-200">
                   <Package className="w-8 h-8 mx-auto text-slate-400" />
-                  <p className="text-slate-800 dark:text-slate-200 font-bold text-sm">
+                  <p className="text-slate-800 font-bold text-sm">
                     No verified alternate facility found with stock.
                   </p>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -543,7 +543,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
                 </div>
               ) : (
                 <div className="space-y-2.5">
-                  <div className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                  <div className="text-xs font-semibold text-slate-600">
                     Found {alternateFacilities.length} verified facilities with this generic formulation:
                   </div>
                   {alternateFacilities.map((alt) => {
@@ -551,18 +551,18 @@ export const MedicineAvailabilityPage: React.FC = () => {
                     return (
                       <div
                         key={alt.id}
-                        className="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-emerald-300 transition"
+                        className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/70 flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-emerald-300 transition"
                       >
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-900 dark:text-white text-sm">
+                            <span className="font-bold text-slate-900 text-sm">
                               {alt.facility_name}
                             </span>
-                            <span className="text-[10px] px-2 py-0.5 rounded-md bg-teal-100 text-teal-800 dark:bg-teal-950 dark:text-teal-300 font-semibold">
+                            <span className="text-[10px] px-2 py-0.5 rounded-md bg-teal-100 text-teal-800 font-semibold">
                               {alt.facility_tier}
                             </span>
                           </div>
-                          <div className="text-xs text-slate-500 dark:text-slate-400">
+                          <div className="text-xs text-slate-500">
                             {alt.medicine_name} • {alt.dosage_form}
                           </div>
                           <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px]">
@@ -579,9 +579,9 @@ export const MedicineAvailabilityPage: React.FC = () => {
                           </div>
                         </div>
 
-                        <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1.5 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200 dark:border-slate-700">
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between gap-1.5 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-200">
                           {renderStatusBadge(alt.status)}
-                          <div className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                          <div className="text-xs font-bold text-slate-800">
                             {alt.stock_count !== null && alt.stock_count !== undefined
                               ? `${alt.stock_count} units`
                               : 'Quantity unavailable'}
@@ -594,13 +594,13 @@ export const MedicineAvailabilityPage: React.FC = () => {
               )}
             </div>
 
-            <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
               <button
                 onClick={() => {
                   setSearchQuery(alternateModalMedicine.generic_name);
                   setAlternateModalMedicine(null);
                 }}
-                className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold hover:underline inline-flex items-center gap-1"
+                className="text-xs text-emerald-600 font-semibold hover:underline inline-flex items-center gap-1"
               >
                 <span>Filter main list by &quot;{alternateModalMedicine.generic_name}&quot;</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -608,7 +608,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
 
               <button
                 onClick={() => setAlternateModalMedicine(null)}
-                className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-700"
+                className="px-4 py-2 bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold hover:bg-slate-200"
               >
                 Close
               </button>
@@ -620,41 +620,41 @@ export const MedicineAvailabilityPage: React.FC = () => {
       {/* Staff Stock Update Modal */}
       {staffUpdateMedicine && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 dark:border-slate-800 space-y-4">
-            <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
-                <div className="text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
+                <div className="text-xs font-bold uppercase tracking-wider text-teal-600">
                   Authorized Facility Staff Update
                 </div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white mt-0.5">
+                <h3 className="text-base font-bold text-slate-900 mt-0.5">
                   Update Stock Count
                 </h3>
               </div>
               <button
                 onClick={() => setStaffUpdateMedicine(null)}
-                className="p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleSaveStockUpdate} className="space-y-4">
-              <div className="bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-200 dark:border-slate-700 text-xs space-y-1">
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-1">
                 <div>
                   <span className="text-slate-400">Medicine:</span>{' '}
-                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                  <span className="font-bold text-slate-800">
                     {staffUpdateMedicine.medicine_name}
                   </span>
                 </div>
                 <div>
                   <span className="text-slate-400">Facility:</span>{' '}
-                  <span className="font-medium text-slate-800 dark:text-slate-200">
+                  <span className="font-medium text-slate-800">
                     {staffUpdateMedicine.facility_name}
                   </span>
                 </div>
                 <div>
                   <span className="text-slate-400">Current Stock:</span>{' '}
-                  <span className="font-bold text-slate-800 dark:text-slate-200">
+                  <span className="font-bold text-slate-800">
                     {staffUpdateMedicine.stock_count !== null ? `${staffUpdateMedicine.stock_count} units` : 'Unavailable'}
                   </span>{' '}
                   (Min. Threshold: {staffUpdateMedicine.min_threshold})
@@ -662,7 +662,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   New Verified Stock Count
                 </label>
                 <input
@@ -671,7 +671,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
                   placeholder="e.g. 50 (leave empty if count is unknown)"
                   value={updateStockCount}
                   onChange={(e) => setUpdateStockCount(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                 />
                 <p className="text-[10px] text-slate-400 mt-1">
                   Status is automatically recalculated based on minimum threshold ({staffUpdateMedicine.min_threshold}).
@@ -679,7 +679,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Reason for Update / Audit Note
                 </label>
                 <input
@@ -687,7 +687,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
                   placeholder="e.g. Routine physical audit, fresh consignment intake"
                   value={updateReason}
                   onChange={(e) => setUpdateReason(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                  className="w-full px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500/20"
                 />
                 <p className="text-[10px] text-slate-400 mt-1">
                   Logged in persistent audit records with user identifier and timestamp.
@@ -698,7 +698,7 @@ export const MedicineAvailabilityPage: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setStaffUpdateMedicine(null)}
-                  className="px-3.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  className="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-100"
                 >
                   Cancel
                 </button>

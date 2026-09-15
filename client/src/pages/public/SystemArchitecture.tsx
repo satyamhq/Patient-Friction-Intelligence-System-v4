@@ -165,9 +165,9 @@ export const SystemArchitecture: React.FC = () => {
       </div>
 
       {/* Comparison Matrix: Traditional Healthcare vs PFIS Thinking */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-card space-y-6">
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-card space-y-6">
         <div className="text-center space-y-1 max-w-2xl mx-auto">
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-2xl font-black text-slate-900 tracking-tight">
             Why PFIS is Fundamentally Novel
           </h2>
           <p className="text-xs text-slate-500">
@@ -177,13 +177,13 @@ export const SystemArchitecture: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Traditional Paradigm */}
-          <div className="p-6 rounded-2xl bg-rose-50/60 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900 space-y-3">
-            <div className="flex items-center gap-2 text-rose-800 dark:text-rose-300 font-bold text-sm">
-              <span className="w-6 h-6 rounded-full bg-rose-200 dark:bg-rose-900 flex items-center justify-center text-xs">✕</span>
+          <div className="p-6 rounded-2xl bg-rose-50/60 border border-rose-200 space-y-3">
+            <div className="flex items-center gap-2 text-rose-800 font-bold text-sm">
+              <span className="w-6 h-6 rounded-full bg-rose-200 flex items-center justify-center text-xs">✕</span>
               <span>Traditional Clinical View (Assumes Universal Access):</span>
             </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400 space-y-2 leading-relaxed">
-              <div className="font-mono bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-rose-100 dark:border-rose-900">
+            <div className="text-xs text-slate-600 space-y-2 leading-relaxed">
+              <div className="font-mono bg-white p-2.5 rounded-lg border border-rose-100">
                 Patient → Disease → Doctor Available ✅ → Treatment Assumed Complete
               </div>
               <p>
@@ -193,13 +193,13 @@ export const SystemArchitecture: React.FC = () => {
           </div>
 
           {/* PFIS Paradigm */}
-          <div className="p-6 rounded-2xl bg-teal-50/70 dark:bg-teal-950/20 border border-teal-200 dark:border-teal-800 space-y-3">
-            <div className="flex items-center gap-2 text-teal-900 dark:text-teal-200 font-bold text-sm">
-              <span className="w-6 h-6 rounded-full bg-teal-200 dark:bg-teal-900 flex items-center justify-center text-xs text-teal-900">✓</span>
+          <div className="p-6 rounded-2xl bg-teal-50/70 border border-teal-200 space-y-3">
+            <div className="flex items-center gap-2 text-teal-900 font-bold text-sm">
+              <span className="w-6 h-6 rounded-full bg-teal-200 flex items-center justify-center text-xs text-teal-900">✓</span>
               <span>PFIS Operational Intelligence (Models Reality):</span>
             </div>
-            <div className="text-xs text-slate-600 dark:text-slate-400 space-y-2 leading-relaxed">
-              <div className="font-mono bg-white dark:bg-slate-900 p-2.5 rounded-lg border border-teal-100 dark:border-teal-800">
+            <div className="text-xs text-slate-600 space-y-2 leading-relaxed">
+              <div className="font-mono bg-white p-2.5 rounded-lg border border-teal-100">
                 Patient → Need → (+Travel +Transport +Digital +Cost +Language +Escort) → Can Patient Finish?
               </div>
               <p>
@@ -214,7 +214,7 @@ export const SystemArchitecture: React.FC = () => {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
               The 10 Core Architectural Pillars
             </h2>
             <p className="text-xs text-slate-500">Each architectural pillar operates on transparent deterministic rules, explainable heuristics, and simulated demonstration models</p>
@@ -227,27 +227,27 @@ export const SystemArchitecture: React.FC = () => {
             return (
               <div
                 key={pillar.number}
-                className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-card hover:shadow-card-hover hover:border-teal-300 dark:hover:border-teal-600 transition-all flex flex-col justify-between space-y-4"
+                className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-card hover:shadow-card-hover hover:border-teal-300 transition-all flex flex-col justify-between space-y-4"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-teal-950/60 border border-teal-200 dark:border-teal-800 text-teal-700 dark:text-teal-300 flex items-center justify-center font-bold text-sm">
+                      <div className="w-10 h-10 rounded-2xl bg-teal-50 border border-teal-200 text-teal-700 flex items-center justify-center font-bold text-sm">
                         {pillar.number}
                       </div>
                       <div>
-                        <h3 className="font-bold text-base text-slate-900 dark:text-white">{pillar.title}</h3>
-                        <span className="text-[11px] font-bold text-teal-600 dark:text-teal-400">{pillar.concept}</span>
+                        <h3 className="font-bold text-base text-slate-900">{pillar.title}</h3>
+                        <span className="text-[11px] font-bold text-teal-600">{pillar.concept}</span>
                       </div>
                     </div>
                   </div>
 
-                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed">
                     {pillar.description}
                   </p>
                 </div>
 
-                <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
                   <Link to={pillar.link}>
                     <Button variant="primary" size="sm" icon={<ArrowRight className="w-3.5 h-3.5" />}>
                       {pillar.buttonText}

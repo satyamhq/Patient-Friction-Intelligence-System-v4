@@ -54,9 +54,9 @@ export const SmartHospitalRecommendationCard: React.FC<SmartHospitalRecommendati
       {/* Facility Overview */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white flex items-center gap-3">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-black tracking-tight text-white flex flex-wrap items-center gap-2 sm:gap-3">
             {hospital.name}
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+            <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 shrink-0">
               Verified NQAS Facility
             </span>
           </h2>

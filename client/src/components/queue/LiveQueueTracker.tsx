@@ -139,22 +139,22 @@ export const LiveQueueTracker: React.FC<LiveQueueTrackerProps> = ({
   const waitMinutes = Math.max(5, aheadCount * 3);
 
   return (
-    <div className="bg-gradient-to-br from-white to-slate-50 dark:from-slate-900 dark:to-slate-850 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-md p-6 space-y-6">
+    <div className="bg-gradient-to-br from-white to-slate-50 rounded-3xl border border-slate-200 shadow-md p-6 space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+          <div className="w-10 h-10 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center font-bold">
             <Ticket className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
               Live Digital OPD Queue Tracker
               <span className="flex h-2 w-2 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
               </span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-xs text-slate-500">
               {hospitalName} • {department}
             </p>
           </div>
@@ -162,7 +162,7 @@ export const LiveQueueTracker: React.FC<LiveQueueTrackerProps> = ({
 
         <button
           onClick={fetchQueue}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh Status
@@ -171,17 +171,17 @@ export const LiveQueueTracker: React.FC<LiveQueueTrackerProps> = ({
 
       {/* Live Status Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-center">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 text-center">
           <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Now Serving</span>
-          <p className="text-2xl font-black text-teal-600 dark:text-teal-400 mt-1">
+          <p className="text-2xl font-black text-teal-600 mt-1">
             #{servingTokenNum}
           </p>
           <span className="text-[10px] text-slate-400 block mt-0.5">Doctor In Consultation</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-center">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 text-center">
           <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Your Token</span>
-          <p className="text-2xl font-black text-brand-600 dark:text-brand-400 mt-1">
+          <p className="text-2xl font-black text-brand-600 mt-1">
             {myTokenNum ? `#${myTokenNum}` : '-'}
           </p>
           <span className="text-[10px] text-teal-600 font-medium block mt-0.5">
@@ -189,17 +189,17 @@ export const LiveQueueTracker: React.FC<LiveQueueTrackerProps> = ({
           </span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-center">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 text-center">
           <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Ahead of You</span>
-          <p className="text-2xl font-black text-slate-800 dark:text-slate-100 mt-1">
+          <p className="text-2xl font-black text-slate-800 mt-1">
             {aheadCount}
           </p>
           <span className="text-[10px] text-slate-400 block mt-0.5">Patients in Queue</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 text-center">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200/80 text-center">
           <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">Est. Wait</span>
-          <p className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">
+          <p className="text-2xl font-black text-amber-600 mt-1">
             ~{waitMinutes} min
           </p>
           <span className="text-[10px] text-slate-400 block mt-0.5">Approximate Wait</span>
@@ -208,8 +208,8 @@ export const LiveQueueTracker: React.FC<LiveQueueTrackerProps> = ({
 
       {/* Queue Progress Bar */}
       {patientToken && (
-        <div className="space-y-1.5 p-4 bg-teal-50/70 dark:bg-teal-950/30 rounded-2xl border border-teal-200 dark:border-teal-900/50">
-          <div className="flex items-center justify-between text-xs font-bold text-teal-900 dark:text-teal-200">
+        <div className="space-y-1.5 p-4 bg-teal-50/70 rounded-2xl border border-teal-200">
+          <div className="flex items-center justify-between text-xs font-bold text-teal-900">
             <span className="flex items-center gap-1.5">
               <Activity className="w-4 h-4 text-teal-600" />
               Queue Progress (Token #{myTokenNum || 112})
@@ -218,7 +218,7 @@ export const LiveQueueTracker: React.FC<LiveQueueTrackerProps> = ({
               {patientToken.status === 'SERVING' ? '🟢 Currently with Doctor' : '🟡 Waiting in OPD Lounge'}
             </span>
           </div>
-          <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2.5 overflow-hidden">
+          <div className="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
             <div
               className="bg-gradient-to-r from-teal-500 to-emerald-500 h-2.5 rounded-full transition-all duration-500"
               style={{
@@ -250,7 +250,7 @@ export const LiveQueueTracker: React.FC<LiveQueueTrackerProps> = ({
             <button
               onClick={() => handleBookToken('EMERGENCY')}
               disabled={isBooking}
-              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 dark:border-rose-900 transition-all disabled:opacity-50"
+              className="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold rounded-xl border border-rose-200 transition-all disabled:opacity-50"
             >
               Priority / Triage
             </button>

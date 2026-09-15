@@ -43,44 +43,47 @@ import {
 
 export const PatientDashboard: React.FC = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { currentLanguage } = useLanguage();
   const { coords, requestCurrentLocation, isLoading: isLocLoading } = useLocation();
 
-  const [patient, setPatient] = useState<Patient | null>(null);
+  const [patient, setPatient] = useState<Patient | null>(profile || null);
   const [frictionProfile, setFrictionProfile] = useState<FrictionProfile | null>(null);
   const [careRisk, setCareRisk] = useState<CareRisk | null>(null);
   const [activeRequests, setActiveRequests] = useState<HospitalRequest[]>([]);
   const [recentDocs, setRecentDocs] = useState<PatientDocument[]>([]);
   const [nearestHospital, setNearestHospital] = useState<Hospital | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(!profile);
 
   useEffect(() => {
     const loadDashboard = async () => {
-      setIsLoading(true);
       try {
-        const pRes = await patientService.getMe().catch(() => null);
-        if (pRes?.success && pRes.patient) {
-          setPatient(pRes.patient);
-          setActiveRequests(pRes.activeRequests || []);
+        const lat = coords.latitude || patient?.location?.latitude || profile?.location?.latitude || 31.2533;
+        const lng = coords.longitude || patient?.location?.longitude || profile?.location?.longitude || 75.7042;
+
+        const [pRes, fRes, rRes, dRes, hRes] = await Promise.allSettled([
+          patientService.getMe(),
+          patientService.getFrictionProfile(),
+          patientService.getAccessibilityRisk(),
+          documentService.getPatientDocuments(),
+          hospitalService.getNearby({ lat, lng, radiusKm: 60 }),
+        ]);
+
+        if (pRes.status === 'fulfilled' && pRes.value?.success && pRes.value.patient) {
+          setPatient(pRes.value.patient);
+          setActiveRequests(pRes.value.activeRequests || []);
         }
-        // No fallback: if no patient profile exists, show onboarding state below
-
-        const fRes = await patientService.getFrictionProfile().catch(() => null);
-        if (fRes?.success) setFrictionProfile(fRes.frictionProfile);
-
-        const rRes = await patientService.getAccessibilityRisk().catch(() => null);
-        if (rRes?.success) setCareRisk(rRes.careRisk);
-
-        const dRes = await documentService.getPatientDocuments().catch(() => null);
-        if (dRes?.success) setRecentDocs(dRes.documents.slice(0, 3));
-
-        // Fetch nearest real hospital dynamically from user's live GPS coordinates
-        const lat = coords.latitude || pRes?.patient?.location?.latitude || 31.2533;
-        const lng = coords.longitude || pRes?.patient?.location?.longitude || 75.7042;
-        const hRes = await hospitalService.getNearby({ lat, lng, radiusKm: 60 }).catch(() => null);
-        if (hRes?.success && hRes.hospitals?.length > 0) {
-          setNearestHospital(hRes.hospitals[0]);
+        if (fRes.status === 'fulfilled' && fRes.value?.success) {
+          setFrictionProfile(fRes.value.frictionProfile);
+        }
+        if (rRes.status === 'fulfilled' && rRes.value?.success) {
+          setCareRisk(rRes.value.careRisk);
+        }
+        if (dRes.status === 'fulfilled' && dRes.value?.success) {
+          setRecentDocs(dRes.value.documents.slice(0, 3));
+        }
+        if (hRes.status === 'fulfilled' && hRes.value?.success && hRes.value.hospitals?.length > 0) {
+          setNearestHospital(hRes.value.hospitals[0]);
         }
       } catch (e) {
         console.error('[PatientDashboard Error]', e);
@@ -110,14 +113,14 @@ export const PatientDashboard: React.FC = () => {
   if (!patient) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center animate-fade-in">
-        <div className="w-20 h-20 rounded-3xl bg-brand-50 dark:bg-brand-950 border border-brand-200 dark:border-brand-800 flex items-center justify-center shadow-lg">
-          <UserCheck className="w-10 h-10 text-brand-600 dark:text-brand-400" />
+        <div className="w-20 h-20 rounded-3xl bg-brand-50 border border-brand-200 flex items-center justify-center shadow-lg">
+          <UserCheck className="w-10 h-10 text-brand-600" />
         </div>
         <div className="space-y-2 max-w-md">
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white">
+          <h2 className="text-2xl font-black text-slate-900">
             Welcome, {user?.name}!
           </h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 leading-relaxed">
+          <p className="text-sm text-slate-500 leading-relaxed">
             Your health profile hasn't been set up yet. Complete it to unlock your personalised friction score, care accessibility index, and nearby hospital matching.
           </p>
         </div>
@@ -177,14 +180,14 @@ export const PatientDashboard: React.FC = () => {
   return (
     <div className="space-y-8 max-w-7xl mx-auto">
       {/* 1. Header Profile Greeting Banner */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 sm:p-8 shadow-card flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-card flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
         <div className="space-y-2.5">
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               {t('patient.welcome', 'Welcome')}, {user?.name}
             </h1>
             {patient?.patientCode && (
-              <span className="text-xs px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono font-bold border border-slate-200 dark:border-slate-700">
+              <span className="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-mono font-bold border border-slate-200">
                 {patient.patientCode}
               </span>
             )}
@@ -193,10 +196,10 @@ export const PatientDashboard: React.FC = () => {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 pt-0.5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 dark:bg-teal-950/50 text-teal-800 dark:text-teal-200 border border-teal-200 dark:border-teal-800 text-xs font-semibold shadow-2xs">
-              <MapPin className="w-3.5 h-3.5 text-teal-600 dark:text-teal-400 animate-pulse" />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-xs font-semibold shadow-2xs">
+              <MapPin className="w-3.5 h-3.5 text-teal-600 animate-pulse" />
               <span>{userAddressText}</span>
-              <span className="text-teal-600 dark:text-teal-400 font-mono text-[10px]">
+              <span className="text-teal-600 font-mono text-[10px]">
                 ({coords.latitude.toFixed(3)}, {coords.longitude.toFixed(3)})
               </span>
             </div>
@@ -205,14 +208,14 @@ export const PatientDashboard: React.FC = () => {
               onClick={() => requestCurrentLocation()}
               disabled={isLocLoading}
               title="Detect and refresh real GPS coordinates"
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-teal-700 dark:text-teal-300 hover:bg-teal-100 dark:hover:bg-teal-900/40 rounded-lg border border-teal-200 dark:border-teal-700 transition-colors"
+              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-teal-700 hover:bg-teal-100 rounded-lg border border-teal-200 transition-colors"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${isLocLoading ? 'animate-spin text-teal-600' : ''}`} />
               <span>{isLocLoading ? 'Detecting...' : 'Sync GPS'}</span>
             </button>
 
-            <span className="text-slate-300 dark:text-slate-700">•</span>
-            <span className="text-xs text-slate-500 dark:text-slate-400">{t('common.language', 'Language')}: <strong>{currentLanguage.nativeName}</strong></span>
+            <span className="text-slate-300">•</span>
+            <span className="text-xs text-slate-500">{t('common.language', 'Language')}: <strong>{currentLanguage.nativeName}</strong></span>
           </div>
         </div>
 
@@ -263,7 +266,7 @@ export const PatientDashboard: React.FC = () => {
 
       {/* 2. Primary 1-Click Patient Healthcare Action Hub */}
       <div className="space-y-3">
-        <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
           <Activity className="w-4 h-4 text-teal-600" /> Quick Patient Actions
         </h2>
 
@@ -354,10 +357,10 @@ export const PatientDashboard: React.FC = () => {
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 dark:bg-teal-950 text-teal-700 dark:text-teal-300 text-[10px] font-bold uppercase tracking-wider border border-teal-200 dark:border-teal-800">
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 text-[10px] font-bold uppercase tracking-wider border border-teal-200">
               <Building2 className="w-3 h-3" /> Public Health Infrastructure • Regional Facility Network
             </div>
-            <h2 className="text-base sm:text-lg font-black text-slate-900 dark:text-white mt-1">
+            <h2 className="text-base sm:text-lg font-black text-slate-900 mt-1">
               Integrated Rural Care & Public Facility Support
             </h2>
           </div>
@@ -368,13 +371,13 @@ export const PatientDashboard: React.FC = () => {
           {/* 1. Digital Triage & Tier Router */}
           <Link
             to="/patient/triage"
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-teal-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
+            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-teal-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
               <Stethoscope className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-1">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
                 <span>Digital Triage & Tier Router</span>
                 <ArrowRight className="w-3.5 h-3.5 text-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
@@ -387,13 +390,13 @@ export const PatientDashboard: React.FC = () => {
           {/* 2. Tiered Referral Tracking */}
           <Link
             to="/patient/referrals"
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
+            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-emerald-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
               <GitFork className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-1">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
                 <span>Referral Tracking Hub</span>
                 <ArrowRight className="w-3.5 h-3.5 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
@@ -406,13 +409,13 @@ export const PatientDashboard: React.FC = () => {
           {/* 3. Longitudinal Records & ABHA */}
           <Link
             to="/patient/health-records"
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
+            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-blue-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
               <FileText className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-1">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
                 <span>Health Records & ABHA</span>
                 <ArrowRight className="w-3.5 h-3.5 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
@@ -425,13 +428,13 @@ export const PatientDashboard: React.FC = () => {
           {/* 4. Diagnostic Network & Equipment Uptime */}
           <Link
             to="/patient/diagnostics"
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-violet-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
+            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-violet-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-violet-50 dark:bg-violet-950 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
               <Activity className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-1">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
                 <span>Diagnostic Equipment Uptime</span>
                 <ArrowRight className="w-3.5 h-3.5 text-violet-500 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
@@ -444,13 +447,13 @@ export const PatientDashboard: React.FC = () => {
           {/* 5. e-Aushadhi Essential Medicines */}
           <Link
             to="/patient/medicines"
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-teal-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
+            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-teal-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
               <Pill className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-1">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
                 <span>e-Aushadhi Medicine Stock</span>
                 <ArrowRight className="w-3.5 h-3.5 text-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
@@ -463,13 +466,13 @@ export const PatientDashboard: React.FC = () => {
           {/* 6. High-Risk Care & Follow-up */}
           <Link
             to="/patient/high-risk"
-            className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-rose-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
+            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-rose-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-rose-50 dark:bg-rose-950 text-rose-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
               <HeartPulse className="w-5 h-5" />
             </div>
             <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 dark:text-white flex items-center gap-1">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
                 <span>High-Risk Care & Follow-up</span>
                 <ArrowRight className="w-3.5 h-3.5 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
               </h3>
@@ -497,7 +500,7 @@ export const PatientDashboard: React.FC = () => {
           value={`${completionProbability}%`}
           subtitle={t('patient.completionProbDesc', 'Estimated journey completion forecast')}
           icon={Activity}
-          iconColor="text-teal-600 bg-teal-50 border-teal-100 dark:bg-teal-950/40"
+          iconColor="text-teal-600 bg-teal-50 border-teal-100"
           badge={`${completionProbability}%`}
           badgeType={completionProbability >= 70 ? 'success' : completionProbability >= 50 ? 'warning' : 'danger'}
         />
@@ -517,7 +520,7 @@ export const PatientDashboard: React.FC = () => {
           value={topBarrier.split(' ')[0]}
           subtitle={topBarrier}
           icon={AlertTriangle}
-          iconColor="text-orange-600 bg-orange-50 border-orange-100 dark:bg-orange-950/40"
+          iconColor="text-orange-600 bg-orange-50 border-orange-100"
           badge="High Barrier"
           badgeType="warning"
         />
@@ -527,13 +530,13 @@ export const PatientDashboard: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left 2 Cols: Gauge & Friction Breakdown */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-card space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-card space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-bold text-slate-900">
                   {t('patient.explainableIntelligence', 'Explainable Accessibility Intelligence')}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500">
                   {t('patient.explainableDesc', 'How socio-geographic factors shape your estimated healthcare completion')}
                 </p>
               </div>
@@ -558,7 +561,7 @@ export const PatientDashboard: React.FC = () => {
               </div>
 
               <div className="sm:col-span-2 space-y-3 text-xs">
-                <div className="p-4 rounded-2xl border space-y-1.5 bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300">
+                <div className="p-4 rounded-2xl border space-y-1.5 bg-slate-50 border-slate-200 text-slate-700">
                   <p className="font-bold text-xs flex items-center gap-1.5">
                     <Activity className="w-3.5 h-3.5 text-teal-500" />
                     Operational Access Diagnosis:
@@ -578,11 +581,11 @@ export const PatientDashboard: React.FC = () => {
           </div>
 
           {/* Active Patient Requests Ledger */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-card space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-card space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <ListOrdered className="w-4 h-4 text-teal-600" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-bold text-slate-900">
                   {t('patient.activeRequests', 'Active Hospital Requests')}
                 </h3>
               </div>
@@ -592,7 +595,7 @@ export const PatientDashboard: React.FC = () => {
             </div>
 
             {activeRequests.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/50 rounded-2xl border border-dashed border-slate-200 dark:border-slate-700 space-y-3">
+              <div className="p-8 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200 space-y-3">
                 <p>No active hospital intake requests.</p>
                 <Link to="/patient/hospitals">
                   <Button variant="primary" size="sm">
@@ -606,22 +609,22 @@ export const PatientDashboard: React.FC = () => {
                   <Link
                     key={req._id}
                     to={`/patient/requests/${req._id}`}
-                    className="block p-4 rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-teal-300 dark:hover:border-teal-600 hover:bg-slate-50/70 dark:hover:bg-slate-800/50 transition-all text-xs space-y-2"
+                    className="block p-4 rounded-2xl border border-slate-200 hover:border-teal-300 hover:bg-slate-50/70 transition-all text-xs space-y-2"
                   >
                     <div className="flex items-start justify-between">
                       <div>
                         <span className="text-[10px] font-bold text-slate-400 block">{req.requestCode}</span>
-                        <h4 className="font-bold text-sm text-slate-900 dark:text-white">
+                        <h4 className="font-bold text-sm text-slate-900">
                           {(req.hospitalId as any)?.name || 'Civil Hospital'}
                         </h4>
-                        <p className="text-slate-500 dark:text-slate-400 font-medium">Department: {req.departmentName}</p>
+                        <p className="text-slate-500 font-medium">Department: {req.departmentName}</p>
                       </div>
                       <StatusBadge status={req.status} size="sm" />
                     </div>
 
-                    <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400 pt-1 border-t border-slate-100 dark:border-slate-800">
+                    <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
                       <span>Reason: {req.reasonForVisit}</span>
-                      <span className="font-semibold text-teal-700 dark:text-teal-400">
+                      <span className="font-semibold text-teal-700">
                         {req.distanceKm ? `${req.distanceKm} km transit` : 'Nearby'}
                       </span>
                     </div>
@@ -676,11 +679,11 @@ export const PatientDashboard: React.FC = () => {
           )}
 
           {/* Document Vault Quick Card */}
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-card space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-card space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
                 <FolderLock className="w-4 h-4 text-teal-600" />
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white">
+                <h4 className="text-sm font-bold text-slate-900">
                   {t('patient.documentVault', 'Medical Records Vault')}
                 </h4>
               </div>
@@ -690,7 +693,7 @@ export const PatientDashboard: React.FC = () => {
             </div>
 
             {recentDocs.length === 0 ? (
-              <div className="p-4 text-center text-xs text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800/50 rounded-2xl">
+              <div className="p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl">
                 Upload your Ayushman Bharat card and prescriptions for 1-click hospital intake.
               </div>
             ) : (
@@ -698,13 +701,13 @@ export const PatientDashboard: React.FC = () => {
                 {recentDocs.map((doc) => (
                   <div
                     key={doc._id}
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700 text-xs"
+                    className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs"
                   >
                     <div className="flex items-center gap-2 truncate">
                       <FileText className="w-4 h-4 text-slate-500 shrink-0" />
-                      <span className="font-medium text-slate-800 dark:text-slate-200 truncate">{doc.title}</span>
+                      <span className="font-medium text-slate-800 truncate">{doc.title}</span>
                     </div>
-                    <span className="text-[10px] bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded-md font-bold">
+                    <span className="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded-md font-bold">
                       {doc.type}
                     </span>
                   </div>

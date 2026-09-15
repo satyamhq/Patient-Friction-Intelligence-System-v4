@@ -1,19 +1,24 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { api } from '../../services/api';
+import { ashaService } from '../../services/ashaService';
 import { useToast } from '../../context/ToastContext';
 import {
   Users,
   Search,
   Filter,
-  Flag,
   RefreshCw,
   MapPin,
-  HeartPulse,
   AlertTriangle,
   Send,
   X,
   Phone,
   Calendar,
+  Home,
+  CheckCircle2,
+  Clock,
+  GitFork,
+  ShieldAlert,
+  HelpCircle,
+  Stethoscope,
 } from 'lucide-react';
 
 export const AshaPatients: React.FC = () => {
@@ -21,23 +26,27 @@ export const AshaPatients: React.FC = () => {
   const [patients, setPatients] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [riskFilter, setRiskFilter] = useState('ALL');
+  const [filterType, setFilterType] = useState('ALL');
 
-  // Modal for flagging
-  const [activePatient, setActivePatient] = useState<any | null>(null);
-  const [flagReason, setFlagReason] = useState('');
-  const [flagUrgency, setFlagUrgency] = useState<'high' | 'critical'>('high');
-  const [isSubmittingFlag, setIsSubmittingFlag] = useState(false);
+  // Modal for Escalation / Assistance
+  const [selectedPatient, setSelectedPatient] = useState<any | null>(null);
+  const [escalationType, setEscalationType] = useState<'CLINICAL_CONCERN' | 'HIGH_ACCESS_PRIORITY'>('HIGH_ACCESS_PRIORITY');
+  const [escalationUrgency, setEscalationUrgency] = useState<'Medium' | 'High' | 'Emergency'>('High');
+  const [escalationReason, setEscalationReason] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const fetchPatients = async () => {
     setIsLoading(true);
     try {
-      const res = await api.get('/asha/patients');
-      if (res.data?.success && res.data?.patients) {
-        setPatients(res.data.patients);
+      const res = await ashaService.getPatients({
+        search: searchQuery || undefined,
+        filter: filterType !== 'ALL' ? filterType : undefined,
+      });
+      if (res.success) {
+        setPatients(res.patients || []);
       }
     } catch {
-      showToast('Failed to load community health records.', 'error');
+      showToast('Failed to load village beneficiary registry.', 'error');
     } finally {
       setIsLoading(false);
     }
@@ -45,250 +54,310 @@ export const AshaPatients: React.FC = () => {
 
   useEffect(() => {
     fetchPatients();
-  }, []);
+  }, [filterType]);
 
-  const handleFlagSubmit = async (e: React.FormEvent) => {
+  const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!activePatient || !flagReason.trim()) return;
+    fetchPatients();
+  };
 
-    setIsSubmittingFlag(true);
+  const handleEscalateSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedPatient || !escalationReason.trim()) {
+      showToast('Please provide a specific reason for escalation.', 'error');
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      await api.post('/asha/flag-patient', {
-        patientId: activePatient.id || activePatient._id,
-        reason: flagReason,
-        urgency: flagUrgency,
+      const res = await ashaService.createEscalation({
+        patientId: selectedPatient.patientId,
+        patientName: selectedPatient.name,
+        householdId: selectedPatient.householdId,
+        villageName: selectedPatient.village,
+        type: escalationType,
+        urgency: escalationUrgency,
+        reason: escalationReason,
       });
-      showToast(`Flag logged: ${activePatient.name} marked as ${flagUrgency.toUpperCase()} risk!`, 'success');
-      setActivePatient(null);
-      setFlagReason('');
-      fetchPatients();
-    } catch (err: any) {
-      showToast(err?.response?.data?.message || 'Could not flag patient.', 'error');
+
+      if (res.success) {
+        showToast(res.message || 'Escalation recorded and routed to authorized personnel.', 'success');
+        setSelectedPatient(null);
+        setEscalationReason('');
+        await fetchPatients();
+      }
+    } catch {
+      showToast('Failed to submit escalation. Please retry.', 'error');
     } finally {
-      setIsSubmittingFlag(false);
+      setIsSubmitting(false);
     }
   };
 
   const filtered = useMemo(() => {
-    return patients.filter((p) => {
-      const name = p.name || '';
-      const village = p.village || p.address || '';
-      const matchesSearch =
-        name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        village.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesRisk = riskFilter === 'ALL' || (p.riskLevel || 'LOW') === riskFilter;
-      return matchesSearch && matchesRisk;
-    });
-  }, [patients, searchQuery, riskFilter]);
-
-  const RISK_BADGE: Record<string, string> = {
-    CRITICAL: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-950/40 dark:text-red-300 dark:border-red-800',
-    HIGH: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-800',
-    MEDIUM: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800',
-    LOW: 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800',
-  };
+    if (!searchQuery.trim()) return patients;
+    const q = searchQuery.toLowerCase();
+    return patients.filter(
+      (p) =>
+        p.name?.toLowerCase().includes(q) ||
+        p.patientId?.toLowerCase().includes(q) ||
+        p.householdId?.toLowerCase().includes(q) ||
+        p.village?.toLowerCase().includes(q)
+    );
+  }, [patients, searchQuery]);
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-            <Users className="w-6 h-6 text-emerald-600 dark:text-emerald-400" />
-            ASHA Village Household Cohort
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-700 text-xs font-bold uppercase tracking-wider mb-2">
+            <Users className="w-3.5 h-3.5" />
+            <span>Authorized Field Scope: Rampur Kalan (Ward 4 & 5)</span>
+          </div>
+          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2.5">
+            Village Patient Registry & Beneficiary Roster
           </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Community-level maternal, child, geriatric, and chronic illness register with field escalation flags.
+          <p className="text-xs text-slate-500">
+            Assigned community members, household links, appointment & referral status, and access barriers
           </p>
         </div>
+
         <button
           onClick={fetchPatients}
           disabled={isLoading}
-          className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 shadow-sm transition-all"
+          className="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-sm self-start sm:self-auto disabled:opacity-50"
         >
-          <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-          Refresh List
+          <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
+          Refresh Registry
         </button>
       </div>
 
-      {/* Filter and Search */}
-      <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row gap-4">
-        <div className="relative flex-1">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search by patient name, village, or hamlet..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white"
-          />
-        </div>
-
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-slate-400" />
-          <select
-            value={riskFilter}
-            onChange={(e) => setRiskFilter(e.target.value)}
-            className="px-3 py-2 text-sm bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white"
+      {/* Search & Filters */}
+      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm space-y-4">
+        <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-3">
+          <div className="relative flex-grow">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search by Patient Name, ID, Household ID (e.g. HH-PB-02), or Village..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-teal-500"
+            />
+          </div>
+          <button
+            type="submit"
+            className="px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-sm transition-all"
           >
-            <option value="ALL">All Care Tiers</option>
-            <option value="CRITICAL">Critical Flagged</option>
-            <option value="HIGH">High Risk</option>
-            <option value="MEDIUM">Moderate Risk</option>
-            <option value="LOW">Low Friction</option>
-          </select>
+            Search
+          </button>
+        </form>
+
+        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-100">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+            <Filter className="w-3.5 h-3.5" /> Filters:
+          </span>
+          {[
+            { id: 'ALL', label: 'All Beneficiaries' },
+            { id: 'pending_followup', label: 'Pending Follow-up' },
+            { id: 'access_barrier', label: 'Has Access Barrier' },
+            { id: 'visited', label: 'Visited This Month' },
+            { id: 'not_visited', label: 'Visit Due' },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setFilterType(tab.id)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                filterType === tab.id
+                  ? 'bg-teal-600 text-white shadow-sm'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Patients Grid */}
-      {isLoading ? (
-        <div className="p-12 text-center text-slate-500 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700">
-          <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-3 text-emerald-600" />
-          Loading village cohort...
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="p-12 text-center text-slate-500 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700">
-          No patients found for this criteria.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filtered.map((p, idx) => (
+      {/* Patient Cards / Table */}
+      <div className="space-y-3">
+        {isLoading ? (
+          <div className="p-12 text-center text-slate-400 text-xs">Loading village records...</div>
+        ) : filtered.length === 0 ? (
+          <div className="p-12 bg-white rounded-2xl border border-slate-200 text-center text-slate-500 text-xs">
+            No assigned beneficiaries match the selected filter.
+          </div>
+        ) : (
+          filtered.map((patient) => (
             <div
-              key={p.id || idx}
-              className="p-5 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+              key={patient.id}
+              className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:border-teal-300 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
             >
-              <div className="space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <h3 className="font-bold text-slate-900 dark:text-white text-base">{p.name}</h3>
-                    <p className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
-                      <MapPin className="w-3 h-3" />
-                      {p.village || p.district || 'Village Community'}
-                    </p>
-                  </div>
+              <div className="space-y-2">
+                <div className="flex flex-wrap items-center gap-2">
+                  <strong className="text-sm text-slate-900">{patient.name}</strong>
+                  <span className="text-xs text-slate-400">
+                    ({patient.age} Yrs, {patient.gender})
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 flex items-center gap-1">
+                    <Home className="w-3 h-3" /> {patient.householdId}
+                  </span>
                   <span
-                    className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold border ${
-                      RISK_BADGE[p.riskLevel || 'LOW']
+                    className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
+                      patient.accessFrictionLevel === 'Critical'
+                        ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                        : patient.accessFrictionLevel === 'High'
+                        ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                        : patient.accessFrictionLevel === 'Moderate'
+                        ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                        : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                     }`}
                   >
-                    {p.riskLevel || 'LOW'}
+                    Access Friction: {patient.accessFrictionLevel}
                   </span>
                 </div>
 
-                <div className="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-xl space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Cohort Type:</span>
-                    <span className="font-semibold text-slate-900 dark:text-white">
-                      {p.category || 'Maternal / Chronic'}
-                    </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs text-slate-500">
+                  <div>
+                    <span className="text-slate-400 block text-[11px]">Location</span>
+                    <strong className="text-slate-800">{patient.village}</strong>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Friction Score:</span>
-                    <span className="font-semibold text-emerald-600">{p.frictionScore || 54}/100</span>
+                  <div>
+                    <span className="text-slate-400 block text-[11px]">Appointment / OPD</span>
+                    <strong className="text-teal-700">{patient.appointmentStatus}</strong>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Last ASHA Visit:</span>
-                    <span>{p.lastVisit || 'Within 7 days'}</span>
+                  <div>
+                    <span className="text-slate-400 block text-[11px]">Follow-up Status</span>
+                    <strong className="text-slate-800">{patient.followUpStatus}</strong>
+                  </div>
+                  <div>
+                    <span className="text-slate-400 block text-[11px]">Identified Access Barrier</span>
+                    <strong className="text-amber-700">{patient.accessBarrier}</strong>
                   </div>
                 </div>
+
+                <p className="text-[11px] text-slate-500">
+                  Next Scheduled Action: <strong>{patient.nextTask}</strong> • Contact: {patient.phone}
+                </p>
               </div>
 
-              <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 shrink-0 self-end md:self-center">
                 <button
-                  onClick={() => setActivePatient(p)}
-                  className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 dark:bg-rose-950/40 dark:text-rose-300 text-xs font-semibold rounded-xl border border-rose-200 dark:border-rose-900/50 transition-colors"
+                  onClick={() => setSelectedPatient(patient)}
+                  className="px-3.5 py-2 rounded-xl text-xs font-bold border border-slate-200 hover:bg-slate-50 text-slate-700 flex items-center gap-1.5 transition-all"
                 >
-                  <Flag className="w-3.5 h-3.5" />
-                  Flag High-Risk Escalation
+                  <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+                  Escalate Case
                 </button>
               </div>
             </div>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
 
-      {/* Flag Escalation Modal */}
-      {activePatient && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-2xl max-w-md w-full p-6 space-y-5 animate-scale-in">
+      {/* Escalation Modal */}
+      {selectedPatient && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 shadow-2xl space-y-4 animate-scale-in">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
-                <AlertTriangle className="w-5 h-5" />
-                <h3 className="font-bold text-base text-slate-900 dark:text-white">Flag Patient Escalation</h3>
+              <div>
+                <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-amber-500" />
+                  Escalate Case: {selectedPatient.name}
+                </h3>
+                <p className="text-xs text-slate-500">
+                  {selectedPatient.householdId} • {selectedPatient.village}
+                </p>
               </div>
               <button
-                onClick={() => setActivePatient(null)}
-                className="p-1 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"
+                onClick={() => setSelectedPatient(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-500">
-              Escalating <span className="font-bold text-slate-900 dark:text-white">{activePatient.name}</span> to the
-              medical officer and district health dashboard for immediate intervention.
-            </p>
-
-            <form onSubmit={handleFlagSubmit} className="space-y-4">
+            <form onSubmit={handleEscalateSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                  Severity Tier
+                <label className="block font-bold text-slate-700 mb-1">
+                  Escalation Category
                 </label>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
-                    onClick={() => setFlagUrgency('high')}
-                    className={`px-3 py-2 text-xs font-bold rounded-xl border transition-all ${
-                      flagUrgency === 'high'
-                        ? 'bg-amber-500 text-white border-amber-500 shadow-sm'
-                        : 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                    onClick={() => setEscalationType('HIGH_ACCESS_PRIORITY')}
+                    className={`p-3 rounded-xl border text-left transition-all ${
+                      escalationType === 'HIGH_ACCESS_PRIORITY'
+                        ? 'border-teal-500 bg-teal-50 text-teal-900 font-bold'
+                        : 'border-slate-200 text-slate-600'
                     }`}
                   >
-                    High Risk
+                    <span className="block font-bold">High Access Priority</span>
+                    <span className="text-[10px] text-slate-500">Transport, road block, documentation barrier</span>
                   </button>
                   <button
                     type="button"
-                    onClick={() => setFlagUrgency('critical')}
-                    className={`px-3 py-2 text-xs font-bold rounded-xl border transition-all ${
-                      flagUrgency === 'critical'
-                        ? 'bg-red-600 text-white border-red-600 shadow-sm'
-                        : 'bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700'
+                    onClick={() => setEscalationType('CLINICAL_CONCERN')}
+                    className={`p-3 rounded-xl border text-left transition-all ${
+                      escalationType === 'CLINICAL_CONCERN'
+                        ? 'border-rose-500 bg-rose-50 text-rose-900 font-bold'
+                        : 'border-slate-200 text-slate-600'
                     }`}
                   >
-                    Critical / Immediate
+                    <span className="block font-bold">Clinical Concern</span>
+                    <span className="text-[10px] text-slate-500">Route to Doctor / PHC Medical Officer</span>
                   </button>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
-                  Clinical Observation & Reason
+                <label className="block font-bold text-slate-700 mb-1">
+                  Urgency Level
+                </label>
+                <select
+                  value={escalationUrgency}
+                  onChange={(e) => setEscalationUrgency(e.target.value as any)}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
+                >
+                  <option value="Medium">Medium Priority</option>
+                  <option value="High">High Urgency</option>
+                  <option value="Emergency">Emergency</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Detailed Reason & Non-Clinical Observations
                 </label>
                 <textarea
-                  required
                   rows={3}
-                  value={flagReason}
-                  onChange={(e) => setFlagReason(e.target.value)}
-                  placeholder="e.g. Patient exhibiting severe respiratory distress, missed 2 consecutive dialysis appointments..."
-                  className="w-full px-3.5 py-2 text-xs bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-rose-500 text-slate-900 dark:text-white outline-none"
+                  value={escalationReason}
+                  onChange={(e) => setEscalationReason(e.target.value)}
+                  placeholder="State non-clinical barriers (e.g. no transport available, patient unable to travel) or observations reported to clinician..."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl placeholder:text-slate-400"
                 />
               </div>
 
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-500">
+                {escalationType === 'CLINICAL_CONCERN'
+                  ? 'Notice: ASHA workers record field observations. Clinical diagnosis and treatment decisions remain strictly reserved for the authorized physician.'
+                  : 'Notice: High Access Priority will alert Block Health Officer for transport and administrative assistance.'}
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2">
                 <button
                   type="button"
-                  onClick={() => setActivePatient(null)}
-                  className="px-4 py-2 text-xs font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl"
+                  onClick={() => setSelectedPatient(null)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 font-semibold"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmittingFlag}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-md transition-all disabled:opacity-50"
+                  disabled={isSubmitting}
+                  className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold shadow-sm disabled:opacity-50"
                 >
-                  {isSubmittingFlag ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
-                  Submit Alert
+                  {isSubmitting ? 'Routing...' : 'Submit Escalation'}
                 </button>
               </div>
             </form>

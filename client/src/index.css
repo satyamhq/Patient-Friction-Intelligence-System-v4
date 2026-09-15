@@ -29,6 +29,20 @@
 
 .table-wrapper {
   width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Responsive Content Safety & Overflow Containment */
+.break-words-anywhere {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.responsive-table-container {
+  width: 100%;
+  max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
 }

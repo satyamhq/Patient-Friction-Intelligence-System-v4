@@ -90,7 +90,7 @@ export const Footer: React.FC = () => {
           </div>
         </div>
 
-        <div className="border-t border-slate-800 pt-6 pb-12 sm:pb-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3 sm:pl-48">
+        <div className="border-t border-slate-800 pt-6 pb-12 sm:pb-4 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-3">
           <p>© {new Date().getFullYear()} Patient Friction Index & Access Platform (PFIS). All rights reserved.</p>
           <p className="text-[11px] text-slate-400 text-center sm:text-right">
             Non-Clinical Healthcare Accessibility Platform • Operational Decision Support

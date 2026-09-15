@@ -82,4 +82,50 @@ export const adminService = {
     const res = await api.put(`/admin/users/${id}/toggle`);
     return res.data;
   },
+
+  // Strategic Statewide Methods
+  async getStateCommand(): Promise<{ success: boolean; commandCenter: any }> {
+    const res = await api.get('/admin/state-command');
+    return res.data;
+  },
+
+  async getPolicySimulator(params?: { opdIncrease?: number; doctorIncrease?: number; teleconsult?: boolean }): Promise<{ success: boolean; simulation: any }> {
+    const res = await api.get('/admin/simulator', { params });
+    return res.data;
+  },
+
+  async getBudgetOptimizer(budget?: number): Promise<{ success: boolean; optimizer: any }> {
+    const res = await api.get('/admin/budget-optimizer', { params: { budget } });
+    return res.data;
+  },
+
+  async getSystemIntegrations(): Promise<{ success: boolean; count: number; integrations: any[] }> {
+    const res = await api.get('/admin/integrations');
+    return res.data;
+  },
+
+  async getDataQuality(): Promise<{ success: boolean; dataQuality: any }> {
+    const res = await api.get('/admin/data-quality');
+    return res.data;
+  },
+
+  async getPermissionsMatrix(): Promise<{ success: boolean; matrix: any[]; rolesSummary?: any[] }> {
+    const res = await api.get('/admin/permissions');
+    return res.data;
+  },
+
+  async getSystemHealth(): Promise<{ success: boolean; health: any }> {
+    const res = await api.get('/admin/system-health');
+    return res.data;
+  },
+
+  async getSystemMap(): Promise<{ success: boolean; flow: any[] }> {
+    const res = await api.get('/admin/system-map');
+    return res.data;
+  },
+
+  async getAdminReports(): Promise<{ success: boolean; reports: any[] }> {
+    const res = await api.get('/admin/reports');
+    return res.data;
+  },
 };

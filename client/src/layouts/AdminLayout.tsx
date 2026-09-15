@@ -1,15 +1,17 @@
-import React from 'react';
-import { Outlet, Navigate, useLocation, Link } from 'react-router-dom';
+import { Outlet, Navigate, useLocation, Link, useOutlet } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { Sidebar } from '../components/layout/Sidebar';
 import { Footer } from '../components/layout/Footer';
 import { DemoModeBanner } from '../components/common/DemoModeBanner';
 import { useAuth } from '../context/AuthContext';
 import { Loader2, BarChart3, LogIn } from 'lucide-react';
+import { JudgeImpactDashboard } from '../pages/admin/JudgeImpactDashboard';
 
 export const AdminLayout: React.FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const location = useLocation();
+  const outlet = useOutlet();
+  console.log('[AdminLayout DEBUG] path:', location.pathname, 'outlet.type:', outlet?.type);
 
   if (isLoading) {
     return (
@@ -66,7 +68,7 @@ export const AdminLayout: React.FC = () => {
       <div className="flex-grow flex max-w-7xl mx-auto w-full">
         <Sidebar forceRole={isJudgeMode && (!user || user.role !== 'admin') ? 'admin' : undefined} />
         <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
-          <Outlet />
+          {isJudgeMode ? <JudgeImpactDashboard /> : <Outlet />}
         </main>
       </div>
       <Footer />

@@ -432,23 +432,23 @@ export const LongitudinalRecordsPage: React.FC = () => {
         </div>
 
         {/* QR Code Container — Honest Non-Mock Handling */}
-        <div className="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-lg shrink-0 flex flex-col items-center justify-center gap-2 z-10 text-slate-900 dark:text-white min-w-[160px] border border-slate-200 dark:border-slate-700">
+        <div className="bg-white p-4 rounded-2xl shadow-lg shrink-0 flex flex-col items-center justify-center gap-2 z-10 text-slate-900 min-w-[160px] border border-slate-200">
           {abha.qrAvailable && abha.qrData ? (
             <>
               {/* If official QR data exists from real ABDM */}
-              <QrCode className="w-20 h-20 text-slate-800 dark:text-slate-200" />
-              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+              <QrCode className="w-20 h-20 text-slate-800" />
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600">
                 Official ABDM QR
               </span>
             </>
           ) : (
             <>
               {/* Honest message per Rule 3 — no fake/decorative QR code */}
-              <div className="w-20 h-20 rounded-xl bg-slate-100 dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-700 flex flex-col items-center justify-center text-slate-400 p-2 text-center">
+              <div className="w-20 h-20 rounded-xl bg-slate-100 border border-dashed border-slate-300 flex flex-col items-center justify-center text-slate-400 p-2 text-center">
                 <Lock className="w-6 h-6 mb-1 text-slate-400" />
                 <span className="text-[9px] font-semibold leading-tight">ABHA QR unavailable</span>
               </div>
-              <span className="text-[10px] text-center font-medium text-slate-500 dark:text-slate-400 max-w-[140px] leading-tight">
+              <span className="text-[10px] text-center font-medium text-slate-500 max-w-[140px] leading-tight">
                 {isAbhaConnected ? 'Official QR pending gateway sync' : 'Link ABHA to enable QR'}
               </span>
             </>
@@ -457,13 +457,13 @@ export const LongitudinalRecordsPage: React.FC = () => {
       </div>
 
       {/* ── 3. Navigation Tabs (Timeline, Consent, Audit) ────────────────── */}
-      <div className="flex border-b border-slate-200 dark:border-slate-800 gap-4">
+      <div className="flex border-b border-slate-200 gap-4">
         <button
           onClick={() => setActiveTab('timeline')}
           className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
             activeTab === 'timeline'
-              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+              ? 'border-indigo-600 text-indigo-600'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <Calendar className="w-4 h-4" />
@@ -474,8 +474,8 @@ export const LongitudinalRecordsPage: React.FC = () => {
           onClick={() => setActiveTab('consents')}
           className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
             activeTab === 'consents'
-              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+              ? 'border-indigo-600 text-indigo-600'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <ShieldCheck className="w-4 h-4" />
@@ -486,8 +486,8 @@ export const LongitudinalRecordsPage: React.FC = () => {
           onClick={() => setActiveTab('audit')}
           className={`pb-3 text-sm font-bold flex items-center gap-2 border-b-2 transition-all cursor-pointer ${
             activeTab === 'audit'
-              ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400'
-              : 'border-transparent text-slate-500 hover:text-slate-800 dark:hover:text-slate-300'
+              ? 'border-indigo-600 text-indigo-600'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
           }`}
         >
           <History className="w-4 h-4" />
@@ -497,14 +497,14 @@ export const LongitudinalRecordsPage: React.FC = () => {
 
       {/* ── TAB 1: RECORD TIMELINE ────────────────────────────────────────── */}
       {activeTab === 'timeline' && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
             <div>
-              <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
                 <Calendar className="w-5 h-5 text-indigo-600" />
                 <span>Chronological Care History ({records.length} Records)</span>
               </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-500 mt-0.5">
                 Every record displays its authentic origin and verification status.
               </p>
             </div>
@@ -513,8 +513,8 @@ export const LongitudinalRecordsPage: React.FC = () => {
             <div className="flex items-center gap-2 text-xs">
               <span className={`px-2.5 py-1 rounded-full border flex items-center gap-1.5 font-medium ${
                 syncStatus === 'synchronized'
-                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
-                  : 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
+                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                  : 'bg-slate-50 text-slate-600 border-slate-200'
               }`}>
                 <Clock className="w-3.5 h-3.5" />
                 {syncStatus === 'synchronized'
@@ -532,14 +532,14 @@ export const LongitudinalRecordsPage: React.FC = () => {
           ) : records.length === 0 ? (
             /* ── Honest Empty State (Per Spec Section 20) ─────────────────── */
             <div className="py-12 px-4 text-center space-y-4 max-w-md mx-auto">
-              <div className="w-14 h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center mx-auto text-indigo-600 dark:text-indigo-400">
+              <div className="w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-200 flex items-center justify-center mx-auto text-indigo-600">
                 <FileText className="w-7 h-7" />
               </div>
               <div className="space-y-1">
-                <h4 className="font-bold text-base text-slate-900 dark:text-white">
+                <h4 className="font-bold text-base text-slate-900">
                   No health records available yet.
                 </h4>
-                <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+                <p className="text-xs text-slate-500 leading-relaxed">
                   Your consultations, health summaries, and diagnostic reports will appear here in chronological order. Add your first visit entry or link an ABHA account.
                 </p>
               </div>
@@ -554,7 +554,7 @@ export const LongitudinalRecordsPage: React.FC = () => {
                 {!isAbhaConnected && (
                   <button
                     onClick={() => setIsConnectAbhaModalOpen(true)}
-                    className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs border border-slate-300 dark:border-slate-700 flex items-center gap-1.5 transition-all cursor-pointer"
+                    className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs border border-slate-300 flex items-center gap-1.5 transition-all cursor-pointer"
                   >
                     <CreditCard className="w-4 h-4" />
                     <span>Connect ABHA</span>
@@ -564,7 +564,7 @@ export const LongitudinalRecordsPage: React.FC = () => {
             </div>
           ) : (
             /* ── Real Records Timeline ────────────────────────────────────── */
-            <div className="relative pl-6 sm:pl-8 space-y-8 before:absolute before:left-2 sm:before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-indigo-200 dark:before:bg-indigo-900">
+            <div className="relative pl-6 sm:pl-8 space-y-8 before:absolute before:left-2 sm:before:left-3 before:top-3 before:bottom-3 before:w-0.5 before:bg-indigo-200">
               {records.map((rec, idx) => {
                 let vitals: any = null;
                 let prescription: any = null;
@@ -580,36 +580,36 @@ export const LongitudinalRecordsPage: React.FC = () => {
                     {/* Node Dot */}
                     <div className={`absolute -left-6 sm:-left-8 top-2 w-4 h-4 sm:w-5 sm:h-5 rounded-full ring-4 flex items-center justify-center text-white text-[10px] ${
                       isHospitalVerified
-                        ? 'bg-emerald-600 ring-emerald-100 dark:ring-emerald-950'
+                        ? 'bg-emerald-600 ring-emerald-100'
                         : isPatientEntered
-                        ? 'bg-amber-600 ring-amber-100 dark:ring-amber-950'
-                        : 'bg-indigo-600 ring-indigo-100 dark:ring-indigo-950'
+                        ? 'bg-amber-600 ring-amber-100'
+                        : 'bg-indigo-600 ring-indigo-100'
                     }`} />
 
-                    <div className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 hover:border-indigo-300 dark:hover:border-indigo-700 transition-all space-y-4">
+                    <div className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 hover:border-indigo-300 transition-all space-y-4">
                       {/* Entry Header */}
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2">
                         <div className="space-y-1">
                           <div className="flex flex-wrap items-center gap-2">
-                            <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300 uppercase">
+                            <span className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-indigo-100 text-indigo-800 uppercase">
                               {rec.record_type}
                             </span>
 
                             {/* Provenance Badge — Clear Distinction */}
                             {isHospitalVerified && (
-                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 flex items-center gap-1">
+                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 flex items-center gap-1">
                                 <CheckCircle2 className="w-3 h-3" />
                                 Verified healthcare-provider record
                               </span>
                             )}
                             {isPatientEntered && (
-                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300 flex items-center gap-1">
+                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-100 text-amber-800 flex items-center gap-1">
                                 <User className="w-3 h-3" />
                                 Patient-entered record
                               </span>
                             )}
                             {isPatientUploaded && (
-                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">
+                              <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 text-purple-800">
                                 Patient uploaded document
                               </span>
                             )}
@@ -619,13 +619,13 @@ export const LongitudinalRecordsPage: React.FC = () => {
                             </span>
                           </div>
 
-                          <h4 className="font-bold text-base text-slate-900 dark:text-white pt-1">
+                          <h4 className="font-bold text-base text-slate-900 pt-1">
                             {rec.diagnosis}
                           </h4>
                         </div>
 
                         <div className="text-xs text-slate-500 sm:text-right shrink-0">
-                          <span className="font-semibold text-slate-700 dark:text-slate-300 block">
+                          <span className="font-semibold text-slate-700 block">
                             {rec.doctor_name}
                           </span>
                           <span className="flex items-center sm:justify-end gap-1 mt-0.5 text-slate-500">
@@ -640,11 +640,11 @@ export const LongitudinalRecordsPage: React.FC = () => {
                           {Object.entries(vitals).map(([k, v]) => (
                             <span
                               key={k}
-                              className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-[11px] font-medium text-slate-700 dark:text-slate-300 flex items-center gap-1.5 shadow-2xs"
+                              className="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-[11px] font-medium text-slate-700 flex items-center gap-1.5 shadow-2xs"
                             >
-                              <Activity className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
+                              <Activity className="w-3 h-3 text-indigo-600" />
                               <span className="uppercase text-slate-400 font-bold">{k}:</span>
-                              <strong className="text-slate-900 dark:text-white">{String(v)}</strong>
+                              <strong className="text-slate-900">{String(v)}</strong>
                             </span>
                           ))}
                         </div>
@@ -652,18 +652,18 @@ export const LongitudinalRecordsPage: React.FC = () => {
 
                       {/* Prescriptions */}
                       {prescription && Array.isArray(prescription) && prescription.length > 0 && (
-                        <div className="pt-2 border-t border-slate-200 dark:border-slate-700/60">
-                          <h5 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-1.5">
-                            <Pill className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                        <div className="pt-2 border-t border-slate-200">
+                          <h5 className="text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-2 flex items-center gap-1.5">
+                            <Pill className="w-3.5 h-3.5 text-indigo-600" />
                             Prescribed Medications
                           </h5>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {prescription.map((m: any, pIdx: number) => (
                               <div
                                 key={pIdx}
-                                className="p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs"
+                                className="p-2.5 rounded-xl bg-white border border-slate-200 text-xs"
                               >
-                                <strong className="text-slate-900 dark:text-white block">{m.name}</strong>
+                                <strong className="text-slate-900 block">{m.name}</strong>
                                 <span className="text-slate-500 text-[11px]">{m.dosage} • {m.duration}</span>
                               </div>
                             ))}
@@ -673,13 +673,13 @@ export const LongitudinalRecordsPage: React.FC = () => {
 
                       {/* Notes / Advice */}
                       {rec.notes && (
-                        <p className="text-xs text-slate-600 dark:text-slate-400 bg-indigo-50/50 dark:bg-indigo-950/20 p-3 rounded-xl border border-indigo-100 dark:border-indigo-900/40">
+                        <p className="text-xs text-slate-600 bg-indigo-50/50 p-3 rounded-xl border border-indigo-100">
                           <strong>Clinical Advice & Notes:</strong> {rec.notes}
                         </p>
                       )}
 
                       {/* Source Footnote */}
-                      <div className="text-[11px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-200/50 dark:border-slate-800">
+                      <div className="text-[11px] text-slate-400 flex items-center justify-between pt-1 border-t border-slate-200/50">
                         <span>Source: <strong>{rec.record_source}</strong></span>
                         {rec.created_at && (
                           <span>Recorded on: {new Date(rec.created_at).toLocaleDateString()}</span>
@@ -696,13 +696,13 @@ export const LongitudinalRecordsPage: React.FC = () => {
 
       {/* ── TAB 2: ACCESS & CONSENT ───────────────────────────────────────── */}
       {activeTab === 'consents' && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
           <div>
-            <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-indigo-600" />
               <span>Health Record Access & Consent Control</span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl leading-relaxed">
+            <p className="text-xs text-slate-500 mt-1 max-w-2xl leading-relaxed">
               Under ABDM patient privacy principles, external healthcare providers and emergency services can only access your protected records if you have granted active consent.
             </p>
           </div>
@@ -716,21 +716,21 @@ export const LongitudinalRecordsPage: React.FC = () => {
                 return (
                   <div
                     key={c.id}
-                    className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                    className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                   >
                     <div>
                       <div className="flex items-center gap-2">
-                        <strong className="text-sm text-slate-900 dark:text-white">{c.requester_name}</strong>
+                        <strong className="text-sm text-slate-900">{c.requester_name}</strong>
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${
                           isActive
-                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                            : 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-slate-200 text-slate-700'
                         }`}>
                           {c.status}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                        Scope: <code className="bg-slate-200/60 dark:bg-slate-700 px-1 py-0.5 rounded text-[11px]">{c.data_scope}</code>
+                      <p className="text-xs text-slate-500 mt-0.5">
+                        Scope: <code className="bg-slate-200/60 px-1 py-0.5 rounded text-[11px]">{c.data_scope}</code>
                       </p>
                     </div>
 
@@ -738,7 +738,7 @@ export const LongitudinalRecordsPage: React.FC = () => {
                       onClick={() => handleToggleConsent(c.id, c.status)}
                       className={`px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all cursor-pointer ${
                         isActive
-                          ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950/40 dark:text-rose-300 border border-rose-200 dark:border-rose-800'
+                          ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
                           : 'bg-emerald-600 text-white hover:bg-emerald-500 shadow'
                       }`}
                     >
@@ -754,13 +754,13 @@ export const LongitudinalRecordsPage: React.FC = () => {
 
       {/* ── TAB 3: SECURITY AUDIT TRAIL ───────────────────────────────────── */}
       {activeTab === 'audit' && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
           <div>
-            <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
               <History className="w-5 h-5 text-indigo-600" />
               <span>Record Access & Security Audit Trail</span>
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            <p className="text-xs text-slate-500 mt-1">
               Immutable log of every time your health records were accessed, modified, or exported.
             </p>
           </div>
@@ -771,7 +771,7 @@ export const LongitudinalRecordsPage: React.FC = () => {
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs border-collapse">
                 <thead>
-                  <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-400 font-semibold uppercase tracking-wider">
+                  <tr className="border-b border-slate-200 text-slate-400 font-semibold uppercase tracking-wider">
                     <th className="py-2.5 px-3">Timestamp</th>
                     <th className="py-2.5 px-3">Event</th>
                     <th className="py-2.5 px-3">Actor</th>
@@ -779,25 +779,25 @@ export const LongitudinalRecordsPage: React.FC = () => {
                     <th className="py-2.5 px-3">Details</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                <tbody className="divide-y divide-slate-100">
                   {auditEvents.map((evt) => (
-                    <tr key={evt.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30">
+                    <tr key={evt.id} className="hover:bg-slate-50/50">
                       <td className="py-2.5 px-3 text-slate-500 font-mono text-[11px]">
                         {evt.timestamp ? new Date(evt.timestamp).toLocaleString() : '—'}
                       </td>
-                      <td className="py-2.5 px-3 font-semibold text-slate-800 dark:text-slate-200">
-                        <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 font-mono text-[11px]">
+                      <td className="py-2.5 px-3 font-semibold text-slate-800">
+                        <span className="px-2 py-0.5 rounded bg-slate-100 font-mono text-[11px]">
                           {evt.event_type}
                         </span>
                       </td>
-                      <td className="py-2.5 px-3 text-slate-600 dark:text-slate-400">
+                      <td className="py-2.5 px-3 text-slate-600">
                         {evt.actor_name} ({evt.actor_role})
                       </td>
                       <td className="py-2.5 px-3">
                         <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                           evt.result === 'SUCCESS' || evt.result === 'ALLOWED'
-                            ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-                            : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-rose-100 text-rose-800'
                         }`}>
                           {evt.result}
                         </span>
@@ -817,10 +817,10 @@ export const LongitudinalRecordsPage: React.FC = () => {
       {/* ── MODAL: ADD VISIT ENTRY ────────────────────────────────────────── */}
       {isNewRecordModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-lg p-6 sm:p-8 shadow-2xl space-y-5 my-8">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="bg-white rounded-3xl border border-slate-200 w-full max-w-lg p-6 sm:p-8 shadow-2xl space-y-5 my-8">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="font-bold text-slate-900 dark:text-white text-base">
+                <h3 className="font-bold text-slate-900 text-base">
                   Add Health Record Entry
                 </h3>
                 <p className="text-xs text-slate-500 mt-0.5">
@@ -829,15 +829,15 @@ export const LongitudinalRecordsPage: React.FC = () => {
               </div>
               <button
                 onClick={() => setIsNewRecordModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-bold p-1 cursor-pointer"
+                className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             {/* Prominent Provenance Disclaimer (Per Spec Rule 12) */}
-            <div className="p-3 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 flex items-start gap-2.5 text-xs text-amber-800 dark:text-amber-200">
-              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600 dark:text-amber-400 mt-0.5" />
+            <div className="p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-2.5 text-xs text-amber-800">
+              <AlertTriangle className="w-4 h-4 shrink-0 text-amber-600 mt-0.5" />
               <p className="leading-relaxed">
                 <strong>Provenance Notice:</strong> This entry will be saved in your records with the clear label <strong>Patient-entered record</strong>. It will not be represented as hospital-verified.
               </p>
@@ -846,13 +846,13 @@ export const LongitudinalRecordsPage: React.FC = () => {
             <form onSubmit={handleCreateRecord} className="space-y-4 text-xs">
               {/* Healthcare Facility */}
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Healthcare Facility *
                 </label>
                 <select
                   value={selectedFacilityName}
                   onChange={(e) => setSelectedFacilityName(e.target.value)}
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none"
                   required
                 >
                   <option value="">Select healthcare facility...</option>
@@ -873,7 +873,7 @@ export const LongitudinalRecordsPage: React.FC = () => {
                     value={customFacilityName}
                     onChange={(e) => setCustomFacilityName(e.target.value)}
                     placeholder="Enter full facility name..."
-                    className="mt-2 w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="mt-2 w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none"
                     required
                   />
                 )}
@@ -882,13 +882,13 @@ export const LongitudinalRecordsPage: React.FC = () => {
               {/* Record Type & Date */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-slate-700 mb-1">
                     Visit / Record Type *
                   </label>
                   <select
                     value={recordType}
                     onChange={(e) => setRecordType(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none"
                     required
                   >
                     <option value="OPD Consultation">OPD Consultation</option>
@@ -901,14 +901,14 @@ export const LongitudinalRecordsPage: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-slate-700 mb-1">
                     Date of Visit *
                   </label>
                   <input
                     type="date"
                     value={recordDate}
                     onChange={(e) => setRecordDate(e.target.value)}
-                    className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                    className="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none"
                     required
                   />
                 </div>
@@ -916,7 +916,7 @@ export const LongitudinalRecordsPage: React.FC = () => {
 
               {/* Doctor Name */}
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Doctor / Provider Name (Optional)
                 </label>
                 <input
@@ -924,13 +924,13 @@ export const LongitudinalRecordsPage: React.FC = () => {
                   value={doctorName}
                   onChange={(e) => setDoctorName(e.target.value)}
                   placeholder="e.g. Dr. R. Verma, MBBS (Leave blank if unknown)"
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
               </div>
 
               {/* Visit Summary / Diagnosis */}
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Diagnosis / Visit Summary *
                 </label>
                 <textarea
@@ -938,7 +938,7 @@ export const LongitudinalRecordsPage: React.FC = () => {
                   value={diagnosis}
                   onChange={(e) => setDiagnosis(e.target.value)}
                   placeholder="Describe health concern, diagnosis, or reason for this visit..."
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
                   required
                 />
               </div>
@@ -946,7 +946,7 @@ export const LongitudinalRecordsPage: React.FC = () => {
               {/* Optional Vitals */}
               <div className="grid grid-cols-3 gap-2">
                 <div>
-                  <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                  <label className="block font-semibold text-slate-600 mb-1">
                     BP (Optional)
                   </label>
                   <input
@@ -954,11 +954,11 @@ export const LongitudinalRecordsPage: React.FC = () => {
                     value={bp}
                     onChange={(e) => setBp(e.target.value)}
                     placeholder="120/80"
-                    className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none text-xs"
+                    className="w-full p-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                  <label className="block font-semibold text-slate-600 mb-1">
                     Pulse (Optional)
                   </label>
                   <input
@@ -966,11 +966,11 @@ export const LongitudinalRecordsPage: React.FC = () => {
                     value={pulse}
                     onChange={(e) => setPulse(e.target.value)}
                     placeholder="72 bpm"
-                    className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none text-xs"
+                    className="w-full p-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                  <label className="block font-semibold text-slate-600 mb-1">
                     SpO2 (Optional)
                   </label>
                   <input
@@ -978,14 +978,14 @@ export const LongitudinalRecordsPage: React.FC = () => {
                     value={spo2}
                     onChange={(e) => setSpo2(e.target.value)}
                     placeholder="98%"
-                    className="w-full p-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none text-xs"
+                    className="w-full p-2 rounded-lg border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none text-xs"
                   />
                 </div>
               </div>
 
               {/* Advice / Notes */}
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Doctor Advice / Notes (Optional)
                 </label>
                 <textarea
@@ -993,16 +993,16 @@ export const LongitudinalRecordsPage: React.FC = () => {
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="Medications advised, lifestyle changes, follow-up instructions..."
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 focus:ring-2 focus:ring-indigo-500 outline-none resize-none"
                 />
               </div>
 
               {/* Modal Buttons */}
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setIsNewRecordModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold transition-all cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-bold transition-all cursor-pointer"
                 >
                   Cancel
                 </button>
@@ -1022,29 +1022,29 @@ export const LongitudinalRecordsPage: React.FC = () => {
       {/* ── MODAL: CONNECT ABHA ───────────────────────────────────────────── */}
       {isConnectAbhaModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 sm:p-8 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="bg-white rounded-3xl border border-slate-200 w-full max-w-md p-6 sm:p-8 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div className="flex items-center gap-2">
                 <CreditCard className="w-5 h-5 text-indigo-600" />
-                <h3 className="font-bold text-slate-900 dark:text-white text-base">
+                <h3 className="font-bold text-slate-900 text-base">
                   Connect ABHA Account
                 </h3>
               </div>
               <button
                 onClick={() => setIsConnectAbhaModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 text-sm font-bold p-1 cursor-pointer"
+                className="text-slate-400 hover:text-slate-600 text-sm font-bold p-1 cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
-            <div className="p-3 rounded-xl bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 text-xs text-blue-900 dark:text-blue-200 leading-relaxed">
+            <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 text-xs text-blue-900 leading-relaxed">
               <strong>Official ABDM Notice:</strong> Enter your verified 14-digit ABHA Number or ABHA Address. The connection will be linked to your authenticated patient profile.
             </div>
 
             <form onSubmit={handleConnectAbha} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   14-Digit ABHA Number
                 </label>
                 <input
@@ -1052,20 +1052,20 @@ export const LongitudinalRecordsPage: React.FC = () => {
                   value={inputAbhaNumber}
                   onChange={(e) => setInputAbhaNumber(e.target.value)}
                   placeholder="e.g. 14-1234-5678-9012"
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono focus:ring-2 focus:ring-indigo-500 outline-none"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 font-mono focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
               </div>
 
               <div className="relative flex items-center justify-center">
-                <div className="border-t border-slate-200 dark:border-slate-700 w-full"></div>
-                <span className="bg-white dark:bg-slate-900 px-2 text-[10px] text-slate-400 font-bold uppercase">
+                <div className="border-t border-slate-200 w-full"></div>
+                <span className="bg-white px-2 text-[10px] text-slate-400 font-bold uppercase">
                   OR
                 </span>
-                <div className="border-t border-slate-200 dark:border-slate-700 w-full"></div>
+                <div className="border-t border-slate-200 w-full"></div>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   ABHA Address (e.g. username@abdm)
                 </label>
                 <input
@@ -1073,15 +1073,15 @@ export const LongitudinalRecordsPage: React.FC = () => {
                   value={inputAbhaAddress}
                   onChange={(e) => setInputAbhaAddress(e.target.value)}
                   placeholder="yourname@abdm"
-                  className="w-full p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white font-mono focus:ring-2 focus:ring-indigo-500 outline-none"
+                  className="w-full p-2.5 rounded-xl border border-slate-200 bg-white text-slate-900 font-mono focus:ring-2 focus:ring-indigo-500 outline-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex justify-end gap-2.5 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setIsConnectAbhaModalOpen(false)}
-                  className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-bold transition-all cursor-pointer"
+                  className="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 font-bold transition-all cursor-pointer"
                 >
                   Cancel
                 </button>

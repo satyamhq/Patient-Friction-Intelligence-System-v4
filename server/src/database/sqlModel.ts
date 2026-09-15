@@ -173,6 +173,8 @@ function wrapModelInstance(tableName: string, raw: any): any {
     isacceptingrequests: 'isAcceptingRequests',
     passwordhash: 'passwordHash',
     password_hash: 'passwordHash',
+    actorrole: 'actorRole',
+    actor_role: 'actorRole',
     userid: 'userId',
     user_id: 'userId',
     patientid: 'patientId',

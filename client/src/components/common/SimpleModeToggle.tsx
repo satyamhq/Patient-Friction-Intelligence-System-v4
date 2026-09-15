@@ -17,8 +17,8 @@ export const SimpleModeToggle: React.FC<SimpleModeToggleProps> = ({ className = 
       onClick={toggleSimpleLanguageMode}
       className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border shadow-sm ${
         simpleLanguageMode
-          ? 'bg-amber-500 text-white border-amber-400 shadow-amber-500/20 ring-2 ring-amber-300 dark:bg-amber-600'
-          : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50 dark:bg-slate-900 dark:text-slate-300 dark:border-slate-800'
+          ? 'bg-amber-500 text-white border-amber-400 shadow-amber-500/20 ring-2 ring-amber-300'
+          : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'
       } ${className}`}
       title={
         simpleLanguageMode

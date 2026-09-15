@@ -353,9 +353,9 @@ export const FrontlineWorkerPortal: React.FC = () => {
         </div>
 
         {/* Non-clinical safety advisory */}
-        <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 flex items-start gap-3">
-          <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
-          <div className="text-xs text-amber-900 dark:text-amber-200 leading-relaxed">
+        <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 flex items-start gap-3">
+          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+          <div className="text-xs text-amber-900 leading-relaxed">
             <strong>Non-Clinical Operational Platform:</strong> ASHA Frontline Seva assists with non-clinical health navigation, travel/distance barriers, and routine doorstep checks. PFIS does not provide clinical diagnoses or prescriptions. For medical emergencies, call <strong>108 (Ambulance)</strong> immediately or visit your nearest Primary Health Centre (PHC).
           </div>
         </div>
@@ -364,49 +364,49 @@ export const FrontlineWorkerPortal: React.FC = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Link
             to="/patient/hospitals"
-            className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-teal-400 transition-all flex items-center gap-4 group shadow-xs"
+            className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-teal-400 transition-all flex items-center gap-4 group shadow-xs"
           >
-            <div className="w-12 h-12 rounded-xl bg-teal-50 dark:bg-teal-950 text-teal-600 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0">
               <MapPin className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-bold text-sm text-slate-900 dark:text-white">Find Nearby PHC & Sub-Centres</h4>
+              <h4 className="font-bold text-sm text-slate-900">Find Nearby PHC & Sub-Centres</h4>
               <p className="text-xs text-slate-500 mt-0.5">Locate nearest public facility with travel directions</p>
             </div>
           </Link>
 
           <Link
             to="/patient/medicines"
-            className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-emerald-400 transition-all flex items-center gap-4 group shadow-xs"
+            className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-400 transition-all flex items-center gap-4 group shadow-xs"
           >
-            <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
               <CheckCircle2 className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-bold text-sm text-slate-900 dark:text-white">Medicine Stock (e-Aushadhi)</h4>
+              <h4 className="font-bold text-sm text-slate-900">Medicine Stock (e-Aushadhi)</h4>
               <p className="text-xs text-slate-500 mt-0.5">Check verified stock at PHC & Rural Hospitals</p>
             </div>
           </Link>
 
           <Link
             to="/patient/teleconsult"
-            className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-blue-400 transition-all flex items-center gap-4 group shadow-xs"
+            className="p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-400 transition-all flex items-center gap-4 group shadow-xs"
           >
-            <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950 text-blue-600 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
               <Video className="w-6 h-6" />
             </div>
             <div>
-              <h4 className="font-bold text-sm text-slate-900 dark:text-white">Assisted Teleconsultation</h4>
+              <h4 className="font-bold text-sm text-slate-900">Assisted Teleconsultation</h4>
               <p className="text-xs text-slate-500 mt-0.5">Consult certified Medical Officer via video link</p>
             </div>
           </Link>
         </div>
 
         {/* Patient's Active Requests */}
-        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-xs space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+              <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
                 <Users className="w-5 h-5 text-emerald-600" />
                 <span>My Doorstep Assistance Requests ({myRequests.length})</span>
               </h3>
@@ -416,7 +416,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
             </div>
             <button
               onClick={fetchPatientData}
-              className="px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-600 hover:bg-slate-50 flex items-center gap-1.5"
+              className="px-3 py-1.5 rounded-xl border border-slate-200 text-xs font-semibold text-slate-600 hover:bg-slate-50 flex items-center gap-1.5"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               <span>Refresh</span>
@@ -427,10 +427,10 @@ export const FrontlineWorkerPortal: React.FC = () => {
             <div className="py-12 text-center text-slate-400 text-sm">Loading your assistance requests...</div>
           ) : myRequests.length === 0 ? (
             <div className="py-12 text-center space-y-3">
-              <div className="w-12 h-12 rounded-full bg-emerald-50 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center mx-auto">
+              <div className="w-12 h-12 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto">
                 <HeartHandshake className="w-6 h-6" />
               </div>
-              <h4 className="font-bold text-slate-700 dark:text-slate-300 text-sm">No household visits assigned today.</h4>
+              <h4 className="font-bold text-slate-700 text-sm">No household visits assigned today.</h4>
               <p className="text-xs text-slate-500 max-w-sm mx-auto">
                 Need doorstep assistance for an elderly family member, BP check, or ABHA verification? Click "Request Doorstep Visit" above.
               </p>
@@ -440,10 +440,10 @@ export const FrontlineWorkerPortal: React.FC = () => {
               {myRequests.map((req) => (
                 <div
                   key={req.id}
-                  className="p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-3"
+                  className="p-5 rounded-2xl border border-slate-200 bg-slate-50/50 space-y-3"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">
                       {req.assistance_type}
                     </span>
                     <span
@@ -460,20 +460,20 @@ export const FrontlineWorkerPortal: React.FC = () => {
                   </div>
 
                   <div>
-                    <h4 className="font-bold text-sm text-slate-900 dark:text-white">{req.patient_name}</h4>
+                    <h4 className="font-bold text-sm text-slate-900">{req.patient_name}</h4>
                     <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-1">
                       <MapPin className="w-3.5 h-3.5 text-slate-400" /> {req.village_or_area}
                     </p>
                   </div>
 
                   {req.barrier_description && (
-                    <div className="p-2.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-600 dark:text-slate-300">
-                      <span className="font-semibold text-slate-800 dark:text-slate-200">Barrier noted: </span>
+                    <div className="p-2.5 rounded-xl bg-white border border-slate-200 text-xs text-slate-600">
+                      <span className="font-semibold text-slate-800">Barrier noted: </span>
                       {req.barrier_description}
                     </div>
                   )}
 
-                  <div className="pt-2 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+                  <div className="pt-2 border-t border-slate-200 flex items-center justify-between text-[11px] text-slate-500">
                     <span>Preferred: {req.preferred_date || 'Earliest available'}</span>
                     <span>{req.assigned_worker_name ? `Assigned to: ${req.assigned_worker_name}` : 'Awaiting ASHA assignment'}</span>
                   </div>
@@ -486,10 +486,10 @@ export const FrontlineWorkerPortal: React.FC = () => {
         {/* Modal: Request Doorstep Assistance */}
         {isRequestModalOpen && (
           <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-            <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+            <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                 <div>
-                  <h3 className="font-bold text-base text-slate-900 dark:text-white">Request Doorstep Assistance</h3>
+                  <h3 className="font-bold text-base text-slate-900">Request Doorstep Assistance</h3>
                   <p className="text-xs text-slate-500">Your request will be routed to your assigned village ASHA</p>
                 </div>
                 <button
@@ -502,13 +502,13 @@ export const FrontlineWorkerPortal: React.FC = () => {
 
               <form onSubmit={handleCreateDoorstepRequest} className="space-y-4 text-xs">
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-slate-700 mb-1">
                     Assistance Category
                   </label>
                   <select
                     value={reqType}
                     onChange={(e) => setReqType(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                    className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                   >
                     <option value="Elderly Mobility / Vitals Check">Elderly Mobility / Vitals Check (Doorstep BP)</option>
                     <option value="ABHA Card Assistance">ABHA Card Registration & Verification Assistance</option>
@@ -519,20 +519,20 @@ export const FrontlineWorkerPortal: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-slate-700 mb-1">
                     Village / Hamlet / Landmark
                   </label>
                   <input
                     type="text"
                     value={reqArea}
                     onChange={(e) => setReqArea(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-slate-700 mb-1">
                     Preferred Visit Timeframe
                   </label>
                   <input
@@ -540,12 +540,12 @@ export const FrontlineWorkerPortal: React.FC = () => {
                     value={reqPreferredDate}
                     onChange={(e) => setReqPreferredDate(e.target.value)}
                     placeholder="e.g. Tomorrow morning, between 9am - 12pm"
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-slate-700 mb-1">
                     Non-Clinical Access Barrier (Optional)
                   </label>
                   <textarea
@@ -553,15 +553,15 @@ export const FrontlineWorkerPortal: React.FC = () => {
                     value={reqBarrierDesc}
                     onChange={(e) => setReqBarrierDesc(e.target.value)}
                     placeholder="Describe any travel, distance, cost, or mobility friction experienced..."
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                   />
                 </div>
 
-                <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => setIsRequestModalOpen(false)}
-                    className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 text-xs font-semibold"
+                    className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-semibold"
                   >
                     Cancel
                   </button>
@@ -662,53 +662,53 @@ export const FrontlineWorkerPortal: React.FC = () => {
 
       {/* Real Backend Generated Metrics Bar (Requirement 5) */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
           <div className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">Today's Visits</div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white mt-1">{metrics.totalVisits}</div>
+          <div className="text-2xl font-black text-slate-900 mt-1">{metrics.totalVisits}</div>
           <div className="text-[11px] text-slate-400 mt-0.5">Assigned to you</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="text-[11px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">Pending</div>
-          <div className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">{metrics.pending}</div>
+        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+          <div className="text-[11px] font-bold text-amber-600 uppercase tracking-wider">Pending</div>
+          <div className="text-2xl font-black text-amber-600 mt-1">{metrics.pending}</div>
           <div className="text-[11px] text-slate-400 mt-0.5">Not yet started</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider">In Progress</div>
-          <div className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">{metrics.inProgress}</div>
+        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+          <div className="text-[11px] font-bold text-blue-600 uppercase tracking-wider">In Progress</div>
+          <div className="text-2xl font-black text-blue-600 mt-1">{metrics.inProgress}</div>
           <div className="text-[11px] text-slate-400 mt-0.5">Active at doorstep</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 uppercase tracking-wider">Completed</div>
-          <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400 mt-1">{metrics.completed}</div>
+        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+          <div className="text-[11px] font-bold text-emerald-600 uppercase tracking-wider">Completed</div>
+          <div className="text-2xl font-black text-emerald-600 mt-1">{metrics.completed}</div>
           <div className="text-[11px] text-slate-400 mt-0.5">Verified & audited</div>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xs">
-          <div className="text-[11px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Follow-up Tasks</div>
-          <div className="text-2xl font-black text-purple-600 dark:text-purple-400 mt-1">{metrics.assignedTasks}</div>
+        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+          <div className="text-[11px] font-bold text-purple-600 uppercase tracking-wider">Follow-up Tasks</div>
+          <div className="text-2xl font-black text-purple-600 mt-1">{metrics.assignedTasks}</div>
           <div className="text-[11px] text-slate-400 mt-0.5">Active reminders</div>
         </div>
       </div>
 
       {/* Non-clinical compliance alert banner (Requirements 1 & 10) */}
-      <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-start gap-3">
-        <AlertCircle className="w-5 h-5 text-slate-600 dark:text-slate-400 shrink-0 mt-0.5" />
-        <div className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+      <div className="p-4 rounded-2xl bg-slate-100 border border-slate-200 flex items-start gap-3">
+        <AlertCircle className="w-5 h-5 text-slate-600 shrink-0 mt-0.5" />
+        <div className="text-xs text-slate-600 leading-relaxed">
           <strong>Frontline Non-Clinical Operational Standard:</strong> ASHA workers log non-clinical access barriers (travel friction, out-of-pocket costs, language difficulties). PFIS must NOT independently diagnose, prescribe medication, or alter clinical treatment. If clinical intervention is required, route the patient via <strong>Assisted Teleconsultation</strong> or initiate a formal <strong>Tiered Referral</strong> to an authorized Medical Officer.
         </div>
       </div>
 
       {/* Workspace Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2">
         <button
           onClick={() => setActiveTab('visits')}
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'visits'
               ? 'bg-emerald-600 text-white shadow-sm'
-              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           Today's Household Visits ({visits.length})
@@ -719,7 +719,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'tasks'
               ? 'bg-emerald-600 text-white shadow-sm'
-              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           Household Tasks & Reminders ({tasks.length})
@@ -730,7 +730,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
           className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
             activeTab === 'audit'
               ? 'bg-emerald-600 text-white shadow-sm'
-              : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
+              : 'text-slate-600 hover:bg-slate-100'
           }`}
         >
           Field Audit Trail ({auditEvents.length})
@@ -749,8 +749,8 @@ export const FrontlineWorkerPortal: React.FC = () => {
                 onClick={() => setVisitFilter(f)}
                 className={`px-3 py-1 rounded-lg font-bold transition-all ${
                   visitFilter === f
-                    ? 'bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900'
-                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                    ? 'bg-slate-900 text-white'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                 }`}
               >
                 {f}
@@ -761,9 +761,9 @@ export const FrontlineWorkerPortal: React.FC = () => {
           {isLoading ? (
             <div className="py-12 text-center text-slate-400 text-sm">Loading assigned household visits...</div>
           ) : visits.length === 0 ? (
-            <div className="py-16 text-center space-y-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div className="py-16 text-center space-y-2 bg-white rounded-2xl border border-slate-200">
               <Users className="w-10 h-10 text-slate-400 mx-auto" />
-              <h4 className="font-bold text-slate-700 dark:text-slate-300 text-sm">No household visits assigned today.</h4>
+              <h4 className="font-bold text-slate-700 text-sm">No household visits assigned today.</h4>
               <p className="text-xs text-slate-500">You have completed all scheduled visits or none have been assigned to your worker ID.</p>
             </div>
           ) : (
@@ -781,15 +781,15 @@ export const FrontlineWorkerPortal: React.FC = () => {
                     key={v.id}
                     className={`p-5 rounded-2xl border transition-all flex flex-col justify-between space-y-4 ${
                       v.status === 'COMPLETED'
-                        ? 'bg-slate-50/70 dark:bg-slate-900/40 border-slate-200 dark:border-slate-800'
+                        ? 'bg-slate-50/70 border-slate-200'
                         : v.status === 'IN_PROGRESS'
-                        ? 'bg-blue-50/30 dark:bg-blue-950/20 border-blue-300 dark:border-blue-800 shadow-xs'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-xs hover:border-emerald-300'
+                        ? 'bg-blue-50/30 border-blue-300 shadow-xs'
+                        : 'bg-white border-slate-200 shadow-xs hover:border-emerald-300'
                     }`}
                   >
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">
                           {v.visit_type}
                         </span>
                         <span
@@ -805,7 +805,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
                         </span>
                       </div>
 
-                      <h4 className="font-extrabold text-base text-slate-900 dark:text-white">
+                      <h4 className="font-extrabold text-base text-slate-900">
                         {v.patient_name}
                       </h4>
 
@@ -822,8 +822,8 @@ export const FrontlineWorkerPortal: React.FC = () => {
                       </div>
 
                       {v.notes && (
-                        <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/70 text-xs text-slate-600 dark:text-slate-300 border border-slate-100 dark:border-slate-800">
-                          <span className="font-semibold text-slate-800 dark:text-slate-200">Instructions: </span>
+                        <div className="p-2.5 rounded-xl bg-slate-50 text-xs text-slate-600 border border-slate-100">
+                          <span className="font-semibold text-slate-800">Instructions: </span>
                           {v.notes}
                         </div>
                       )}
@@ -835,7 +835,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
                             {barriers.map((b, idx) => (
                               <span
                                 key={idx}
-                                className="px-2 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/50 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800 text-[10px] font-medium"
+                                className="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-medium"
                               >
                                 {b}
                               </span>
@@ -846,7 +846,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
                     </div>
 
                     {/* Operational Action Workflow */}
-                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-col gap-2">
+                    <div className="pt-3 border-t border-slate-100 flex flex-col gap-2">
                       {v.status === 'ASSIGNED' || v.status === 'SCHEDULED' ? (
                         <button
                           onClick={() => handleStartVisit(v)}
@@ -857,7 +857,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
                         </button>
                       ) : v.status === 'IN_PROGRESS' ? (
                         <div className="space-y-2">
-                          <div className="text-[11px] text-blue-600 dark:text-blue-400 font-semibold flex items-center gap-1">
+                          <div className="text-[11px] text-blue-600 font-semibold flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             <span>Started: {v.started_at ? new Date(v.started_at).toLocaleTimeString() : 'Active'}</span>
                           </div>
@@ -874,7 +874,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
                           </button>
                         </div>
                       ) : (
-                        <div className="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1">
+                        <div className="text-[11px] text-emerald-600 font-bold flex items-center gap-1">
                           <CheckCircle2 className="w-3.5 h-3.5" />
                           <span>Visit Completed ({v.completed_at ? new Date(v.completed_at).toLocaleTimeString() : 'Verified'})</span>
                         </div>
@@ -884,14 +884,14 @@ export const FrontlineWorkerPortal: React.FC = () => {
                       <div className="grid grid-cols-2 gap-1.5 pt-1">
                         <Link
                           to="/patient/teleconsult"
-                          className="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-semibold hover:bg-slate-50 flex items-center justify-center gap-1 text-center"
+                          className="px-2 py-1.5 rounded-lg border border-slate-200 text-slate-600 text-[11px] font-semibold hover:bg-slate-50 flex items-center justify-center gap-1 text-center"
                         >
                           <Video className="w-3 h-3 text-blue-500" />
                           <span>Teleconsult</span>
                         </Link>
                         <Link
                           to="/patient/referrals"
-                          className="px-2 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-[11px] font-semibold hover:bg-slate-50 flex items-center justify-center gap-1 text-center"
+                          className="px-2 py-1.5 rounded-lg border border-slate-200 text-slate-600 text-[11px] font-semibold hover:bg-slate-50 flex items-center justify-center gap-1 text-center"
                         >
                           <ExternalLink className="w-3 h-3 text-emerald-500" />
                           <span>Referral Hub</span>
@@ -910,7 +910,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
       {activeTab === 'tasks' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
+            <h3 className="text-sm font-bold text-slate-700">
               Household Task Registry ({tasks.length})
             </h3>
             <button
@@ -923,9 +923,9 @@ export const FrontlineWorkerPortal: React.FC = () => {
           </div>
 
           {tasks.length === 0 ? (
-            <div className="py-16 text-center space-y-2 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div className="py-16 text-center space-y-2 bg-white rounded-2xl border border-slate-200">
               <FileText className="w-10 h-10 text-slate-400 mx-auto" />
-              <h4 className="font-bold text-slate-700 dark:text-slate-300 text-sm">No pending household tasks.</h4>
+              <h4 className="font-bold text-slate-700 text-sm">No pending household tasks.</h4>
               <p className="text-xs text-slate-500">Click "Log Household Task" above to schedule a new visit, reminder, or follow-up call.</p>
             </div>
           ) : (
@@ -937,13 +937,13 @@ export const FrontlineWorkerPortal: React.FC = () => {
                     key={t.id}
                     className={`p-5 rounded-2xl border transition-all flex flex-col justify-between space-y-3 ${
                       isCompleted
-                        ? 'bg-slate-50/70 dark:bg-slate-900/30 border-slate-200 dark:border-slate-800 opacity-75'
-                        : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-xs'
+                        ? 'bg-slate-50/70 border-slate-200 opacity-75'
+                        : 'bg-white border-slate-200 shadow-xs'
                     }`}
                   >
                     <div>
                       <div className="flex items-center justify-between mb-2">
-                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-emerald-100 text-emerald-800">
                           {t.task_type}
                         </span>
                         <span
@@ -955,7 +955,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
                         </span>
                       </div>
 
-                      <h4 className="font-extrabold text-base text-slate-900 dark:text-white">
+                      <h4 className="font-extrabold text-base text-slate-900">
                         {t.beneficiary_name}
                       </h4>
 
@@ -968,19 +968,19 @@ export const FrontlineWorkerPortal: React.FC = () => {
                             <Phone className="w-3.5 h-3.5 text-slate-400" /> {t.beneficiary_phone}
                           </span>
                         )}
-                        <span className="flex items-center gap-1 text-slate-600 dark:text-slate-400 font-medium">
+                        <span className="flex items-center gap-1 text-slate-600 font-medium">
                           <Clock className="w-3.5 h-3.5 text-slate-400" /> Due: {t.due_date}
                         </span>
                       </div>
 
                       {t.notes && (
-                        <p className="mt-3 text-xs text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl border border-slate-100 dark:border-slate-800">
+                        <p className="mt-3 text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl border border-slate-100">
                           {t.notes}
                         </p>
                       )}
                     </div>
 
-                    <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                       <span className="text-[11px] text-slate-400">Worker: {t.worker_name}</span>
                       <button
                         onClick={() => handleTaskStatusToggle(t)}
@@ -1005,26 +1005,26 @@ export const FrontlineWorkerPortal: React.FC = () => {
       {activeTab === 'audit' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-slate-700 dark:text-slate-300">
+            <h3 className="text-sm font-bold text-slate-700">
               Field Activity Audit Trail (Immutable Server Records)
             </h3>
             <span className="text-xs text-slate-400">Total events: {auditEvents.length}</span>
           </div>
 
           {auditEvents.length === 0 ? (
-            <div className="py-12 text-center text-slate-400 text-sm bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800">
+            <div className="py-12 text-center text-slate-400 text-sm bg-white rounded-2xl border border-slate-200">
               No audit events recorded yet for this session.
             </div>
           ) : (
-            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 divide-y divide-slate-100 dark:divide-slate-800">
+            <div className="bg-white rounded-2xl border border-slate-200 divide-y divide-slate-100">
               {auditEvents.map(e => (
                 <div key={e.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                   <div className="space-y-0.5">
                     <div className="flex items-center gap-2">
-                      <span className="px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 font-bold text-[10px]">
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 font-bold text-[10px]">
                         {e.action}
                       </span>
-                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      <span className="font-semibold text-slate-800">
                         {e.resource_type}: {e.resource_id}
                       </span>
                     </div>
@@ -1044,10 +1044,10 @@ export const FrontlineWorkerPortal: React.FC = () => {
       {/* MODAL: COMPLETE VISIT & RECORD BARRIERS */}
       {activeVisitForCompletion && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                <h3 className="font-bold text-base text-slate-900">
                   Complete Visit: {activeVisitForCompletion.patient_name}
                 </h3>
                 <p className="text-xs text-slate-500">Record non-clinical operational barriers identified during visit</p>
@@ -1062,7 +1062,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
 
             <form onSubmit={handleCompleteVisitSubmit} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-2">
+                <label className="block font-semibold text-slate-700 mb-2">
                   Access & Logistics Barriers Encountered
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -1071,8 +1071,8 @@ export const FrontlineWorkerPortal: React.FC = () => {
                       key={b}
                       className={`p-2.5 rounded-xl border flex items-center gap-2 cursor-pointer transition-all ${
                         completionBarriers.includes(b)
-                          ? 'bg-emerald-50 dark:bg-emerald-950/40 border-emerald-400 text-emerald-900 dark:text-emerald-200'
-                          : 'border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400'
+                          ? 'bg-emerald-50 border-emerald-400 text-emerald-900'
+                          : 'border-slate-200 text-slate-600'
                       }`}
                     >
                       <input
@@ -1094,7 +1094,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Doorstep Completion Notes
                 </label>
                 <textarea
@@ -1102,19 +1102,19 @@ export const FrontlineWorkerPortal: React.FC = () => {
                   value={completionNotes}
                   onChange={(e) => setCompletionNotes(e.target.value)}
                   placeholder="Record observations (e.g. Vitals checked, blister packs counted, dietary counseling delivered)..."
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                  className="w-full px-3 py-2.5 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                 />
               </div>
 
-              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 text-[11px] text-slate-500">
+              <div className="p-3 rounded-xl bg-slate-50 text-[11px] text-slate-500">
                 Completing this visit writes an immutable completion audit event with current server timestamp and stores recorded barriers in the database.
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setActiveVisitForCompletion(null)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 text-xs font-semibold"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-semibold"
                 >
                   Cancel
                 </button>
@@ -1134,10 +1134,10 @@ export const FrontlineWorkerPortal: React.FC = () => {
       {/* MODAL: LOG HOUSEHOLD TASK */}
       {isNewTaskModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200 dark:border-slate-800">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
               <div>
-                <h3 className="font-bold text-base text-slate-900 dark:text-white">Log Household Task</h3>
+                <h3 className="font-bold text-base text-slate-900">Log Household Task</h3>
                 <p className="text-xs text-slate-500">Create a real operational task assigned to your worker profile</p>
               </div>
               <button
@@ -1150,7 +1150,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
 
             <form onSubmit={handleCreateTask} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Beneficiary / Patient Name
                 </label>
                 <input
@@ -1158,14 +1158,14 @@ export const FrontlineWorkerPortal: React.FC = () => {
                   placeholder="Enter full name"
                   value={newTaskBeneficiary}
                   onChange={(e) => setNewTaskBeneficiary(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-slate-700 mb-1">
                     Contact Phone
                   </label>
                   <input
@@ -1173,19 +1173,19 @@ export const FrontlineWorkerPortal: React.FC = () => {
                     placeholder="e.g. +91 98123 45678"
                     value={newTaskPhone}
                     onChange={(e) => setNewTaskPhone(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                   />
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-slate-700 mb-1">
                     Village / Area
                   </label>
                   <input
                     type="text"
                     value={newTaskVillage}
                     onChange={(e) => setNewTaskVillage(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                     required
                   />
                 </div>
@@ -1193,13 +1193,13 @@ export const FrontlineWorkerPortal: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-slate-700 mb-1">
                     Task Type
                   </label>
                   <select
                     value={newTaskType}
                     onChange={(e) => setNewTaskType(e.target.value)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                   >
                     <option value="Household Visit">Household Visit</option>
                     <option value="Follow-up Call">Follow-up Call</option>
@@ -1212,13 +1212,13 @@ export const FrontlineWorkerPortal: React.FC = () => {
                 </div>
 
                 <div>
-                  <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                  <label className="block font-semibold text-slate-700 mb-1">
                     Priority
                   </label>
                   <select
                     value={newTaskPriority}
                     onChange={(e) => setNewTaskPriority(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                   >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -1229,7 +1229,7 @@ export const FrontlineWorkerPortal: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Scheduled Due Time
                 </label>
                 <input
@@ -1237,13 +1237,13 @@ export const FrontlineWorkerPortal: React.FC = () => {
                   placeholder="e.g. Tomorrow, 10:30 AM"
                   value={newTaskDue}
                   onChange={(e) => setNewTaskDue(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Notes & Objective
                 </label>
                 <textarea
@@ -1251,15 +1251,15 @@ export const FrontlineWorkerPortal: React.FC = () => {
                   value={newTaskNotes}
                   onChange={(e) => setNewTaskNotes(e.target.value)}
                   placeholder="Specific task checklist or reminders..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-slate-50 text-xs"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setIsNewTaskModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 text-xs font-semibold"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-semibold"
                 >
                   Cancel
                 </button>

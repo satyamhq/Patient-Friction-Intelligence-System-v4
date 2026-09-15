@@ -84,18 +84,18 @@ export const HospitalMap: React.FC<HospitalMapProps> = ({
   };
 
   return (
-    <div className="relative w-full rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-md">
+    <div className="relative w-full rounded-2xl overflow-hidden border border-slate-200 shadow-md">
       {/* Top Floating Controls Bar */}
       <div className="absolute top-3 left-3 right-3 z-[400] flex flex-wrap items-center justify-between gap-2 pointer-events-none">
         {/* Layer Switcher */}
-        <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-1 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 flex items-center gap-1 pointer-events-auto">
+        <div className="bg-white/95 backdrop-blur-md p-1 rounded-xl shadow-md border border-slate-200 flex items-center gap-1 pointer-events-auto">
           <button
             type="button"
             onClick={() => setMapLayer('street')}
             className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
               mapLayer === 'street'
                 ? 'bg-teal-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             🗺️ Street
@@ -106,7 +106,7 @@ export const HospitalMap: React.FC<HospitalMapProps> = ({
             className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
               mapLayer === 'satellite'
                 ? 'bg-teal-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             🛰️ Satellite
@@ -117,7 +117,7 @@ export const HospitalMap: React.FC<HospitalMapProps> = ({
             className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all ${
               mapLayer === 'terrain'
                 ? 'bg-teal-600 text-white shadow-xs'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
+                : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
             ⛰️ Terrain
@@ -137,7 +137,7 @@ export const HospitalMap: React.FC<HospitalMapProps> = ({
             <span>Open Google Maps</span>
           </a>
 
-          <div className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-md border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-300 hidden sm:flex items-center gap-2">
+          <div className="bg-white/95 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-md border border-slate-200 text-xs font-semibold text-slate-700 hidden sm:flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span>Real GPS Active ({hospitals.length} Facilities)</span>
           </div>

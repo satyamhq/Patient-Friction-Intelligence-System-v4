@@ -36,7 +36,12 @@ export const authService = {
   },
 
   getGoogleOAuthRedirectUrl(role: string = 'patient'): string {
-    const base = API_BASE_URL.replace(/\/+$/, '');
+    let base = API_BASE_URL.replace(/\/+$/, '');
+    if (!base.startsWith('http://') && !base.startsWith('https://')) {
+      if (typeof window !== 'undefined' && window.location.hostname.endsWith('onrender.com')) {
+        base = 'https://pfis-patient-friction-intelligence-system.onrender.com/api';
+      }
+    }
     return `${base}/auth/google?role=${encodeURIComponent(role)}`;
   },
 

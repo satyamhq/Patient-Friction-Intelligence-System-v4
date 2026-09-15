@@ -71,25 +71,25 @@ function getEquipmentBadge(status: string): { label: string; icon: React.ReactNo
       return {
         label: 'Equipment Functional',
         icon: <CheckCircle2 className="w-3 h-3" />,
-        className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300',
+        className: 'bg-emerald-100 text-emerald-800',
       };
     case 'UNDER_MAINTENANCE':
       return {
         label: 'Under Maintenance',
         icon: <Wrench className="w-3 h-3" />,
-        className: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
+        className: 'bg-amber-100 text-amber-800',
       };
     case 'OUT_OF_SERVICE':
       return {
         label: 'Currently unavailable',
         icon: <XCircle className="w-3 h-3" />,
-        className: 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300',
+        className: 'bg-rose-100 text-rose-800',
       };
     default:
       return {
         label: 'Equipment status unavailable',
         icon: <HelpCircle className="w-3 h-3" />,
-        className: 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400',
+        className: 'bg-slate-100 text-slate-500',
       };
   }
 }
@@ -101,19 +101,19 @@ function getVerificationBadge(status: string): { label: string; icon: React.Reac
       return {
         label: 'Verified',
         icon: <ShieldCheck className="w-3 h-3" />,
-        className: 'text-emerald-700 dark:text-emerald-400',
+        className: 'text-emerald-700',
       };
     case 'PENDING_VERIFICATION':
       return {
         label: 'Pending Verification',
         icon: <ShieldAlert className="w-3 h-3" />,
-        className: 'text-amber-600 dark:text-amber-400',
+        className: 'text-amber-600',
       };
     case 'UNVERIFIED':
       return {
         label: 'Unverified',
         icon: <ShieldQuestion className="w-3 h-3" />,
-        className: 'text-slate-500 dark:text-slate-400',
+        className: 'text-slate-500',
       };
     default:
       return {
@@ -128,17 +128,17 @@ function getVerificationBadge(status: string): { label: string; icon: React.Reac
 function getBookingStatusBadge(status: string): { label: string; className: string } {
   switch (status) {
     case 'SUBMITTED':
-      return { label: 'Submitted', className: 'bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300' };
+      return { label: 'Submitted', className: 'bg-blue-100 text-blue-800' };
     case 'ACCEPTED':
-      return { label: 'Accepted', className: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300' };
+      return { label: 'Accepted', className: 'bg-emerald-100 text-emerald-800' };
     case 'SCHEDULED':
-      return { label: 'Scheduled', className: 'bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300' };
+      return { label: 'Scheduled', className: 'bg-violet-100 text-violet-800' };
     case 'COMPLETED':
-      return { label: 'Completed', className: 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300' };
+      return { label: 'Completed', className: 'bg-green-100 text-green-800' };
     case 'CANCELLED':
-      return { label: 'Cancelled', className: 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400' };
+      return { label: 'Cancelled', className: 'bg-slate-100 text-slate-500' };
     case 'REJECTED':
-      return { label: 'Rejected', className: 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300' };
+      return { label: 'Rejected', className: 'bg-rose-100 text-rose-800' };
     default:
       return { label: status || 'Unknown', className: 'bg-slate-100 text-slate-500' };
   }
@@ -298,7 +298,7 @@ export const DiagnosticsPage: React.FC = () => {
       </div>
 
       {/* Search & Category Filter Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm">
         <div className="relative w-full sm:w-80 flex gap-2">
           <div className="relative flex-1">
             <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -308,7 +308,7 @@ export const DiagnosticsPage: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-              className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs focus:outline-none focus:ring-2 focus:ring-violet-500/20"
+              className="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-violet-500/20"
             />
           </div>
           <button
@@ -327,7 +327,7 @@ export const DiagnosticsPage: React.FC = () => {
               className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
                 selectedCategory === cat
                   ? 'bg-violet-600 text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:text-slate-900'
+                  : 'bg-slate-100 text-slate-600 hover:text-slate-900'
               }`}
             >
               {cat}
@@ -339,19 +339,19 @@ export const DiagnosticsPage: React.FC = () => {
       {/* Summary Stats */}
       {!isLoading && services.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-3 text-center">
-            <div className="text-2xl font-extrabold text-slate-800 dark:text-white">{services.length}</div>
+          <div className="bg-white rounded-xl border border-slate-200 p-3 text-center">
+            <div className="text-2xl font-extrabold text-slate-800">{services.length}</div>
             <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Total Services</div>
           </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-3 text-center">
+          <div className="bg-white rounded-xl border border-slate-200 p-3 text-center">
             <div className="text-2xl font-extrabold text-emerald-600">{services.filter(s => s.equipment_status === 'FUNCTIONAL').length}</div>
             <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Functional</div>
           </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-3 text-center">
+          <div className="bg-white rounded-xl border border-slate-200 p-3 text-center">
             <div className="text-2xl font-extrabold text-amber-600">{services.filter(s => s.equipment_status === 'UNDER_MAINTENANCE' || s.equipment_status === 'OUT_OF_SERVICE').length}</div>
             <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Down / Maintenance</div>
           </div>
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-3 text-center">
+          <div className="bg-white rounded-xl border border-slate-200 p-3 text-center">
             <div className="text-2xl font-extrabold text-slate-500">{services.filter(s => s.equipment_status === 'UNKNOWN').length}</div>
             <div className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Unknown Status</div>
           </div>
@@ -366,9 +366,9 @@ export const DiagnosticsPage: React.FC = () => {
             Loading diagnostic services from database...
           </div>
         ) : fetchError ? (
-          <div className="col-span-full text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-rose-300 dark:border-rose-900/50 p-6 space-y-3">
+          <div className="col-span-full text-center py-16 bg-white rounded-2xl border border-dashed border-rose-300 p-6 space-y-3">
             <AlertTriangle className="w-8 h-8 mx-auto text-rose-500" />
-            <p className="text-rose-600 dark:text-rose-400 font-bold text-sm">{fetchError}</p>
+            <p className="text-rose-600 font-bold text-sm">{fetchError}</p>
             <p className="text-slate-400 text-xs">Please check your connection or try again.</p>
             <button
               onClick={fetchServices}
@@ -378,9 +378,9 @@ export const DiagnosticsPage: React.FC = () => {
             </button>
           </div>
         ) : services.length === 0 ? (
-          <div className="col-span-full text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-800 space-y-2">
+          <div className="col-span-full text-center py-16 bg-white rounded-2xl border border-dashed border-slate-300 space-y-2">
             <Info className="w-8 h-8 mx-auto text-slate-300" />
-            <p className="text-slate-500 dark:text-slate-400 text-sm font-semibold">
+            <p className="text-slate-500 text-sm font-semibold">
               {searchQuery || selectedCategory !== 'All'
                 ? 'No matching diagnostic service found.'
                 : 'No verified diagnostic services found.'}
@@ -398,18 +398,18 @@ export const DiagnosticsPage: React.FC = () => {
             return (
               <div
                 key={s.id}
-                className={`bg-white dark:bg-slate-900 rounded-2xl border p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 ${
+                className={`bg-white rounded-2xl border p-5 shadow-xs hover:shadow-md transition-all flex flex-col justify-between space-y-4 ${
                   s.equipment_status === 'OUT_OF_SERVICE'
-                    ? 'border-rose-200 dark:border-rose-900/50 opacity-75'
+                    ? 'border-rose-200 opacity-75'
                     : s.equipment_status === 'UNKNOWN'
-                    ? 'border-slate-300 dark:border-slate-700'
-                    : 'border-slate-200 dark:border-slate-800 hover:border-violet-300'
+                    ? 'border-slate-300'
+                    : 'border-slate-200 hover:border-violet-300'
                 }`}
               >
                 <div>
                   {/* Top row: Category + Equipment Status */}
                   <div className="flex items-center justify-between mb-2 gap-2">
-                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-violet-100 text-violet-800 dark:bg-violet-950/60 dark:text-violet-300 shrink-0">
+                    <span className="text-[11px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-violet-100 text-violet-800 shrink-0">
                       {s.category}
                     </span>
                     <span
@@ -421,7 +421,7 @@ export const DiagnosticsPage: React.FC = () => {
                   </div>
 
                   {/* Service name */}
-                  <h3 className="font-bold text-base text-slate-900 dark:text-white leading-snug">
+                  <h3 className="font-bold text-base text-slate-900 leading-snug">
                     {s.service_name}
                   </h3>
 
@@ -432,11 +432,11 @@ export const DiagnosticsPage: React.FC = () => {
 
                   {/* Details */}
                   <div className="mt-3 space-y-1.5 text-xs text-slate-500">
-                    <p className="flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
+                    <p className="flex items-center gap-1.5 font-medium text-slate-700">
                       <Building2 className="w-3.5 h-3.5 text-violet-500 shrink-0" />
                       <span className="truncate">{s.facility_name}</span>
                     </p>
-                    <p className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                    <p className="flex items-center gap-1.5 text-slate-500">
                       <span className="text-[10px] font-semibold uppercase text-slate-400 w-12 shrink-0">Tier</span>
                       <span className="truncate">{s.facility_tier}</span>
                     </p>
@@ -484,7 +484,7 @@ export const DiagnosticsPage: React.FC = () => {
                 </div>
 
                 {/* Footer: Fee + Book action */}
-                <div className="pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
                   <div>
                     <span className="text-[10px] text-slate-400 uppercase font-bold block">Fee</span>
                     <strong className={`text-sm ${feeDisplay.className}`}>
@@ -513,8 +513,8 @@ export const DiagnosticsPage: React.FC = () => {
 
       {/* My Diagnostic Bookings */}
       {bookings.length > 0 && (
-        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-4">
-          <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
+          <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
             <FileCheck className="w-5 h-5 text-violet-600" />
             <span>My Diagnostic Booking Requests</span>
           </h3>
@@ -527,17 +527,17 @@ export const DiagnosticsPage: React.FC = () => {
               return (
                 <div
                   key={b.id}
-                  className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 space-y-2 text-xs"
+                  className="p-4 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2 text-xs"
                 >
                   <div className="flex items-center justify-between">
-                    <span className="font-mono font-bold text-violet-700 dark:text-violet-400">
+                    <span className="font-mono font-bold text-violet-700">
                       {b.booking_number}
                     </span>
                     <span className={`px-2 py-0.5 rounded-full font-semibold text-[10px] ${statusBadge.className}`}>
                       {statusBadge.label}
                     </span>
                   </div>
-                  <h4 className="font-bold text-sm text-slate-900 dark:text-white">{b.service_name}</h4>
+                  <h4 className="font-bold text-sm text-slate-900">{b.service_name}</h4>
                   <p className="text-slate-500">{b.facility_name}</p>
                   <p className="text-slate-400 text-[11px]">
                     Requested: {b.requested_date}
@@ -552,7 +552,7 @@ export const DiagnosticsPage: React.FC = () => {
                   {canCancel && (
                     <button
                       onClick={() => handleCancelBooking(b.id)}
-                      className="mt-1 px-3 py-1 rounded-lg border border-rose-200 dark:border-rose-800 text-rose-600 text-[11px] font-semibold hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-all cursor-pointer"
+                      className="mt-1 px-3 py-1 rounded-lg border border-rose-200 text-rose-600 text-[11px] font-semibold hover:bg-rose-50 transition-all cursor-pointer"
                     >
                       Cancel Request
                     </button>
@@ -567,22 +567,22 @@ export const DiagnosticsPage: React.FC = () => {
       {/* Booking Request Modal */}
       {selectedService && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-md p-6 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-              <h3 className="font-bold text-slate-900 dark:text-white text-base">
+          <div className="bg-white rounded-3xl border border-slate-200 w-full max-w-md p-6 shadow-2xl space-y-5">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <h3 className="font-bold text-slate-900 text-base">
                 Request Diagnostic Booking
               </h3>
               <button
                 onClick={() => setSelectedService(null)}
-                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer"
+                className="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition-all cursor-pointer"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
             {/* Selected service info */}
-            <div className="p-3.5 rounded-xl bg-violet-50 dark:bg-violet-950/30 border border-violet-100 dark:border-violet-900 text-xs space-y-1.5">
-              <p className="font-bold text-slate-900 dark:text-white">{selectedService.service_name}</p>
+            <div className="p-3.5 rounded-xl bg-violet-50 border border-violet-100 text-xs space-y-1.5">
+              <p className="font-bold text-slate-900">{selectedService.service_name}</p>
               <p className="text-slate-500">{selectedService.facility_name}</p>
               <p className={feeDisplay(selectedService).className}>
                 {getFeeDisplay(selectedService).label}
@@ -590,27 +590,27 @@ export const DiagnosticsPage: React.FC = () => {
 
               {/* Warnings for unverified/unknown services */}
               {selectedService.verification_status !== 'VERIFIED' && (
-                <div className="flex items-start gap-1.5 mt-2 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+                <div className="flex items-start gap-1.5 mt-2 p-2 rounded-lg bg-amber-50 border border-amber-200">
                   <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-amber-700 dark:text-amber-300">
+                  <p className="text-[11px] text-amber-700">
                     This service has not been independently verified. Availability at the facility is not guaranteed.
                     Please confirm with the facility before traveling.
                   </p>
                 </div>
               )}
               {selectedService.equipment_status === 'UNDER_MAINTENANCE' && (
-                <div className="flex items-start gap-1.5 mt-2 p-2 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+                <div className="flex items-start gap-1.5 mt-2 p-2 rounded-lg bg-amber-50 border border-amber-200">
                   <Wrench className="w-3.5 h-3.5 text-amber-500 shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-amber-700 dark:text-amber-300">
+                  <p className="text-[11px] text-amber-700">
                     Equipment is currently reported as under maintenance. Your request will be queued and the facility
                     will contact you when the service resumes.
                   </p>
                 </div>
               )}
               {selectedService.equipment_status === 'UNKNOWN' && (
-                <div className="flex items-start gap-1.5 mt-2 p-2 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+                <div className="flex items-start gap-1.5 mt-2 p-2 rounded-lg bg-slate-100 border border-slate-200">
                   <HelpCircle className="w-3.5 h-3.5 text-slate-400 shrink-0 mt-0.5" />
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="text-[11px] text-slate-500">
                     Equipment status is currently unknown. Your request will be forwarded to the facility
                     for confirmation.
                   </p>
@@ -620,7 +620,7 @@ export const DiagnosticsPage: React.FC = () => {
 
             <form onSubmit={handleBookService} className="space-y-4 text-xs">
               <div>
-                <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                <label className="block font-semibold text-slate-600 mb-1">
                   Preferred Date <span className="text-rose-500">*</span>
                 </label>
                 <input
@@ -628,25 +628,25 @@ export const DiagnosticsPage: React.FC = () => {
                   value={requestedDate}
                   onChange={(e) => setRequestedDate(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                <label className="block font-semibold text-slate-600 mb-1">
                   Preferred Time (Optional)
                 </label>
                 <input
                   type="time"
                   value={requestedTime}
                   onChange={(e) => setRequestedTime(e.target.value)}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-600 dark:text-slate-400 mb-1">
+                <label className="block font-semibold text-slate-600 mb-1">
                   Accessibility or Special Needs (Optional)
                 </label>
                 <textarea
@@ -654,15 +654,15 @@ export const DiagnosticsPage: React.FC = () => {
                   onChange={(e) => setAccessibilityNotes(e.target.value)}
                   placeholder="e.g., wheelchair required, translator needed, caregiver accompanying..."
                   rows={2}
-                  className="w-full px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-sm resize-none"
+                  className="w-full px-3 py-2 rounded-lg border border-slate-200 bg-slate-50 text-sm resize-none"
                 />
               </div>
 
-              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex justify-end gap-3 pt-3 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setSelectedService(null)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 text-xs font-semibold cursor-pointer"
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-slate-600 text-xs font-semibold cursor-pointer"
                 >
                   Cancel
                 </button>

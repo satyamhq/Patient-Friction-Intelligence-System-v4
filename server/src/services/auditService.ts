@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import { AuditLog } from '../models/AuditLog.js';
 import { Request } from 'express';
 
@@ -8,7 +7,7 @@ export class AuditService {
     resource: string,
     req?: Request,
     options?: {
-      userId?: string | Types.ObjectId;
+      userId?: string | any;
       actorRole?: string;
       resourceId?: string;
       details?: Record<string, any>;

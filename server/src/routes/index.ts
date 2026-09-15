@@ -17,6 +17,7 @@ import governmentRoutes from './governmentRoutes.js';
 import queueRoutes from './queueRoutes.js';
 import frictionReportRoutes from './frictionReportRoutes.js';
 import digitalTwinRoutes from './digitalTwinRoutes.js';
+import aiRoutes from './aiRoutes.js';
 
 const router = Router();
 
@@ -39,5 +40,6 @@ router.use('/government', governmentRoutes);
 router.use('/queue', queueRoutes);
 router.use('/friction-reports', frictionReportRoutes);
 router.use('/digital-twin', digitalTwinRoutes);
+router.use('/ai', aiRoutes);
 
 export default router;

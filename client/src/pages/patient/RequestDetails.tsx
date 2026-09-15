@@ -143,16 +143,16 @@ export const RequestDetails: React.FC = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {/* Ambulance Card */}
               {request.needsAmbulance && (
-                <div className="p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 space-y-2 text-xs">
+                <div className="p-4 rounded-2xl bg-rose-50 border border-rose-200 space-y-2 text-xs">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-rose-900 dark:text-rose-200 flex items-center gap-1.5 text-xs">
+                    <span className="font-bold text-rose-900 flex items-center gap-1.5 text-xs">
                       <span className="text-base">🚑</span> Hospital Ambulance
                     </span>
-                    <span className="text-[10px] font-bold bg-rose-200 dark:bg-rose-900 text-rose-900 dark:text-rose-100 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold bg-rose-200 text-rose-900 px-2 py-0.5 rounded-full">
                       {request.ambulanceBooking?.status || 'DISPATCHED'}
                     </span>
                   </div>
-                  <div className="space-y-1 text-[11px] text-slate-700 dark:text-slate-300">
+                  <div className="space-y-1 text-[11px] text-slate-700">
                     <p><strong>Vehicle:</strong> {request.ambulanceBooking?.vehicleNumber || 'PB-08-AM-1082'}</p>
                     <p><strong>Driver:</strong> {request.ambulanceBooking?.driverName || 'Gurmeet Singh'} ({request.ambulanceBooking?.driverPhone || '+91 98140 12345'})</p>
                     <p><strong>Estimated Arrival:</strong> ~{request.ambulanceBooking?.estimatedArrivalMinutes || 18} mins at home</p>
@@ -163,20 +163,20 @@ export const RequestDetails: React.FC = () => {
 
               {/* Doorstep Care Escort Card */}
               {request.needsCareEscort && (
-                <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 space-y-2 text-xs">
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 space-y-2 text-xs">
                   <div className="flex items-center justify-between">
-                    <span className="font-bold text-emerald-900 dark:text-emerald-200 flex items-center gap-1.5 text-xs">
+                    <span className="font-bold text-emerald-900 flex items-center gap-1.5 text-xs">
                       <span className="text-base">🤝</span> Doorstep Care Escort
                     </span>
-                    <span className="text-[10px] font-bold bg-emerald-200 dark:bg-emerald-900 text-emerald-900 dark:text-emerald-100 px-2 py-0.5 rounded-full">
+                    <span className="text-[10px] font-bold bg-emerald-200 text-emerald-900 px-2 py-0.5 rounded-full">
                       {request.careEscortBooking?.status || 'ASSIGNED'}
                     </span>
                   </div>
-                  <div className="space-y-1 text-[11px] text-slate-700 dark:text-slate-300">
+                  <div className="space-y-1 text-[11px] text-slate-700">
                     <p><strong>Care Sahayak:</strong> {request.careEscortBooking?.escortName || 'Smt. Sunita Sharma'}</p>
                     <p><strong>Role:</strong> {request.careEscortBooking?.escortRole || 'Hospital Doorstep Care Attendant'}</p>
                     <p><strong>Phone:</strong> {request.careEscortBooking?.escortPhone || '+91 98765 88990'}</p>
-                    <p className="text-[10px] text-emerald-800 dark:text-emerald-300 font-medium">
+                    <p className="text-[10px] text-emerald-800 font-medium">
                       ✓ Will escort you through doctor checkup & safely drop you back home.
                     </p>
                   </div>

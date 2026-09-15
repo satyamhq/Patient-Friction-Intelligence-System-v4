@@ -30,18 +30,21 @@ export const HospitalDashboard: React.FC = () => {
   useEffect(() => {
     const loadDashboard = async () => {
       try {
-        const hRes = await hospitalService.getMyProfile().catch(() => null);
-        if (hRes?.success && hRes.hospital) {
-          setHospital(hRes.hospital);
-          setDepartments(hRes.departments || []);
+        const [hRes, rRes] = await Promise.allSettled([
+          hospitalService.getMyProfile(),
+          requestService.getHospitalRequests(),
+        ]);
+
+        if (hRes.status === 'fulfilled' && hRes.value?.success && hRes.value.hospital) {
+          setHospital(hRes.value.hospital);
+          setDepartments(hRes.value.departments || []);
           setError(null);
-        } else {
+        } else if (hRes.status === 'rejected' || !hRes.value?.success) {
           setError('Could not load hospital profile. Please ensure your account is linked to a facility.');
         }
 
-        const rRes = await requestService.getHospitalRequests().catch(() => null);
-        if (rRes?.success) {
-          setRequests(rRes.requests || []);
+        if (rRes.status === 'fulfilled' && rRes.value?.success) {
+          setRequests(rRes.value.requests || []);
         }
       } catch (e) {
         console.error(e);
@@ -151,10 +154,10 @@ export const HospitalDashboard: React.FC = () => {
       </div>
 
       {/* Live Capacity & Operational Resource Tracker */}
-      <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700 p-6 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-700 pb-3">
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Building2 className="w-5 h-5 text-indigo-600" />
               Real-time Facility Bed & Resource Capacity
             </h3>
@@ -168,58 +171,58 @@ export const HospitalDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">General Beds</span>
-            <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">94<span className="text-xs text-slate-400 font-normal">/120</span></p>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+            <p className="text-2xl font-black text-slate-900 mt-1">94<span className="text-xs text-slate-400 font-normal">/120</span></p>
+            <div className="w-full bg-slate-200 h-1.5 rounded-full mt-2 overflow-hidden">
               <div className="bg-indigo-600 h-1.5 rounded-full w-[78%]" />
             </div>
             <span className="text-[10px] text-slate-500 mt-1 block">78% Occupancy</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">ICU Beds</span>
-            <p className="text-2xl font-black text-amber-600 dark:text-amber-400 mt-1">19<span className="text-xs text-slate-400 font-normal">/22</span></p>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+            <p className="text-2xl font-black text-amber-600 mt-1">19<span className="text-xs text-slate-400 font-normal">/22</span></p>
+            <div className="w-full bg-slate-200 h-1.5 rounded-full mt-2 overflow-hidden">
               <div className="bg-amber-500 h-1.5 rounded-full w-[86%]" />
             </div>
             <span className="text-[10px] text-amber-600 font-bold mt-1 block">3 Available</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Emergency Units</span>
-            <p className="text-2xl font-black text-rose-600 dark:text-rose-400 mt-1">11<span className="text-xs text-slate-400 font-normal">/15</span></p>
-            <div className="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+            <p className="text-2xl font-black text-rose-600 mt-1">11<span className="text-xs text-slate-400 font-normal">/15</span></p>
+            <div className="w-full bg-slate-200 h-1.5 rounded-full mt-2 overflow-hidden">
               <div className="bg-rose-500 h-1.5 rounded-full w-[73%]" />
             </div>
             <span className="text-[10px] text-slate-500 mt-1 block">4 Bays Open</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Doctors on Duty</span>
-            <p className="text-2xl font-black text-teal-600 dark:text-teal-400 mt-1">26</p>
+            <p className="text-2xl font-black text-teal-600 mt-1">26</p>
             <span className="text-[10px] text-teal-700 font-semibold mt-2 block">Across 8 OPDs</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Nurses on Duty</span>
-            <p className="text-2xl font-black text-blue-600 dark:text-blue-400 mt-1">48</p>
+            <p className="text-2xl font-black text-blue-600 mt-1">48</p>
             <span className="text-[10px] text-slate-500 mt-2 block">1:4 Patient Ratio</span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-slate-700 text-center">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 text-center">
             <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">CT / MRI Scanner</span>
-            <p className="text-lg font-black text-emerald-600 dark:text-emerald-400 mt-2">100%</p>
+            <p className="text-lg font-black text-emerald-600 mt-2">100%</p>
             <span className="text-[10px] text-emerald-700 font-bold block mt-1">Operational</span>
           </div>
         </div>
       </div>
 
       {/* Patient Flow Stage Friction Funnel */}
-      <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200/80 dark:border-slate-700 p-6 shadow-sm space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-700 pb-3">
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-sm space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
               <Layers className="w-5 h-5 text-indigo-600" />
               Patient Flow Stage Friction Funnel
             </h3>
@@ -231,39 +234,39 @@ export const HospitalDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-6 gap-2.5 text-center text-xs">
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/70 dark:border-slate-700 space-y-1">
+          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase">1. Registration</span>
-            <p className="text-base font-black text-slate-800 dark:text-slate-100">~12 min</p>
+            <p className="text-base font-black text-slate-800">~12 min</p>
             <span className="text-[10px] text-emerald-600 font-semibold block">Normal Flow</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/70 dark:border-slate-700 space-y-1">
+          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase">2. Triage Desk</span>
-            <p className="text-base font-black text-slate-800 dark:text-slate-100">~7 min</p>
+            <p className="text-base font-black text-slate-800">~7 min</p>
             <span className="text-[10px] text-emerald-600 font-semibold block">Fast Transit</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/70 dark:border-slate-700 space-y-1">
+          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase">3. OPD Doctor</span>
-            <p className="text-base font-black text-amber-600 dark:text-amber-400">~18 min</p>
+            <p className="text-base font-black text-amber-600">~18 min</p>
             <span className="text-[10px] text-amber-600 font-semibold block">Mild Queue</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 space-y-1">
+          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 space-y-1">
             <span className="text-[10px] font-bold text-rose-700 uppercase">4. Diagnostics</span>
             <p className="text-base font-black text-rose-700">~38 min</p>
             <span className="text-[10px] text-rose-700 font-bold block">⚠️ High Delay</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/70 dark:border-slate-700 space-y-1">
+          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase">5. Pharmacy</span>
-            <p className="text-base font-black text-slate-800 dark:text-slate-100">~9 min</p>
+            <p className="text-base font-black text-slate-800">~9 min</p>
             <span className="text-[10px] text-emerald-600 font-semibold block">Formulary Ready</span>
           </div>
 
-          <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200/70 dark:border-slate-700 space-y-1">
+          <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 space-y-1">
             <span className="text-[10px] font-bold text-slate-400 uppercase">6. Discharge</span>
-            <p className="text-base font-black text-slate-800 dark:text-slate-100">~5 min</p>
+            <p className="text-base font-black text-slate-800">~5 min</p>
             <span className="text-[10px] text-emerald-600 font-semibold block">Digital e-Rx</span>
           </div>
         </div>

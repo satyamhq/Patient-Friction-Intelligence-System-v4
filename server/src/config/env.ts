@@ -24,9 +24,36 @@ const sanitizeEnv = (val?: string): string => {
   return cleaned;
 };
 
+const nodeEnv = sanitizeEnv(process.env.NODE_ENV) || 'development';
+const isProd = nodeEnv === 'production' || !!process.env.RENDER;
+
 const rawPort = sanitizeEnv(process.env.PORT) || '5000';
-const rawClientUrl = sanitizeEnv(process.env.CLIENT_URL) || 'http://localhost:5173';
-const rawServerUrl = sanitizeEnv(process.env.SERVER_URL) || `http://localhost:${rawPort}`;
+
+const defaultClientUrl = isProd
+  ? 'https://pfis-patient-friction-intelligence.onrender.com'
+  : 'http://localhost:5173';
+
+const defaultServerUrl = isProd
+  ? 'https://pfis-patient-friction-intelligence-system.onrender.com'
+  : `http://localhost:${rawPort}`;
+
+let rawClientUrl = sanitizeEnv(process.env.CLIENT_URL) || defaultClientUrl;
+if (isProd && (rawClientUrl.includes('localhost') || rawClientUrl.includes('127.0.0.1'))) {
+  console.warn('[PFIS Config Warning] CLIENT_URL configured with localhost in production environment. Overriding with production frontend domain.');
+  rawClientUrl = 'https://pfis-patient-friction-intelligence.onrender.com';
+}
+
+let rawServerUrl = sanitizeEnv(process.env.SERVER_URL) || defaultServerUrl;
+if (isProd && (rawServerUrl.includes('localhost') || rawServerUrl.includes('127.0.0.1'))) {
+  console.warn('[PFIS Config Warning] SERVER_URL configured with localhost in production environment. Overriding with production backend domain.');
+  rawServerUrl = 'https://pfis-patient-friction-intelligence-system.onrender.com';
+}
+
+let rawCallbackUrl = sanitizeEnv(process.env.GOOGLE_CALLBACK_URL) || `${rawServerUrl.replace(/\/+$/, '')}/api/auth/google/callback`;
+if (isProd && (rawCallbackUrl.includes('localhost') || rawCallbackUrl.includes('127.0.0.1'))) {
+  console.warn('[PFIS Config Warning] GOOGLE_CALLBACK_URL configured with localhost in production environment. Overriding with production callback domain.');
+  rawCallbackUrl = 'https://pfis-patient-friction-intelligence-system.onrender.com/api/auth/google/callback';
+}
 
 export const config = {
   port: parseInt(rawPort, 10),
@@ -49,12 +76,10 @@ export const config = {
   googleClientId: sanitizeEnv(process.env.GOOGLE_CLIENT_ID),
   clientUrl: rawClientUrl.replace(/\/+$/, ''),
   serverUrl: rawServerUrl.replace(/\/+$/, ''),
-  googleCallbackUrl: (
-    sanitizeEnv(process.env.GOOGLE_CALLBACK_URL) ||
-    `${rawServerUrl.replace(/\/+$/, '')}/api/auth/google/callback`
-  ).replace(/\/+$/, ''),
-  nodeEnv: sanitizeEnv(process.env.NODE_ENV) || 'development',
+  googleCallbackUrl: rawCallbackUrl.replace(/\/+$/, ''),
+  nodeEnv,
   maxFileSizeMb: parseInt(sanitizeEnv(process.env.MAX_FILE_SIZE_MB) || '10', 10),
+  geminiApiKey: sanitizeEnv(process.env.GEMINI_API_KEY),
 };
 
 /**

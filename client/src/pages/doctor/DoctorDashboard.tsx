@@ -71,10 +71,10 @@ export const DoctorDashboard: React.FC = () => {
       </div>
 
       {/* Live OPD Calling Widget & Consultation Launcher */}
-      <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-700">
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
           <div>
-            <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
               <Activity className="w-5 h-5 text-teal-600" />
               Live OPD Queue Desk & Patient Caller
             </h3>
@@ -92,10 +92,10 @@ export const DoctorDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 rounded-2xl bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-900 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-between">
             <div>
               <span className="text-[10px] font-bold text-teal-700 uppercase tracking-wider">Now In Consultation</span>
-              <p className="text-xl font-black text-slate-900 dark:text-white mt-0.5">Token #104: Sunita Devi</p>
+              <p className="text-xl font-black text-slate-900 mt-0.5">Token #104: Sunita Devi</p>
               <span className="text-xs text-slate-500">Hypertension Follow-up • Gate #3</span>
             </div>
             <Link
@@ -106,29 +106,29 @@ export const DoctorDashboard: React.FC = () => {
             </Link>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
             <div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Next in Queue</span>
-              <p className="text-xl font-black text-slate-900 dark:text-white mt-0.5">Token #105: Harpreet Singh</p>
+              <p className="text-xl font-black text-slate-900 mt-0.5">Token #105: Harpreet Singh</p>
               <span className="text-xs text-slate-500">Cardiology Referral Check</span>
             </div>
             <Link
               to="/doctor/consultation?patient=Harpreet%20Singh&token=105"
-              className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-lg"
+              className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg"
             >
               Call Next
             </Link>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
             <div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Queue Metrics</span>
-              <p className="text-xl font-black text-slate-900 dark:text-white mt-0.5">6 Waiting • ~14m Avg</p>
+              <p className="text-xl font-black text-slate-900 mt-0.5">6 Waiting • ~14m Avg</p>
               <span className="text-xs text-emerald-600 font-medium">On Schedule</span>
             </div>
             <Link
               to="/doctor/patients"
-              className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-300 text-slate-700 dark:text-slate-200 text-xs font-bold rounded-lg"
+              className="px-3 py-1.5 bg-white border border-slate-300 text-slate-700 text-xs font-bold rounded-lg"
             >
               View Roster
             </Link>
@@ -137,9 +137,9 @@ export const DoctorDashboard: React.FC = () => {
       </div>
 
       {/* Proactive Clinical Alerts */}
-      <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 p-6 shadow-sm space-y-4">
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+          <h3 className="font-bold text-base text-slate-900 flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-amber-500" />
             Smart Clinical & Follow-up Alerts
           </h3>
@@ -149,43 +149,43 @@ export const DoctorDashboard: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3.5">
-          <div className="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 space-y-2">
+          <div className="p-4 rounded-2xl bg-amber-50/70 border border-amber-200 space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <strong className="font-bold text-amber-900 dark:text-amber-200">Sunita Devi</strong>
+              <strong className="font-bold text-amber-900">Sunita Devi</strong>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-200 text-amber-900">MISSED VISIT</span>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-300">
+            <p className="text-xs text-slate-600">
               Missed 2 consecutive follow-up visits for chronic hypertension monitoring.
             </p>
-            <div className="pt-1 text-[11px] text-amber-800 dark:text-amber-300 font-medium flex items-center justify-between">
+            <div className="pt-1 text-[11px] text-amber-800 font-medium flex items-center justify-between">
               <span>Action: ASHA visit dispatched</span>
               <Link to="/patient/teleconsult" className="font-bold underline">Teleconsult</Link>
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-rose-50/70 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/50 space-y-2">
+          <div className="p-4 rounded-2xl bg-rose-50/70 border border-rose-200 space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <strong className="font-bold text-rose-900 dark:text-rose-200">Amrik Chand</strong>
+              <strong className="font-bold text-rose-900">Amrik Chand</strong>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-rose-200 text-rose-900">CRITICAL LAB</span>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-300">
+            <p className="text-xs text-slate-600">
               HbA1c level of 10.4% received from diagnostic lab. Urgent glycemic review recommended.
             </p>
-            <div className="pt-1 text-[11px] text-rose-800 dark:text-rose-300 font-medium flex items-center justify-between">
+            <div className="pt-1 text-[11px] text-rose-800 font-medium flex items-center justify-between">
               <span>Status: Needs Dose Adjustment</span>
               <Link to="/doctor/consultation?patient=Amrik%20Chand" className="font-bold underline">Review</Link>
             </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-900/50 space-y-2">
+          <div className="p-4 rounded-2xl bg-blue-50/70 border border-blue-200 space-y-2">
             <div className="flex items-center justify-between text-xs">
-              <strong className="font-bold text-blue-900 dark:text-blue-200">Harpreet Singh</strong>
+              <strong className="font-bold text-blue-900">Harpreet Singh</strong>
               <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-200 text-blue-900">REFERRAL OVERDUE</span>
             </div>
-            <p className="text-xs text-slate-600 dark:text-slate-300">
+            <p className="text-xs text-slate-600">
               Cardiology referral to District Civil Hospital pending acceptance for 5 days.
             </p>
-            <div className="pt-1 text-[11px] text-blue-800 dark:text-blue-300 font-medium flex items-center justify-between">
+            <div className="pt-1 text-[11px] text-blue-800 font-medium flex items-center justify-between">
               <span>Contact: Nodal Liaison Officer</span>
               <Link to="/patient/referrals" className="font-bold underline">Track</Link>
             </div>

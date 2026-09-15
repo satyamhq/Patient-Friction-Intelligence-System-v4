@@ -18,4 +18,5 @@ server/.env.local
 uploads/*
 !uploads/.gitkeep
 data/
+scratch/
 

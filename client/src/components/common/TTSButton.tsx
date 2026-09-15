@@ -48,7 +48,7 @@ export const TTSButton: React.FC<TTSButtonProps> = ({
       className={`inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all ${
         isPlayingLocal && isSpeaking
           ? 'bg-teal-500 text-white shadow-sm ring-2 ring-teal-300 animate-pulse'
-          : 'bg-teal-50 text-teal-700 hover:bg-teal-100 dark:bg-teal-950/40 dark:text-teal-300 dark:hover:bg-teal-900/50'
+          : 'bg-teal-50 text-teal-700 hover:bg-teal-100'
       } ${className}`}
       title={isPlayingLocal && isSpeaking ? t('common.stop', 'Stop') : t('common.listen', 'Listen')}
     >

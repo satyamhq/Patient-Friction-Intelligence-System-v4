@@ -198,15 +198,15 @@ export const HospitalDepartments: React.FC = () => {
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-card">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-card">
         <div>
           <div className="flex items-center gap-2">
             <Layers className="w-6 h-6 text-brand-500" />
-            <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
               Hospital Clinical Departments & Doctor Roster
             </h2>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Configure your real doctors on duty, clinical specializations, operating schedules & live token seat allocations
           </p>
         </div>
@@ -223,9 +223,9 @@ export const HospitalDepartments: React.FC = () => {
 
       {/* Department Cards Grid */}
       {departments.length === 0 ? (
-        <div className="p-12 text-center bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-card space-y-3">
+        <div className="p-12 text-center bg-white rounded-2xl border border-slate-200/80 shadow-card space-y-3">
           <Stethoscope className="w-12 h-12 text-slate-300 mx-auto" />
-          <h3 className="font-bold text-slate-700 dark:text-slate-300 text-base">
+          <h3 className="font-bold text-slate-700 text-base">
             No Doctors or Clinical Departments Configured
           </h3>
           <p className="text-xs text-slate-500 max-w-md mx-auto">
@@ -250,42 +250,42 @@ export const HospitalDepartments: React.FC = () => {
             return (
               <div
                 key={did}
-                className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-5 shadow-card space-y-4 flex flex-col justify-between"
+                className="bg-white rounded-2xl border border-slate-200/80 p-5 shadow-card space-y-4 flex flex-col justify-between"
               >
                 <div className="space-y-3.5">
-                  <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+                  <div className="flex items-start justify-between border-b border-slate-100 pb-3">
                     <div>
-                      <span className="text-[10px] font-bold text-teal-700 dark:text-teal-400 uppercase tracking-wider block">
+                      <span className="text-[10px] font-bold text-teal-700 uppercase tracking-wider block">
                         Clinical Department
                       </span>
-                      <h4 className="font-bold text-base text-slate-900 dark:text-white">
+                      <h4 className="font-bold text-base text-slate-900">
                         {dept.name}
                       </h4>
-                      <p className="text-xs text-brand-600 dark:text-brand-400 font-bold flex items-center gap-1.5 mt-0.5">
+                      <p className="text-xs text-brand-600 font-bold flex items-center gap-1.5 mt-0.5">
                         <Stethoscope className="w-3.5 h-3.5" />
                         <span>Doctor: {docName}</span>
                       </p>
                     </div>
-                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200">
+                    <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-800">
                       {dept.consultationFee === 0 ? 'FREE OPD' : `₹${dept.consultationFee}`}
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  <p className="text-xs text-slate-600 leading-relaxed">
                     {dept.description || 'Outpatient clinical consultation, diagnosis, prescription, and token appointment triage.'}
                   </p>
 
                   {/* Treated Diseases & Clinical Specializations */}
                   {conditions.length > 0 && (
-                    <div className="space-y-1 bg-emerald-50/60 dark:bg-emerald-950/20 p-2.5 rounded-xl border border-emerald-200/60 dark:border-emerald-900/40">
-                      <span className="text-[10px] font-bold text-emerald-800 dark:text-emerald-300 uppercase tracking-wider block">
+                    <div className="space-y-1 bg-emerald-50/60 p-2.5 rounded-xl border border-emerald-200/60">
+                      <span className="text-[10px] font-bold text-emerald-800 uppercase tracking-wider block">
                         🩺 Bimariyon Ka Ilaaj (Treated Illnesses):
                       </span>
                       <div className="flex flex-wrap gap-1 pt-0.5">
                         {conditions.map((cond: string, idx: number) => (
                           <span
                             key={idx}
-                            className="text-[10px] bg-white dark:bg-slate-900 text-emerald-800 dark:text-emerald-300 px-2 py-0.5 rounded-md font-medium border border-emerald-200 dark:border-emerald-800"
+                            className="text-[10px] bg-white text-emerald-800 px-2 py-0.5 rounded-md font-medium border border-emerald-200"
                           >
                             ✓ {cond}
                           </span>
@@ -295,16 +295,16 @@ export const HospitalDepartments: React.FC = () => {
                   )}
 
                   {/* Schedule & Tokens */}
-                  <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 dark:bg-slate-800/50 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
+                  <div className="grid grid-cols-2 gap-2 text-xs bg-slate-50 p-3 rounded-xl border border-slate-100">
                     <div>
                       <span className="text-[10px] text-slate-400 font-bold uppercase block">OPD Schedule</span>
-                      <span className="font-semibold text-slate-800 dark:text-slate-200">
+                      <span className="font-semibold text-slate-800">
                         {dept.opdTimings || '09:00 AM - 02:00 PM'}
                       </span>
                     </div>
                     <div>
                       <span className="text-[10px] text-slate-400 font-bold uppercase block">Token Seats Today</span>
-                      <span className="font-bold text-teal-700 dark:text-teal-300">
+                      <span className="font-bold text-teal-700">
                         {dept.availableTokensToday ?? (dept as any).available_tokens ?? 25} / {dept.dailyTokenCapacity ?? (dept as any).total_daily_tokens ?? 50} Seats
                       </span>
                     </div>
@@ -320,7 +320,7 @@ export const HospitalDepartments: React.FC = () => {
                       ).map((day, i) => (
                         <span
                           key={i}
-                          className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-0.5 rounded font-medium"
+                          className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 rounded font-medium"
                         >
                           {day.slice(0, 3)}
                         </span>
@@ -330,11 +330,11 @@ export const HospitalDepartments: React.FC = () => {
                 </div>
 
                 {/* Card Actions: Edit & Remove */}
-                <div className="flex items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
                   <button
                     type="button"
                     onClick={() => openEditModal(dept)}
-                    className="flex-1 py-1.5 px-3 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 text-slate-700 dark:text-slate-300 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="flex-1 py-1.5 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
                     <Edit2 className="w-3.5 h-3.5" />
                     <span>Edit Doctor & Dept</span>
@@ -343,7 +343,7 @@ export const HospitalDepartments: React.FC = () => {
                   <button
                     type="button"
                     onClick={() => setDeptToDelete(dept)}
-                    className="py-1.5 px-3 bg-rose-50 dark:bg-rose-950/40 hover:bg-rose-100 text-rose-700 dark:text-rose-300 font-bold text-xs rounded-xl border border-rose-200 dark:border-rose-900 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                    className="py-1.5 px-3 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl border border-rose-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                     title="Remove Department"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -359,10 +359,10 @@ export const HospitalDepartments: React.FC = () => {
       {/* MODAL 1: ADD OR EDIT DEPARTMENT & DOCTOR */}
       {isAddModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 space-y-5 animate-fadeIn text-xs">
-            <div className="flex items-start justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+          <div className="bg-white rounded-3xl border border-slate-200 w-full max-w-xl max-h-[90vh] overflow-y-auto shadow-2xl p-6 sm:p-8 space-y-5 animate-fadeIn text-xs">
+            <div className="flex items-start justify-between border-b border-slate-100 pb-3">
               <div>
-                <h3 className="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <h3 className="text-lg font-black text-slate-900 flex items-center gap-2">
                   <Stethoscope className="w-5 h-5 text-brand-500" />
                   {editingDept ? 'Edit Doctor & Department' : 'Add Doctor & Department'}
                 </h3>
@@ -373,7 +373,7 @@ export const HospitalDepartments: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setIsAddModalOpen(false)}
-                className="p-1.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:text-slate-800"
+                className="p-1.5 rounded-full bg-slate-100 text-slate-500 hover:text-slate-800"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -436,12 +436,12 @@ export const HospitalDepartments: React.FC = () => {
 
               {/* Treated Conditions Input */}
               <div className="space-y-1">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-bold text-slate-700">
                   Bimariyon Ka Ilaaj (Treated Diseases - comma separated)
                 </label>
                 <textarea
                   rows={2}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-brand-500 focus:outline-hidden"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-200 bg-white text-xs text-slate-800 focus:ring-2 focus:ring-brand-500 focus:outline-hidden"
                   placeholder="e.g. Heart Attack, Chest Pain, High BP, Cholesterol, Arrhythmia"
                   value={formConditions}
                   onChange={(e) => setFormConditions(e.target.value)}
@@ -450,7 +450,7 @@ export const HospitalDepartments: React.FC = () => {
 
               {/* Operating Days Selection */}
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                <label className="block text-xs font-bold text-slate-700">
                   Select Operating OPD Days
                 </label>
                 <div className="flex flex-wrap gap-1.5">
@@ -464,7 +464,7 @@ export const HospitalDepartments: React.FC = () => {
                         className={`px-3 py-1 rounded-full text-xs font-bold transition-all ${
                           isSelected
                             ? 'bg-teal-600 text-white shadow-xs'
-                            : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
+                            : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                         }`}
                       >
                         {day}
@@ -474,7 +474,7 @@ export const HospitalDepartments: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-2 pt-3 border-t border-slate-100">
                 <Button
                   type="submit"
                   variant="primary"
@@ -502,13 +502,13 @@ export const HospitalDepartments: React.FC = () => {
       {/* MODAL 2: CONFIRM DELETE DEPARTMENT */}
       {deptToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4">
-          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-rose-200 dark:border-rose-900 max-w-sm w-full p-6 shadow-2xl space-y-4 animate-fadeIn text-xs">
+          <div className="bg-white rounded-3xl border border-rose-200 max-w-sm w-full p-6 shadow-2xl space-y-4 animate-fadeIn text-xs">
             <div className="flex items-center gap-3 text-rose-600">
-              <div className="p-3 bg-rose-100 dark:bg-rose-950/60 rounded-2xl">
+              <div className="p-3 bg-rose-100 rounded-2xl">
                 <Trash2 className="w-6 h-6 text-rose-600" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                <h3 className="text-base font-bold text-slate-900">
                   Delete Department?
                 </h3>
                 <p className="text-[11px] text-slate-500">
@@ -517,7 +517,7 @@ export const HospitalDepartments: React.FC = () => {
               </div>
             </div>
 
-            <p className="text-slate-600 dark:text-slate-400">
+            <p className="text-slate-600">
               Are you sure you want to delete <strong>{deptToDelete.name}</strong>? Patients will no longer be able to book token appointments with this doctor.
             </p>
 

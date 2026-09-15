@@ -86,26 +86,26 @@ export const PatientFrictionReportPage: React.FC = () => {
       case 'SUBMITTED':
       case 'PENDING':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 dark:bg-blue-950/80 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-800 border border-blue-200">
             Submitted
           </span>
         );
       case 'UNDER_REVIEW':
       case 'INVESTIGATING':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-200">
             Under Review
           </span>
         );
       case 'ACTION_TAKEN':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 dark:bg-indigo-950/80 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
             Action Taken
           </span>
         );
       case 'RESOLVED':
         return (
-          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
+          <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
             Resolved
           </span>
         );
@@ -126,13 +126,13 @@ export const PatientFrictionReportPage: React.FC = () => {
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-fade-in pb-12">
       {/* Page Heading */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white rounded-3xl border border-slate-200/80 p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white flex items-center gap-2.5">
-            <ShieldAlert className="w-6 h-6 text-teal-600 dark:text-teal-400" />
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2.5">
+            <ShieldAlert className="w-6 h-6 text-teal-600" />
             Report a Healthcare Barrier
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Submit non-clinical healthcare access obstacles experienced at public facilities. All reports are verified and tracked by district health authorities.
           </p>
         </div>
@@ -140,7 +140,7 @@ export const PatientFrictionReportPage: React.FC = () => {
         <button
           onClick={fetchReports}
           disabled={isLoading}
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-xl transition-all self-start sm:self-auto cursor-pointer"
+          className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all self-start sm:self-auto cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
           Refresh Status
@@ -150,10 +150,10 @@ export const PatientFrictionReportPage: React.FC = () => {
       {/* Form: Tell Us About the Barrier */}
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6 space-y-5"
+        className="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-6 space-y-5"
       >
-        <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
-          <h2 className="font-bold text-base text-slate-900 dark:text-white flex items-center gap-2">
+        <div className="border-b border-slate-100 pb-3">
+          <h2 className="font-bold text-base text-slate-900 flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-teal-600" />
             Tell Us About the Barrier
           </h2>
@@ -164,7 +164,7 @@ export const PatientFrictionReportPage: React.FC = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
               Healthcare Facility
             </label>
             <input
@@ -173,18 +173,18 @@ export const PatientFrictionReportPage: React.FC = () => {
               value={hospitalName}
               onChange={(e) => setHospitalName(e.target.value)}
               placeholder="e.g. District Civil Hospital, Jalandhar"
-              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
               Severity Level
             </label>
             <select
               value={severity}
               onChange={(e) => setSeverity(e.target.value as any)}
-              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+              className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500"
             >
               <option value="LOW">Low (Minor inconvenience / short delay)</option>
               <option value="MEDIUM">Medium (Significant wait / travel obstacle)</option>
@@ -195,7 +195,7 @@ export const PatientFrictionReportPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-2">
+          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
             Barrier Category
           </label>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
@@ -204,8 +204,8 @@ export const PatientFrictionReportPage: React.FC = () => {
                 key={cat.key}
                 className={`p-3 rounded-2xl border text-xs font-medium cursor-pointer transition-all flex items-center gap-3 ${
                   category === cat.key
-                    ? 'bg-teal-50 text-teal-950 border-teal-500 shadow-xs dark:bg-teal-950/40 dark:text-teal-200 dark:border-teal-700'
-                    : 'bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-100'
+                    ? 'bg-teal-50 text-teal-950 border-teal-500 shadow-xs'
+                    : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                 }`}
               >
                 <input
@@ -223,7 +223,7 @@ export const PatientFrictionReportPage: React.FC = () => {
         </div>
 
         <div>
-          <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
             Detailed Description of the Barrier
           </label>
           <textarea
@@ -232,7 +232,7 @@ export const PatientFrictionReportPage: React.FC = () => {
             placeholder="Describe what occurred, time of event, counter number, or specific transit/facility problem encountered..."
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className="w-full px-3.5 py-2.5 text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-teal-500 leading-relaxed"
+            className="w-full px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-500 leading-relaxed"
           />
         </div>
 
@@ -249,17 +249,17 @@ export const PatientFrictionReportPage: React.FC = () => {
       </form>
 
       {/* Reported Barriers History & Status Tracking */}
-      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200/80 dark:border-slate-800 shadow-sm p-6 space-y-4">
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+      <div className="bg-white rounded-3xl border border-slate-200/80 shadow-sm p-6 space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <div>
-            <h2 className="font-bold text-sm text-slate-900 dark:text-white">
+            <h2 className="font-bold text-sm text-slate-900">
               Your Submitted Barrier Reports & Status
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
               Persistent tracking directly from the state healthcare registry.
             </p>
           </div>
-          <span className="text-xs font-mono font-bold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-950/60 px-2.5 py-1 rounded-lg">
+          <span className="text-xs font-mono font-bold text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg">
             {reports.length} Recorded
           </span>
         </div>
@@ -287,17 +287,17 @@ export const PatientFrictionReportPage: React.FC = () => {
               return (
                 <div
                   key={r.id || r.reportId || idx}
-                  className="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700 space-y-2.5"
+                  className="p-4 sm:p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-2.5"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-mono font-bold text-slate-900 dark:text-white bg-white dark:bg-slate-900 px-2 py-0.5 rounded-md border border-slate-200 dark:border-slate-700">
+                      <span className="font-mono font-bold text-slate-900 bg-white px-2 py-0.5 rounded-md border border-slate-200">
                         {displayId}
                       </span>
-                      <strong className="text-slate-800 dark:text-slate-200">
+                      <strong className="text-slate-800">
                         {r.hospitalName}
                       </strong>
-                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-slate-300">
+                      <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-200 text-slate-700">
                         {getCategoryLabel(r.category)}
                       </span>
                       <span className="text-[10px] text-slate-400 font-mono">
@@ -308,13 +308,13 @@ export const PatientFrictionReportPage: React.FC = () => {
                     <div>{getStatusBadge(r.status)}</div>
                   </div>
 
-                  <p className="text-xs text-slate-700 dark:text-slate-300 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-700 leading-relaxed font-medium">
                     {r.description}
                   </p>
 
                   {r.resolutionNotes && (
-                    <div className="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl text-xs text-emerald-900 dark:text-emerald-200 border border-emerald-200 dark:border-emerald-800 space-y-0.5">
-                      <div className="font-bold flex items-center gap-1.5 text-emerald-700 dark:text-emerald-300">
+                    <div className="p-3 bg-emerald-50 rounded-xl text-xs text-emerald-900 border border-emerald-200 space-y-0.5">
+                      <div className="font-bold flex items-center gap-1.5 text-emerald-700">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Official Action / Resolution Note:
                       </div>
                       <p>{r.resolutionNotes}</p>
