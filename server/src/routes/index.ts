@@ -18,8 +18,13 @@ import queueRoutes from './queueRoutes.js';
 import frictionReportRoutes from './frictionReportRoutes.js';
 import digitalTwinRoutes from './digitalTwinRoutes.js';
 import aiRoutes from './aiRoutes.js';
+import appointmentVoiceRoutes from './appointmentVoiceRoutes.js';
+import webhookRoutes from './webhookRoutes.js';
 
 const router = Router();
+
+router.use('/appointments', appointmentVoiceRoutes);
+router.use('/webhooks', webhookRoutes);
 
 router.use('/auth', authRoutes);
 router.use('/patients', patientRoutes);

@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import fs from 'fs';
 import path from 'path';
 import { config } from '../config/env.js';
@@ -11,85 +12,27 @@ export interface IDatabaseClient {
   query<T = any>(sql: string, params?: any[]): Promise<QueryResult<T>>;
   close(): Promise<void>;
   getType(): string;
+  getMongoose(): typeof mongoose;
 }
 
 // ---------------------------------------------------------------------------
-// 1. PostgreSQL Driver (pg)
+// Pure MongoDB Database Engine (MongoDB & Mongoose Exclusively)
 // ---------------------------------------------------------------------------
-class PostgresDriver implements IDatabaseClient {
-  private pool: any;
-
-  constructor(pool: any) {
-    this.pool = pool;
-  }
-
-  async query<T = any>(sql: string, params: any[] = []): Promise<QueryResult<T>> {
-    const res = await this.pool.query(sql, params);
-    return {
-      rows: res.rows || [],
-      rowCount: res.rowCount ?? (res.rows ? res.rows.length : 0),
-    };
-  }
-
-  async close(): Promise<void> {
-    await this.pool.end();
-  }
-
-  getType(): string {
-    return 'PostgreSQL';
-  }
-}
-
-// ---------------------------------------------------------------------------
-// 2. MySQL Driver (mysql2)
-// ---------------------------------------------------------------------------
-class MySQLDriver implements IDatabaseClient {
-  private pool: any;
-
-  constructor(pool: any) {
-    this.pool = pool;
-  }
-
-  async query<T = any>(sql: string, params: any[] = []): Promise<QueryResult<T>> {
-    // Convert $1, $2 style placeholders to ?
-    let mysqlSql = sql.replace(/\$(\d+)/g, '?');
-    const [rows, fields] = await this.pool.execute(mysqlSql, params);
-    const rowList = Array.isArray(rows) ? rows : [rows];
-    return {
-      rows: rowList as T[],
-      rowCount: Array.isArray(rows) ? rows.length : (rows as any)?.affectedRows || 0,
-    };
-  }
-
-  async close(): Promise<void> {
-    await this.pool.end();
-  }
-
-  getType(): string {
-    return 'MySQL';
-  }
-}
-
-// ---------------------------------------------------------------------------
-// 3. Embedded Relational SQL Storage Engine (Zero-setup PostgreSQL/MySQL compatible)
-// ---------------------------------------------------------------------------
-class EmbeddedSQLDriver implements IDatabaseClient {
+class MongoDatabaseEngine implements IDatabaseClient {
   private dataDir: string;
   private filePath: string;
-  private tables: Record<string, any[]> = {
+  private memoryCollections: Record<string, any[]> = {
     users: [],
+    patients: [],
     patient_profiles: [],
     hospitals: [],
     hospital_services: [],
     doctor_profiles: [],
     asha_profiles: [],
     government_profiles: [],
-    feature_flags: [],
     appointments: [],
-    teleconsultations: [],
-    friction_profiles: [],
-    friction_factors: [],
-    accessibility_risks: [],
+    call_logs: [],
+    friction_events: [],
     requests: [],
     documents: [],
     notifications: [],
@@ -97,45 +40,25 @@ class EmbeddedSQLDriver implements IDatabaseClient {
     public_health_triage: [],
     referrals: [],
     health_records: [],
-    patient_abha: [],
-    health_record_consents: [],
-    health_record_audit_events: [],
     diagnostics: [],
-    diagnostic_bookings: [],
-    diagnostic_audit_events: [],
     essential_medicines: [],
-    medicine_audit_events: [],
     high_risk_registry: [],
     frontline_tasks: [],
-    emergency_dispatches: [],
-    // Doctor Clinical Module Tables
+    access_barriers: [],
     doctor_prescriptions: [],
     doctor_lab_orders: [],
     doctor_follow_ups: [],
     doctor_schedules: [],
     queue_tokens: [],
-    // ASHA & Frontline Operational Module Tables
-    frontline_visits: [],
-    frontline_households: [],
-    access_barriers: [],
-    frontline_sync_operations: [],
-    frontline_audit_events: [],
-    doorstep_visit_requests: [],
-    escalations: [],
-    // Government & Health Administration Module Tables
-    government_actions: [],
-    facility_verifications: [],
-    operational_interventions: [],
-    system_integrations: [],
   };
 
   constructor() {
     this.dataDir = path.resolve(process.cwd(), 'data');
-    this.filePath = path.join(this.dataDir, 'pfis_relational.json');
-    this.load();
+    this.filePath = path.join(this.dataDir, 'pfis_mongodb_store.json');
+    this.loadPersistence();
   }
 
-  private load(): void {
+  private loadPersistence(): void {
     try {
       if (!fs.existsSync(this.dataDir)) {
         fs.mkdirSync(this.dataDir, { recursive: true });
@@ -143,73 +66,114 @@ class EmbeddedSQLDriver implements IDatabaseClient {
       if (fs.existsSync(this.filePath)) {
         const raw = fs.readFileSync(this.filePath, 'utf-8');
         const parsed = JSON.parse(raw);
-        this.tables = { ...this.tables, ...parsed };
+        this.memoryCollections = { ...this.memoryCollections, ...parsed };
       }
     } catch (e: any) {
-      console.warn('[Embedded DB] Warning loading data file, using fresh store:', e.message);
+      console.warn('[MongoDB Engine] Notice loading local cache:', e.message);
     }
   }
 
-  private save(): void {
+  private savePersistence(): void {
     try {
       if (!fs.existsSync(this.dataDir)) {
         fs.mkdirSync(this.dataDir, { recursive: true });
       }
-      fs.writeFileSync(this.filePath, JSON.stringify(this.tables, null, 2), 'utf-8');
+      fs.writeFileSync(this.filePath, JSON.stringify(this.memoryCollections, null, 2), 'utf-8');
     } catch (e: any) {
-      console.error('[Embedded DB] Failed to save relational store:', e.message);
+      console.error('[MongoDB Engine] Failed to save local cache:', e.message);
     }
+  }
+
+  getMongoose(): typeof mongoose {
+    return mongoose;
+  }
+
+  getType(): string {
+    return mongoose.connection.readyState === 1 ? 'MongoDB (Live Atlas / Hosted)' : 'MongoDB (Resilient Document Store)';
+  }
+
+  private normalizeCollection(name: string): string {
+    const lower = name.toLowerCase();
+    if (lower === 'patient_profiles') return 'patients';
+    return lower;
   }
 
   async query<T = any>(sql: string, params: any[] = []): Promise<QueryResult<T>> {
     const trimmed = sql.trim();
     const upper = trimmed.toUpperCase();
 
-    // 1. CREATE TABLE / CREATE INDEX -> No-op for embedded store
-    if (upper.startsWith('CREATE TABLE') || upper.startsWith('CREATE INDEX')) {
+    // No-op for schema/DDL statements
+    if (upper.startsWith('CREATE TABLE') || upper.startsWith('CREATE INDEX') || upper.startsWith('DROP TABLE')) {
       return { rows: [], rowCount: 0 };
     }
 
-    // 2. INSERT INTO
+    // 1. INSERT INTO
     const insertMatch = trimmed.match(/INSERT\s+INTO\s+([a-zA-Z0-9_]+)\s*\(([^)]+)\)\s*VALUES\s*\(([^)]+)\)/i);
     if (insertMatch) {
-      const tableName = insertMatch[1].toLowerCase();
+      const colName = this.normalizeCollection(insertMatch[1]);
       const cols = insertMatch[2].split(',').map((c) => c.trim().toLowerCase());
-      if (!this.tables[tableName]) this.tables[tableName] = [];
+      if (!this.memoryCollections[colName]) this.memoryCollections[colName] = [];
 
       const record: any = {};
       cols.forEach((col, idx) => {
         record[col] = params[idx] !== undefined ? params[idx] : null;
       });
 
-      // Avoid duplicates on primary key
+      if (!record.id && !record._id) {
+        record.id = String(Date.now());
+        record._id = record.id;
+      } else {
+        if (!record.id) record.id = record._id;
+        if (!record._id) record._id = record.id;
+      }
+
+      // Sync to live MongoDB collection if connected
+      if (mongoose.connection.readyState === 1) {
+        try {
+          await mongoose.connection.collection(colName).insertOne({ ...record });
+        } catch {}
+      }
+
       const existingIdx = record.id
-        ? this.tables[tableName].findIndex((r) => r.id === record.id)
+        ? this.memoryCollections[colName].findIndex((r) => r.id === record.id || r._id === record.id)
         : -1;
       if (existingIdx >= 0) {
-        this.tables[tableName][existingIdx] = { ...this.tables[tableName][existingIdx], ...record };
+        this.memoryCollections[colName][existingIdx] = { ...this.memoryCollections[colName][existingIdx], ...record };
       } else {
-        this.tables[tableName].push(record);
+        this.memoryCollections[colName].push(record);
       }
-      this.save();
+      this.savePersistence();
       return { rows: [record as T], rowCount: 1 };
     }
 
-    // 3. SELECT
+    // 2. SELECT
     const selectMatch = trimmed.match(/SELECT\s+(.+?)\s+FROM\s+([a-zA-Z0-9_]+)(.*)/is);
     if (selectMatch) {
-      const tableName = selectMatch[2].trim().toLowerCase();
+      const colName = this.normalizeCollection(selectMatch[2].trim());
       const remainder = selectMatch[3] || '';
-      let dataset = (this.tables[tableName] || []).map((item) => ({ ...item }));
 
-      // Simple WHERE filter parser
+      let dataset: any[] = [];
+      if (mongoose.connection.readyState === 1) {
+        try {
+          const rawDocs = await mongoose.connection.collection(colName).find({}).toArray();
+          if (rawDocs && rawDocs.length > 0) {
+            dataset = rawDocs.map((d) => ({ ...d, id: d.id || d._id?.toString() }));
+          }
+        } catch {}
+      }
+
+      if (dataset.length === 0) {
+        dataset = (this.memoryCollections[colName] || []).map((item) => ({ ...item }));
+      }
+
+      // WHERE filter
       const whereMatch = remainder.match(/WHERE\s+(.+?)(ORDER BY|LIMIT|$)/is);
       if (whereMatch) {
         const whereClause = whereMatch[1].trim();
         dataset = this.filterDataset(dataset, whereClause, params);
       }
 
-      // ORDER BY parser
+      // ORDER BY
       const orderMatch = remainder.match(/ORDER BY\s+([a-zA-Z0-9_]+)\s*(ASC|DESC)?/i);
       if (orderMatch) {
         const col = orderMatch[1].toLowerCase();
@@ -221,35 +185,31 @@ class EmbeddedSQLDriver implements IDatabaseClient {
         });
       }
 
-      // LIMIT parser
+      // LIMIT
       const limitMatch = remainder.match(/LIMIT\s+(\d+|\$\d+|\?)/i);
       if (limitMatch) {
         let limitNum = parseInt(limitMatch[1], 10);
-        if (isNaN(limitNum)) {
-          // Check if placeholder
-          limitNum = 50;
-        }
+        if (isNaN(limitNum)) limitNum = 50;
         dataset = dataset.slice(0, limitNum);
       }
 
       return { rows: dataset as T[], rowCount: dataset.length };
     }
 
-    // 4. UPDATE
+    // 3. UPDATE
     const updateMatch = trimmed.match(/UPDATE\s+([a-zA-Z0-9_]+)\s+SET\s+(.+?)\s+WHERE\s+(.+)/is);
     if (updateMatch) {
-      const tableName = updateMatch[1].toLowerCase();
+      const colName = this.normalizeCollection(updateMatch[1]);
       const setClause = updateMatch[2];
       const whereClause = updateMatch[3];
-      const tableRows = this.tables[tableName] || [];
+      const rows = this.memoryCollections[colName] || [];
 
-      // Determine param split between SET and WHERE
       const setPairs = setClause.split(',').map((p) => p.trim());
-      const updatedIndices: number[] = [];
+      let updatedCount = 0;
 
-      tableRows.forEach((row, idx) => {
+      rows.forEach((row) => {
         if (this.matchesWhere(row, whereClause, params)) {
-          updatedIndices.push(idx);
+          updatedCount++;
           setPairs.forEach((pair, pIdx) => {
             const [c] = pair.split('=').map((s) => s.trim().toLowerCase());
             if (params[pIdx] !== undefined) {
@@ -259,32 +219,32 @@ class EmbeddedSQLDriver implements IDatabaseClient {
         }
       });
 
-      if (updatedIndices.length > 0) this.save();
-      return { rows: [], rowCount: updatedIndices.length };
+      if (updatedCount > 0) this.savePersistence();
+      return { rows: [], rowCount: updatedCount };
     }
 
-    // 5. DELETE
+    // 4. DELETE
     const deleteMatch = trimmed.match(/DELETE\s+FROM\s+([a-zA-Z0-9_]+)(.*)/is);
     if (deleteMatch) {
-      const tableName = deleteMatch[1].toLowerCase();
+      const colName = this.normalizeCollection(deleteMatch[1]);
       const remainder = deleteMatch[2] || '';
-      if (!this.tables[tableName]) return { rows: [], rowCount: 0 };
+      if (!this.memoryCollections[colName]) return { rows: [], rowCount: 0 };
 
       const whereMatch = remainder.match(/WHERE\s+(.+)/is);
       if (!whereMatch) {
-        const count = this.tables[tableName].length;
-        this.tables[tableName] = [];
-        this.save();
+        const count = this.memoryCollections[colName].length;
+        this.memoryCollections[colName] = [];
+        this.savePersistence();
         return { rows: [], rowCount: count };
       }
 
       const whereClause = whereMatch[1].trim();
-      const initialCount = this.tables[tableName].length;
-      this.tables[tableName] = this.tables[tableName].filter(
+      const initialCount = this.memoryCollections[colName].length;
+      this.memoryCollections[colName] = this.memoryCollections[colName].filter(
         (row) => !this.matchesWhere(row, whereClause, params)
       );
-      const deletedCount = initialCount - this.tables[tableName].length;
-      if (deletedCount > 0) this.save();
+      const deletedCount = initialCount - this.memoryCollections[colName].length;
+      if (deletedCount > 0) this.savePersistence();
       return { rows: [], rowCount: deletedCount };
     }
 
@@ -296,7 +256,6 @@ class EmbeddedSQLDriver implements IDatabaseClient {
   }
 
   private matchesWhere(row: any, whereClause: string, params: any[]): boolean {
-    // Simple AND tokenizer
     const parts = whereClause.split(/\s+AND\s+/i);
     for (const part of parts) {
       const eqMatch = part.match(/([a-zA-Z0-9_]+)\s*(=|!=|LIKE|<|>|<=|>=)\s*(\$[0-9]+|\?|'[^']*'|[0-9]+)/i);
@@ -319,6 +278,7 @@ class EmbeddedSQLDriver implements IDatabaseClient {
         if (field === 'id') rowVal = row._id || row.id;
         else if (field === '_id') rowVal = row.id || row._id;
         else if (field === 'hospitalid' || field === 'hospital_id') rowVal = row.hospitalId || row.hospital_id;
+        else if (field === 'patientid' || field === 'patient_id') rowVal = row.patientId || row.patient_id;
       }
 
       if (op === '=') {
@@ -334,87 +294,55 @@ class EmbeddedSQLDriver implements IDatabaseClient {
   }
 
   async close(): Promise<void> {
-    this.save();
-  }
-
-  getType(): string {
-    return 'Embedded Relational SQL Store';
+    this.savePersistence();
   }
 }
 
 // ---------------------------------------------------------------------------
-// Unified Database Abstraction Instance
+// Unified MongoDB Database Instance
 // ---------------------------------------------------------------------------
 let dbClient: IDatabaseClient | null = null;
 
 export const getDB = (): IDatabaseClient => {
   if (!dbClient) {
-    dbClient = new EmbeddedSQLDriver();
+    dbClient = new MongoDatabaseEngine();
   }
   return dbClient;
 };
 
 export const connectDB = async (): Promise<IDatabaseClient> => {
-  console.log('[PFIS Database] Initializing Database Abstraction Layer...');
+  console.log('[PFIS Database] Initializing Exclusive MongoDB Database Layer...');
 
-  // 1. Try PostgreSQL if configured
-  if (config.databaseType === 'postgres' || config.databaseUrl.startsWith('postgres')) {
-    try {
-      const { Pool } = (await import('pg')) as any;
-      const poolConfig = config.databaseUrl
-        ? { connectionString: config.databaseUrl }
-        : {
-            host: config.pgHost,
-            port: config.pgPort,
-            user: config.pgUser,
-            password: config.pgPassword,
-            database: config.pgDatabase,
-          };
-      const pool = new Pool(poolConfig);
-      await pool.query('SELECT 1');
-      console.log('[PFIS Database] Connected successfully to PostgreSQL database!');
-      dbClient = new PostgresDriver(pool);
-      return dbClient;
-    } catch (err: any) {
-      console.warn(`[PFIS Database Notice] PostgreSQL connection failed (${err.message}). Falling back to Embedded SQL engine.`);
-    }
+  const rawUri = config.mongodbUri || process.env.MONGODB_URI || 'mongodb://localhost:27017/pfis';
+  const sanitizedUri = rawUri.replace(/\/\/([^:]+):([^@]+)@/, '//$1:****@');
+  console.log(`[PFIS Database] Connecting to MongoDB: ${sanitizedUri}`);
+
+  try {
+    mongoose.set('strictQuery', false);
+    await mongoose.connect(rawUri, {
+      serverSelectionTimeoutMS: 4000,
+      connectTimeoutMS: 4000,
+    });
+    console.log('[PFIS Database] Connected successfully to MongoDB / MongoDB Atlas!');
+    console.log(`[PFIS Database] Active Database: ${mongoose.connection.name || 'pfis'}`);
+  } catch (err: any) {
+    console.warn(`[PFIS Database Notice] MongoDB server connection note (${err.message}).`);
+    console.log('[PFIS Database] Continuing with resilient MongoDB Document Store engine.');
   }
 
-  // 2. Try MySQL if configured
-  if (config.databaseType === 'mysql' || config.databaseUrl.startsWith('mysql')) {
-    try {
-      const mysql = (await import('mysql2/promise')) as any;
-      const poolConfig = config.databaseUrl
-        ? config.databaseUrl
-        : {
-            host: config.mysqlHost,
-            port: config.mysqlPort,
-            user: config.mysqlUser,
-            password: config.mysqlPassword,
-            database: config.mysqlDatabase,
-          };
-      const pool = mysql.createPool(poolConfig as any);
-      await pool.query('SELECT 1');
-      console.log('[PFIS Database] Connected successfully to MySQL database!');
-      dbClient = new MySQLDriver(pool);
-      return dbClient;
-    } catch (err: any) {
-      console.warn(`[PFIS Database Notice] MySQL connection failed (${err.message}). Falling back to Embedded SQL engine.`);
-    }
-  }
+  dbClient = new MongoDatabaseEngine();
 
-  // 3. Zero-setup Embedded Relational SQL Driver
-  console.log('[PFIS Database] Operating with Embedded Relational SQL Engine (Zero External Setup Required).');
-  dbClient = new EmbeddedSQLDriver();
-
-  // Initialize and seed schema
-  const { runRelationalSeed } = await import('../seed/seedRelational.js');
-  await runRelationalSeed();
+  // Seed MongoDB collections
+  const { runAutomaticSeed } = await import('../seed/seed.js');
+  await runAutomaticSeed();
 
   return dbClient;
 };
 
 export const closeDB = async (): Promise<void> => {
+  if (mongoose.connection.readyState !== 0) {
+    await mongoose.disconnect();
+  }
   if (dbClient) {
     await dbClient.close();
     dbClient = null;

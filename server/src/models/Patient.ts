@@ -55,4 +55,4 @@ export interface IPatient {
   toJSON?: () => any;
 }
 
-export const Patient: any = createSQLModel<IPatient>('patient_profiles');
+export const Patient: any = createSQLModel<IPatient>('patients');

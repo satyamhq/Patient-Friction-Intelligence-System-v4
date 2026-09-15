@@ -32,6 +32,7 @@ import { useNotifications } from '../../context/NotificationContext';
 import { LanguageSelector } from '../common/LanguageSelector';
 import { OfflineSyncIndicator } from '../common/OfflineSyncIndicator';
 import { EmergencySOSModal } from '../common/EmergencySOSModal';
+import { AiAppointmentAssistanceModal } from '../common/AiAppointmentAssistanceModal';
 
 export const Navbar: React.FC = () => {
   const { t } = useTranslation();
@@ -45,6 +46,7 @@ export const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileNotifExpanded, setIsMobileNotifExpanded] = useState(false);
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
+  const [isAiAssistanceOpen, setIsAiAssistanceOpen] = useState(false);
 
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -340,15 +342,28 @@ export const Navbar: React.FC = () => {
 
           {/* Right Action Controls */}
           <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
-            {/* 108 Emergency SOS Button */}
+            {/* 108 Emergency SOS Button (Immediate Emergencies) */}
             <button
               type="button"
               onClick={() => setIsEmergencyModalOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xs font-black tracking-wide border border-red-700 shadow-sm flex items-center gap-1.5 transition-all cursor-pointer select-none"
-              title="Emergency 108 SOS Paramedic Dispatch"
+              className="px-3.5 py-1.5 rounded-xl bg-red-600 hover:bg-red-700 active:bg-red-800 text-white text-xs font-black tracking-wide border border-red-700 shadow-sm flex items-center gap-1.5 transition-all cursor-pointer select-none shrink-0"
+              title="108 Emergency: For immediate emergencies"
+              aria-label="108 Emergency SOS"
             >
               <Ambulance className="w-4 h-4 text-white shrink-0" />
-              <span className="font-extrabold tracking-wider">108 SOS</span>
+              <span className="font-extrabold tracking-wider whitespace-nowrap">108 SOS</span>
+            </button>
+
+            {/* AI Call & Appointment Assistance Button (Placed Immediately After 108) */}
+            <button
+              type="button"
+              onClick={() => setIsAiAssistanceOpen(true)}
+              className="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white text-xs font-bold tracking-wide border border-teal-700 shadow-sm flex items-center gap-1.5 transition-all cursor-pointer select-none shrink-0"
+              title="Get help booking, rescheduling, or finding a healthcare appointment."
+              aria-label="Talk to AI: AI Call and Appointment Assistance"
+            >
+              <span className="text-sm leading-none" role="img" aria-label="phone">📞</span>
+              <span className="hidden xs:inline font-bold">Talk to AI</span>
             </button>
 
             {/* Desktop & Tablet Action Controls */}
@@ -672,6 +687,67 @@ export const Navbar: React.FC = () => {
                   </Link>
                 </div>
               )}
+
+              {/* Mobile Dedicated Healthcare Assistance Cards (Emergency & Non-Emergency) */}
+              <div className="pt-2 space-y-2.5">
+                {/* 108 Emergency */}
+                <div className="p-3 rounded-2xl bg-red-50 border border-red-200 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-red-600 text-white flex items-center justify-center shrink-0">
+                      <Ambulance className="w-4 h-4" />
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-red-600 block">
+                        108 Emergency
+                      </span>
+                      <p className="text-xs font-bold text-slate-900">
+                        For immediate emergencies
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsEmergencyModalOpen(true);
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-red-600 text-white text-xs font-black tracking-wider shadow-xs cursor-pointer select-none"
+                  >
+                    108 SOS
+                  </button>
+                </div>
+
+                <div className="flex items-center justify-center -my-1 text-slate-400 font-black text-xs">
+                  ↓
+                </div>
+
+                {/* AI Call & Appointment Assistance */}
+                <div className="p-3 rounded-2xl bg-teal-50 border border-teal-200 flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-lg bg-teal-600 text-white flex items-center justify-center shrink-0">
+                      <span className="text-sm" role="img" aria-label="phone">📞</span>
+                    </div>
+                    <div>
+                      <span className="text-[10px] font-black uppercase tracking-wider text-teal-800 block">
+                        AI Call & Appointment
+                      </span>
+                      <p className="text-[11px] text-slate-600 leading-tight">
+                        Get help booking, rescheduling, or finding a healthcare appointment.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      setIsAiAssistanceOpen(true);
+                    }}
+                    className="px-3 py-1.5 rounded-xl bg-teal-600 text-white text-xs font-bold tracking-wide shadow-xs cursor-pointer select-none shrink-0"
+                  >
+                    Talk to AI
+                  </button>
+                </div>
+              </div>
 
               {/* Navigation Links Group */}
               <div className="space-y-1 pt-1">
@@ -1125,6 +1201,13 @@ export const Navbar: React.FC = () => {
       <EmergencySOSModal
         isOpen={isEmergencyModalOpen}
         onClose={() => setIsEmergencyModalOpen(false)}
+      />
+
+      {/* AI Call & Appointment Assistance Modal */}
+      <AiAppointmentAssistanceModal
+        isOpen={isAiAssistanceOpen}
+        onClose={() => setIsAiAssistanceOpen(false)}
+        onOpen108Emergency={() => setIsEmergencyModalOpen(true)}
       />
     </header>
   );

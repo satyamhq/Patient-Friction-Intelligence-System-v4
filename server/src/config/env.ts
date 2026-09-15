@@ -57,18 +57,7 @@ if (isProd && (rawCallbackUrl.includes('localhost') || rawCallbackUrl.includes('
 
 export const config = {
   port: parseInt(rawPort, 10),
-  databaseType: sanitizeEnv(process.env.DATABASE_TYPE) || 'auto', // 'postgres' | 'mysql' | 'auto'
-  databaseUrl: sanitizeEnv(process.env.DATABASE_URL),
-  pgHost: sanitizeEnv(process.env.PG_HOST) || 'localhost',
-  pgPort: parseInt(sanitizeEnv(process.env.PG_PORT) || '5432', 10),
-  pgUser: sanitizeEnv(process.env.PG_USER) || 'postgres',
-  pgPassword: sanitizeEnv(process.env.PG_PASSWORD) || 'postgres',
-  pgDatabase: sanitizeEnv(process.env.PG_DATABASE) || 'pfis',
-  mysqlHost: sanitizeEnv(process.env.MYSQL_HOST) || 'localhost',
-  mysqlPort: parseInt(sanitizeEnv(process.env.MYSQL_PORT) || '3306', 10),
-  mysqlUser: sanitizeEnv(process.env.MYSQL_USER) || 'root',
-  mysqlPassword: sanitizeEnv(process.env.MYSQL_PASSWORD) || '',
-  mysqlDatabase: sanitizeEnv(process.env.MYSQL_DATABASE) || 'pfis',
+  mongodbUri: sanitizeEnv(process.env.MONGODB_URI) || 'mongodb://localhost:27017/pfis',
   jwtSecret: sanitizeEnv(process.env.JWT_SECRET) || 'pfis_super_secure_jwt_secret_key_2026',
   jwtExpiresIn: '7d',
   googleMapsApiKey: sanitizeEnv(process.env.GOOGLE_MAPS_API_KEY),
@@ -80,6 +69,10 @@ export const config = {
   nodeEnv,
   maxFileSizeMb: parseInt(sanitizeEnv(process.env.MAX_FILE_SIZE_MB) || '10', 10),
   geminiApiKey: sanitizeEnv(process.env.GEMINI_API_KEY),
+  elevenLabsAgentId: sanitizeEnv(process.env.ELEVENLABS_AGENT_ID) || 'agent_2901m2hw983kfcesprd47f904gbk',
+  elevenLabsApiKey: sanitizeEnv(process.env.ELEVENLABS_API_KEY),
+  twilioAccountSid: sanitizeEnv(process.env.TWILIO_ACCOUNT_SID),
+  twilioAuthToken: sanitizeEnv(process.env.TWILIO_AUTH_TOKEN),
 };
 
 /**

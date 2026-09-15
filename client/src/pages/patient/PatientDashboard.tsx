@@ -39,7 +39,11 @@ import {
   HeartPulse,
   HeartHandshake,
   Stethoscope,
+  Phone,
+  Sparkles,
 } from 'lucide-react';
+import { appointmentVoiceService } from '../../services/appointmentVoiceService';
+import { AiAppointmentAssistanceModal } from '../../components/common/AiAppointmentAssistanceModal';
 
 export const PatientDashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -54,6 +58,8 @@ export const PatientDashboard: React.FC = () => {
   const [recentDocs, setRecentDocs] = useState<PatientDocument[]>([]);
   const [nearestHospital, setNearestHospital] = useState<Hospital | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(!profile);
+  const [voiceStatusData, setVoiceStatusData] = useState<any>(null);
+  const [isVoiceAssistanceOpen, setIsVoiceAssistanceOpen] = useState(false);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -84,6 +90,15 @@ export const PatientDashboard: React.FC = () => {
         }
         if (hRes.status === 'fulfilled' && hRes.value?.success && hRes.value.hospitals?.length > 0) {
           setNearestHospital(hRes.value.hospitals[0]);
+        }
+
+        try {
+          const vRes = await appointmentVoiceService.getLatestStatus();
+          if (vRes?.success && vRes.data) {
+            setVoiceStatusData(vRes.data);
+          }
+        } catch (vErr) {
+          console.warn('[VoiceStatus Load]', vErr);
         }
       } catch (e) {
         console.error('[PatientDashboard Error]', e);
@@ -225,6 +240,109 @@ export const PatientDashboard: React.FC = () => {
               {t('patient.editProfile', 'Edit Profile')}
             </Button>
           </Link>
+        </div>
+      </div>
+
+      {/* AI Appointment Assistance Dashboard Card (Requirement 10) */}
+      <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-teal-200/90 bg-gradient-to-r from-teal-50/90 via-emerald-50/40 to-white shadow-sm space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-teal-100 pb-3">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-sm">
+              <Phone className="w-5 h-5 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm sm:text-base font-black text-slate-900">
+                  AI Appointment Assistance
+                </h3>
+                <span className="text-[10px] font-bold text-teal-800 bg-teal-100/80 px-2 py-0.5 rounded-full border border-teal-200 inline-flex items-center gap-1">
+                  <Sparkles className="w-2.5 h-2.5 text-teal-600" />
+                  Voice Nav
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">
+                Live voice booking, scheduling guidance & operational support
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2.5">
+            {/* Live Status Indicator */}
+            {voiceStatusData?.latestAppointment ? (
+              <span
+                className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wide border flex items-center gap-1.5 shadow-2xs ${
+                  voiceStatusData.latestAppointment.status === 'confirmed'
+                    ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                    : voiceStatusData.latestAppointment.status === 'calling'
+                    ? 'bg-amber-50 text-amber-700 border-amber-300'
+                    : voiceStatusData.latestAppointment.status === 'alternative_offered'
+                    ? 'bg-purple-50 text-purple-700 border-purple-300'
+                    : voiceStatusData.latestAppointment.status === 'unavailable'
+                    ? 'bg-orange-50 text-orange-700 border-orange-300'
+                    : voiceStatusData.latestAppointment.status === 'failed'
+                    ? 'bg-rose-50 text-rose-700 border-rose-300'
+                    : 'bg-teal-50 text-teal-700 border-teal-300'
+                }`}
+              >
+                <span>
+                  {voiceStatusData.latestAppointment.status === 'confirmed'
+                    ? '🟢 Appointment Confirmed'
+                    : voiceStatusData.latestAppointment.status === 'calling'
+                    ? '🟡 Calling...'
+                    : voiceStatusData.latestAppointment.status === 'alternative_offered'
+                    ? '🟣 Alternative Offered'
+                    : voiceStatusData.latestAppointment.status === 'unavailable'
+                    ? '🟠 Unable to Book'
+                    : voiceStatusData.latestAppointment.status === 'failed'
+                    ? '🔴 Call Failed'
+                    : '🔵 Call Completed'}
+                </span>
+              </span>
+            ) : (
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
+                <span>🟢 Assistant Ready</span>
+              </span>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setIsVoiceAssistanceOpen(true)}
+              className="px-3.5 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
+            >
+              <Phone className="w-3.5 h-3.5" />
+              <span>Talk to AI</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Status Details Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-1">
+          <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200">
+            <span className="text-[11px] text-slate-500 block">Hospital</span>
+            <strong className="text-slate-900 font-bold block truncate">
+              {voiceStatusData?.latestAppointment?.hospital || 'District Civil Hospital'}
+            </strong>
+          </div>
+          <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200">
+            <span className="text-[11px] text-slate-500 block">Department</span>
+            <strong className="text-slate-900 font-bold block truncate">
+              {voiceStatusData?.latestAppointment?.department || 'General Medicine'}
+            </strong>
+          </div>
+          <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200">
+            <span className="text-[11px] text-slate-500 block">Date & Time</span>
+            <strong className="text-teal-800 font-bold block truncate">
+              {voiceStatusData?.latestAppointment
+                ? `${voiceStatusData.latestAppointment.date} at ${voiceStatusData.latestAppointment.time}`
+                : 'Schedule via Voice'}
+            </strong>
+          </div>
+          <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200">
+            <span className="text-[11px] text-slate-500 block">Assisted by</span>
+            <strong className="text-slate-900 font-bold block truncate">
+              {voiceStatusData?.latestAppointment?.assistedBy || 'AI Voice Agent (ElevenLabs)'}
+            </strong>
+          </div>
         </div>
       </div>
 
@@ -723,6 +841,12 @@ export const PatientDashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* AI Call & Appointment Assistance Modal */}
+      <AiAppointmentAssistanceModal
+        isOpen={isVoiceAssistanceOpen}
+        onClose={() => setIsVoiceAssistanceOpen(false)}
+      />
     </div>
   );
 };
