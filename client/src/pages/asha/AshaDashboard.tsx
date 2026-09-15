@@ -27,6 +27,8 @@ import {
   Sparkles,
 } from 'lucide-react';
 
+import { AshaCopilotDrawer } from '../../components/asha/AshaCopilotDrawer';
+
 export const AshaDashboard: React.FC = () => {
   const { showToast } = useToast();
   const navigate = useNavigate();
@@ -40,6 +42,7 @@ export const AshaDashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isCopilotOpen, setIsCopilotOpen] = useState(false);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -161,28 +164,39 @@ export const AshaDashboard: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex flex-wrap md:flex-col lg:flex-row items-center gap-3 shrink-0">
-            <Link
-              to="/asha/patients"
-              className="px-4 py-2.5 rounded-xl bg-white text-teal-900 hover:bg-teal-50 font-bold text-xs shadow-md transition-all flex items-center gap-2"
-            >
-              <Users className="w-4 h-4 text-teal-700" />
-              My Patients
-            </Link>
+          <div className="flex flex-wrap md:flex-col lg:flex-row items-center gap-2.5 shrink-0">
             <Link
               to="/asha/visits"
-              className="px-4 py-2.5 rounded-xl bg-teal-600/60 hover:bg-teal-600 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-2"
+              className="px-5 py-3 rounded-2xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs sm:text-sm shadow-lg hover:shadow-xl transition-all flex items-center gap-2 active:scale-95"
             >
-              <Calendar className="w-4 h-4" />
-              Today's Visits
+              <Calendar className="w-4 h-4 text-slate-950 stroke-[2.5]" />
+              <span>START TODAY'S VISITS</span>
             </Link>
+
+            <button
+              type="button"
+              onClick={() => setIsCopilotOpen(true)}
+              className="px-4 py-2.5 rounded-xl bg-teal-600/80 hover:bg-teal-600 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-2 cursor-pointer shadow-sm"
+            >
+              <Sparkles className="w-4 h-4 text-amber-300" />
+              <span>AI ASHA Copilot</span>
+            </button>
+
+            <Link
+              to="/asha/patients"
+              className="px-3.5 py-2.5 rounded-xl bg-white/15 hover:bg-white/25 text-white font-bold text-xs border border-white/20 transition-all flex items-center gap-1.5"
+            >
+              <Users className="w-4 h-4" />
+              <span>Patients</span>
+            </Link>
+
             <button
               onClick={handleManualSync}
               disabled={isSyncing}
-              className="px-4 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
+              className="px-3.5 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs shadow-md transition-all flex items-center gap-1.5 disabled:opacity-50 cursor-pointer"
             >
               <RefreshCw className={`w-4 h-4 ${isSyncing ? 'animate-spin' : ''}`} />
-              {isSyncing ? 'Syncing...' : 'Sync Now'}
+              <span>{isSyncing ? 'Syncing...' : 'Sync'}</span>
             </button>
           </div>
         </div>
@@ -522,6 +536,12 @@ export const AshaDashboard: React.FC = () => {
           </button>
         </div>
       </div>
+
+      {/* AI ASHA Copilot Drawer */}
+      <AshaCopilotDrawer
+        isOpen={isCopilotOpen}
+        onClose={() => setIsCopilotOpen(false)}
+      />
     </div>
   );
 };

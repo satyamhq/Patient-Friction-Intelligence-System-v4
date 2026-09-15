@@ -9,6 +9,7 @@ import { ToastProvider } from './context/ToastContext';
 import { FirstVisitLanguageModal } from './components/common/FirstVisitLanguageModal';
 import { AccessibilityToolbar } from './components/common/AccessibilityToolbar';
 import { ElevenLabsWidget } from './components/common/ElevenLabsWidget';
+import { MobileBottomBar } from './components/layout/MobileBottomBar';
 
 // Layouts
 import { MainLayout } from './layouts/MainLayout';
@@ -149,6 +150,7 @@ export const App: React.FC = () => {
                   <FirstVisitLanguageModal />
                   <AccessibilityToolbar />
                   <ElevenLabsWidget />
+                  <MobileBottomBar />
                   <Routes>
                     {/* Public Main Layout */}
                     <Route element={<MainLayout />}>

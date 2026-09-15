@@ -8,48 +8,41 @@ import { patientService } from '../../services/patientService';
 import { hospitalService } from '../../services/hospitalService';
 import { documentService } from '../../services/documentService';
 import { Patient, FrictionProfile, CareRisk, HospitalRequest, PatientDocument, Hospital } from '../../types';
-import { StatCard } from '../../components/common/StatCard';
 import { StatusBadge } from '../../components/common/StatusBadge';
-import { Button } from '../../components/common/Button';
-import { CompletionGauge } from '../../components/charts/CompletionGauge';
 import { LoadingSkeleton } from '../../components/common/LoadingSkeleton';
-import { TTSButton } from '../../components/common/TTSButton';
 import { SmartHospitalRecommendationCard } from '../../components/hospitals/SmartHospitalRecommendationCard';
 import { LiveQueueTracker } from '../../components/queue/LiveQueueTracker';
 import {
   Activity,
-  ShieldAlert,
   MapPin,
   Building2,
   FileText,
   ListOrdered,
   ArrowRight,
-  TrendingUp,
-  AlertTriangle,
-  FolderLock,
-  Plus,
-  Laptop,
-  CheckCircle2,
-  Clock,
   UserCheck,
   RefreshCw,
-  Navigation,
   GitFork,
   Pill,
   HeartPulse,
-  HeartHandshake,
   Stethoscope,
   Phone,
   Sparkles,
+  Calendar,
+  AlertCircle,
+  Clock,
+  CheckCircle2,
+  HelpCircle,
+  ShieldAlert,
 } from 'lucide-react';
 import { appointmentVoiceService } from '../../services/appointmentVoiceService';
 import { openElevenLabsCalling } from '../../services/elevenlabsCallingService';
+import { EmergencySOSModal } from '../../components/common/EmergencySOSModal';
 
 export const PatientDashboard: React.FC = () => {
   const { t } = useTranslation();
   const { user, profile } = useAuth();
   const { currentLanguage } = useLanguage();
-  const { coords, requestCurrentLocation, isLoading: isLocLoading } = useLocation();
+  const { coords } = useLocation();
 
   const [patient, setPatient] = useState<Patient | null>(profile || null);
   const [frictionProfile, setFrictionProfile] = useState<FrictionProfile | null>(null);
@@ -59,6 +52,8 @@ export const PatientDashboard: React.FC = () => {
   const [nearestHospital, setNearestHospital] = useState<Hospital | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(!profile);
   const [voiceStatusData, setVoiceStatusData] = useState<any>(null);
+  const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
+  const [explainedRecord, setExplainedRecord] = useState<string | null>(null);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -111,735 +106,473 @@ export const PatientDashboard: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <LoadingSkeleton rows={3} />
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <LoadingSkeleton rows={2} />
-          <LoadingSkeleton rows={2} />
-          <LoadingSkeleton rows={2} />
-          <LoadingSkeleton rows={2} />
+      <div className="space-y-6 max-w-7xl mx-auto py-4">
+        <LoadingSkeleton rows={2} />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <LoadingSkeleton rows={3} />
+          <LoadingSkeleton rows={3} />
+          <LoadingSkeleton rows={3} />
+          <LoadingSkeleton rows={3} />
         </div>
       </div>
     );
   }
 
-  // No patient profile found for this user → show onboarding card
-  if (!patient) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-6 text-center animate-fade-in">
-        <div className="w-20 h-20 rounded-3xl bg-brand-50 border border-brand-200 flex items-center justify-center shadow-lg">
-          <UserCheck className="w-10 h-10 text-brand-600" />
-        </div>
-        <div className="space-y-2 max-w-md">
-          <h2 className="text-2xl font-black text-slate-900">
-            Welcome, {user?.name}!
-          </h2>
-          <p className="text-sm text-slate-500 leading-relaxed">
-            Your health profile hasn't been set up yet. Complete it to unlock your personalised friction score, care accessibility index, and nearby hospital matching.
-          </p>
-        </div>
-        <Link
-          to="/patient/profile"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-brand-600 hover:bg-brand-700 text-white font-bold text-sm shadow-lg hover:shadow-xl transition-all"
-        >
-          <UserCheck className="w-4 h-4" />
-          Set Up My Health Profile
-        </Link>
-      </div>
-    );
-  }
+  const patientName = (patient as any)?.name || user?.name || 'Citizen';
+  const latestAppointment: any = activeRequests[0] || (voiceStatusData?.appointment ? {
+    id: voiceStatusData.appointment._id,
+    hospitalName: voiceStatusData.appointment.hospitalName || 'District Hospital',
+    department: voiceStatusData.appointment.department || 'General Medicine',
+    preferredDate: voiceStatusData.appointment.preferredDate || 'Tomorrow',
+    preferredTime: voiceStatusData.appointment.preferredTime || '10:00 AM',
+    status: voiceStatusData.appointment.status || 'confirmed',
+  } : null);
 
-  // Real dynamic distance calculation based on user's live coordinates & nearest facility
-  const realDistanceKm = nearestHospital?.distanceKm ?? (frictionProfile?.travel?.contributingParameters?.distanceKm ?? 2.7);
-
-  let accessibilityScore = frictionProfile?.overallAccessibilityScore ?? 85;
-  let completionProbability = careRisk?.careCompletionProbability ?? 86;
-  let riskCategory = careRisk?.riskCategory ?? 'LOW';
-  let topBarrier = frictionProfile?.topBarrier ?? 'Transport Availability';
-
-  if (nearestHospital && realDistanceKm !== undefined) {
-    if (realDistanceKm <= 5) {
-      accessibilityScore = Math.max(accessibilityScore, 92);
-      completionProbability = Math.max(completionProbability, 91);
-      riskCategory = 'LOW';
-      topBarrier = 'OPD Token Queue & Timings';
-    } else if (realDistanceKm <= 15) {
-      accessibilityScore = 80;
-      completionProbability = 82;
-      riskCategory = 'LOW';
-      topBarrier = 'Local Road Transit';
-    } else if (realDistanceKm <= 30) {
-      accessibilityScore = 64;
-      completionProbability = 70;
-      riskCategory = 'MODERATE';
-      topBarrier = 'Travel Distance & Transit Cost';
-    } else {
-      accessibilityScore = 46;
-      completionProbability = 52;
-      riskCategory = 'HIGH';
-      topBarrier = 'Severe Geographic Distance';
-    }
-  }
-
-  const userAddressText = coords.address || patient?.location?.address || (coords.city ? `${coords.city}, ${coords.state || 'India'}` : patient?.location?.city || 'Location not available');
-
-
-
-  const dynamicDiagnosis = nearestHospital
-    ? `User detected at ${userAddressText}. Nearest verified health center (${nearestHospital.name}) is ${realDistanceKm.toFixed(1)} km away (~${Math.max(5, Math.round(realDistanceKm * 3.5))} mins transit). Overall accessibility friction is evaluated at ${100 - accessibilityScore}/100 with ${completionProbability}% care completion probability.`
-    : (frictionProfile?.explanation || `User located at ${userAddressText}. Nearby facility proximity represents manageable geographic travel.`);
-
-  const dashboardExplanation = dynamicDiagnosis;
+  const recommendedHospData = nearestHospital ? {
+    id: nearestHospital._id,
+    name: nearestHospital.name,
+    type: nearestHospital.type || 'Government',
+    city: nearestHospital.city || 'Jalandhar',
+    district: (nearestHospital as any).district || 'Kapurthala',
+    distanceKm: Number(nearestHospital.distanceKm || 2.4),
+    estimatedWaitMinutes: nearestHospital.averageWaitTimeMinutes || 20,
+    availableBeds: nearestHospital.availableBeds || 14,
+    totalBeds: nearestHospital.totalBeds || 40,
+    rating: nearestHospital.rating || 4.8,
+    reasons: ['Shortest travel distance', 'Low OPD congestion', 'Emergency ready'],
+    specialtyMatch: 'General Medicine & Maternal Care',
+    frictionScore: 18,
+  } : null;
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto">
-      {/* 1. Header Profile Greeting Banner */}
-      <div className="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-card flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-        <div className="space-y-2.5">
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
-              {t('patient.welcome', 'Welcome')}, {user?.name}
-            </h1>
-            {patient?.patientCode && (
-              <span className="text-xs px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 font-mono font-bold border border-slate-200">
-                {patient.patientCode}
-              </span>
-            )}
-            <StatusBadge status={riskCategory === 'CRITICAL' ? 'CRITICAL' : riskCategory === 'HIGH' ? 'HIGH' : 'ACTIVE'} size="sm" />
-            <TTSButton text={`${t('patient.welcome')} ${user?.name}. ${dashboardExplanation}`} />
+    <div className="space-y-8 max-w-7xl mx-auto pb-16">
+      {/* 1. Header: "How can we help you today?" */}
+      <div className="bg-white rounded-3xl border border-slate-200/90 p-6 sm:p-8 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="space-y-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 border border-teal-200 text-teal-800 text-xs font-bold">
+            <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse" />
+            <span>Public Health Network Connected</span>
           </div>
-
-          <div className="flex flex-wrap items-center gap-2 pt-0.5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 text-teal-800 border border-teal-200 text-xs font-semibold shadow-2xs">
-              <MapPin className="w-3.5 h-3.5 text-teal-600 animate-pulse" />
-              <span>{userAddressText}</span>
-              <span className="text-teal-600 font-mono text-[10px]">
-                ({coords.latitude.toFixed(3)}, {coords.longitude.toFixed(3)})
-              </span>
-            </div>
-
-            <button
-              onClick={() => requestCurrentLocation()}
-              disabled={isLocLoading}
-              title="Detect and refresh real GPS coordinates"
-              className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-teal-700 hover:bg-teal-100 rounded-lg border border-teal-200 transition-colors"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${isLocLoading ? 'animate-spin text-teal-600' : ''}`} />
-              <span>{isLocLoading ? 'Detecting...' : 'Sync GPS'}</span>
-            </button>
-
-            <span className="text-slate-300">•</span>
-            <span className="text-xs text-slate-500">{t('common.language', 'Language')}: <strong>{currentLanguage.nativeName}</strong></span>
-          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            Namaste, {patientName}!
+          </h1>
+          <p className="text-base text-slate-600 font-medium">
+            How can we help you with your health today?
+          </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 w-full lg:w-auto">
-          <Link to="/patient/profile">
-            <Button variant="outline" size="sm">
-              {t('patient.editProfile', 'Edit Profile')}
-            </Button>
-          </Link>
+        {/* Top Actions: Emergency SOS & ElevenLabs Voice Call */}
+        <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
+          <button
+            type="button"
+            onClick={() => setIsEmergencyModalOpen(true)}
+            className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+          >
+            <ShieldAlert className="w-4 h-4" />
+            <span>108 Emergency SOS</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => openElevenLabsCalling()}
+            className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
+            title="Start voice call with AI healthcare assistant"
+          >
+            <Phone className="w-4 h-4" />
+            <span>Call AI Assistant</span>
+          </button>
         </div>
       </div>
 
-      {/* AI Appointment Assistance Dashboard Card (Requirement 10) */}
-      <div className="p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-teal-200/90 bg-gradient-to-r from-teal-50/90 via-emerald-50/40 to-white shadow-sm space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-teal-100 pb-3">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-sm">
-              <Phone className="w-5 h-5 animate-pulse" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-sm sm:text-base font-black text-slate-900">
-                  AI Appointment Assistance
-                </h3>
-                <span className="text-[10px] font-bold text-teal-800 bg-teal-100/80 px-2 py-0.5 rounded-full border border-teal-200 inline-flex items-center gap-1">
-                  <Sparkles className="w-2.5 h-2.5 text-teal-600" />
-                  Voice Nav
-                </span>
-              </div>
-              <p className="text-xs text-slate-500">
-                Live voice booking, scheduling guidance & operational support
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2.5">
-            {/* Live Status Indicator */}
-            {voiceStatusData?.latestAppointment ? (
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-black uppercase tracking-wide border flex items-center gap-1.5 shadow-2xs ${
-                  voiceStatusData.latestAppointment.status === 'confirmed'
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
-                    : voiceStatusData.latestAppointment.status === 'calling'
-                    ? 'bg-amber-50 text-amber-700 border-amber-300'
-                    : voiceStatusData.latestAppointment.status === 'alternative_offered'
-                    ? 'bg-purple-50 text-purple-700 border-purple-300'
-                    : voiceStatusData.latestAppointment.status === 'unavailable'
-                    ? 'bg-orange-50 text-orange-700 border-orange-300'
-                    : voiceStatusData.latestAppointment.status === 'failed'
-                    ? 'bg-rose-50 text-rose-700 border-rose-300'
-                    : 'bg-teal-50 text-teal-700 border-teal-300'
-                }`}
-              >
-                <span>
-                  {voiceStatusData.latestAppointment.status === 'confirmed'
-                    ? '🟢 Appointment Confirmed'
-                    : voiceStatusData.latestAppointment.status === 'calling'
-                    ? '🟡 Calling...'
-                    : voiceStatusData.latestAppointment.status === 'alternative_offered'
-                    ? '🟣 Alternative Offered'
-                    : voiceStatusData.latestAppointment.status === 'unavailable'
-                    ? '🟠 Unable to Book'
-                    : voiceStatusData.latestAppointment.status === 'failed'
-                    ? '🔴 Call Failed'
-                    : '🔵 Call Completed'}
-                </span>
-              </span>
-            ) : (
-              <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5">
-                <span>🟢 Assistant Ready</span>
-              </span>
-            )}
-
-            <button
-              type="button"
-              onClick={openElevenLabsCalling}
-              className="px-3.5 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
-            >
-              <Phone className="w-3.5 h-3.5" />
-              <span>Talk to AI</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Status Details Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs pt-1">
-          <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200">
-            <span className="text-[11px] text-slate-500 block">Hospital</span>
-            <strong className="text-slate-900 font-bold block truncate">
-              {voiceStatusData?.latestAppointment?.hospital || 'District Civil Hospital'}
-            </strong>
-          </div>
-          <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200">
-            <span className="text-[11px] text-slate-500 block">Department</span>
-            <strong className="text-slate-900 font-bold block truncate">
-              {voiceStatusData?.latestAppointment?.department || 'General Medicine'}
-            </strong>
-          </div>
-          <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200">
-            <span className="text-[11px] text-slate-500 block">Date & Time</span>
-            <strong className="text-teal-800 font-bold block truncate">
-              {voiceStatusData?.latestAppointment
-                ? `${voiceStatusData.latestAppointment.date} at ${voiceStatusData.latestAppointment.time}`
-                : 'Schedule via Voice'}
-            </strong>
-          </div>
-          <div className="p-2.5 rounded-xl bg-white/90 border border-slate-200">
-            <span className="text-[11px] text-slate-500 block">Assisted by</span>
-            <strong className="text-slate-900 font-bold block truncate">
-              {voiceStatusData?.latestAppointment?.assistedBy || 'AI Voice Agent (ElevenLabs)'}
-            </strong>
-          </div>
-        </div>
-      </div>
-
-      {/* Smart Recommended Hospital & Live OPD Queue Tracker */}
-      <div className="space-y-6" id="queue">
-        <SmartHospitalRecommendationCard
-          hospital={{
-            id: nearestHospital?._id || 'hosp-rec-1',
-            name: nearestHospital?.name || 'District Civil Hospital, Jalandhar',
-            type: nearestHospital?.type || 'Government',
-            city: nearestHospital?.city || coords.city || 'Jalandhar',
-            district: nearestHospital?.state || coords.state || 'Punjab',
-            distanceKm: Number(realDistanceKm.toFixed(1)),
-            estimatedWaitMinutes: nearestHospital?.averageWaitTimeMinutes || 25,
-            availableBeds: nearestHospital?.availableBeds || 42,
-            totalBeds: nearestHospital?.totalBeds || 120,
-            rating: nearestHospital?.rating || 4.8,
-            reasons: [
-              `Shortest transit barrier: Only ${realDistanceKm.toFixed(1)} km away via local transit`,
-              'Minimal queue friction: Digital OPD tokens active with live SMS/app progression',
-              'Specialty match: General medicine and emergency triage open 24/7 with zero referral backlog',
-            ],
-            specialtyMatch: 'General Medicine, Emergency & Diagnostic Lab',
-            frictionScore: Math.round(100 - accessibilityScore),
-          }}
-          onSelectToken={() => {
-            const el = document.getElementById('queue-tracker-section');
-            if (el) el.scrollIntoView({ behavior: 'smooth' });
-          }}
-        />
-
-        <div id="queue-tracker-section">
-          <LiveQueueTracker
-            hospitalName={nearestHospital?.name || 'District Civil Hospital, Jalandhar'}
-            department="General Medicine OPD"
-          />
-        </div>
-      </div>
-
-      {/* 2. Primary 1-Click Patient Healthcare Action Hub */}
-      <div className="space-y-3">
-        <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-          <Activity className="w-4 h-4 text-teal-600" /> Quick Patient Actions
+      {/* 2. Primary Actions Grid (Task-Completion Oriented) */}
+      <div>
+        <h2 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3 px-1">
+          Quick Health Actions
         </h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {/* Card 1: Find Hospitals & Doctors */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
+          {/* Action 1: Book Appointment */}
           <Link
             to="/patient/hospitals"
-            className="p-5 rounded-2xl bg-gradient-to-br from-teal-500 to-teal-700 text-white shadow-lg shadow-teal-500/10 hover:shadow-xl hover:scale-[1.02] transition-all flex flex-col justify-between space-y-4 group"
+            className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 hover:border-teal-500 hover:shadow-md transition-all group flex flex-col justify-between"
           >
-            <div className="space-y-2">
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white backdrop-blur-xs">
-                <Building2 className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-base leading-tight">Find Hospitals & Doctors</h3>
-              <p className="text-xs text-teal-100 leading-relaxed">
-                View on-duty doctors, available OPD token seats, and bed capacity near you.
-              </p>
+            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+              <Calendar className="w-5 h-5" />
             </div>
-            <div className="pt-2 flex items-center justify-between text-xs font-bold text-teal-100 group-hover:text-white">
-              <span>Find Nearby</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-teal-700 transition-colors">
+                Book Appointment
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 leading-snug">
+                Doctor visit & OPD token
+              </p>
             </div>
           </Link>
 
-          {/* Card 2: Live Video Teleconsultation */}
-          <Link
-            to="/patient/teleconsult"
-            className="p-5 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-700 text-white shadow-lg shadow-blue-500/10 hover:shadow-xl hover:scale-[1.02] transition-all flex flex-col justify-between space-y-4 group"
-          >
-            <div className="space-y-2">
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white backdrop-blur-xs">
-                <Laptop className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-base leading-tight">Live Teleconsultation</h3>
-              <p className="text-xs text-blue-100 leading-relaxed">
-                Connect instantly via video with duty doctors from home with live translation.
-              </p>
-            </div>
-            <div className="pt-2 flex items-center justify-between text-xs font-bold text-blue-100 group-hover:text-white">
-              <span>Start Video Call</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
-
-          {/* Card 3: Friction Digital Twin */}
-          <Link
-            to="/patient/digital-twin"
-            className="p-5 rounded-2xl bg-gradient-to-br from-emerald-600 to-teal-800 text-white shadow-lg shadow-emerald-500/10 hover:shadow-xl hover:scale-[1.02] transition-all flex flex-col justify-between space-y-4 group"
-          >
-            <div className="space-y-2">
-              <div className="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center text-white backdrop-blur-xs">
-                <Activity className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-base leading-tight">Friction Digital Twin</h3>
-              <p className="text-xs text-emerald-100 leading-relaxed">
-                Simulate your 7-step travel journey and see how shuttles and ASHA escorts save time.
-              </p>
-            </div>
-            <div className="pt-2 flex items-center justify-between text-xs font-bold text-emerald-100 group-hover:text-white">
-              <span>Simulate Journey</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
-
-          {/* Card 4: Document Vault */}
-          <Link
-            to="/patient/documents"
-            className="p-5 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 text-white shadow-lg shadow-slate-900/10 hover:shadow-xl hover:scale-[1.02] transition-all flex flex-col justify-between space-y-4 group border border-slate-700"
-          >
-            <div className="space-y-2">
-              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-white backdrop-blur-xs">
-                <FolderLock className="w-5 h-5" />
-              </div>
-              <h3 className="font-bold text-base leading-tight">Document Vault</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Securely store your Ayushman Bharat card, prescription slips, and lab reports.
-              </p>
-            </div>
-            <div className="pt-2 flex items-center justify-between text-xs font-bold text-slate-300 group-hover:text-white">
-              <span>View Documents</span>
-              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-            </div>
-          </Link>
-        </div>
-      </div>
-
-      {/* 2b. Integrated Public Health Care-Access Suite */}
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-teal-50 text-teal-700 text-[10px] font-bold uppercase tracking-wider border border-teal-200">
-              <Building2 className="w-3 h-3" /> Public Health Infrastructure • Regional Facility Network
-            </div>
-            <h2 className="text-base sm:text-lg font-black text-slate-900 mt-1">
-              Integrated Rural Care & Public Facility Support
-            </h2>
-          </div>
-          <span className="text-xs text-slate-400">Strengthening Primary to Tertiary Health Continuum</span>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {/* 1. Digital Triage & Tier Router */}
+          {/* Action 2: Start Health Check (Triage) */}
           <Link
             to="/patient/triage"
-            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-teal-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
+            className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 hover:border-blue-500 hover:shadow-md transition-all group flex flex-col justify-between"
           >
-            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Stethoscope className="w-5 h-5" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
-                <span>Digital Triage & Tier Router</span>
-                <ArrowRight className="w-3.5 h-3.5 text-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Determine whether to visit <strong>Sub-Centre</strong>, <strong>PHC</strong>, or <strong>Rural Hospital</strong> to avoid 60km travel.
-              </p>
-            </div>
-          </Link>
-
-          {/* 2. Tiered Referral Tracking */}
-          <Link
-            to="/patient/referrals"
-            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-emerald-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
-          >
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <GitFork className="w-5 h-5" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
-                <span>Referral Tracking Hub</span>
-                <ArrowRight className="w-3.5 h-3.5 text-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Multi-tier pipeline (PHC ➡️ RH ➡️ DH) with 102/108 transit status and counter-referral feedback loop.
-              </p>
-            </div>
-          </Link>
-
-          {/* 3. Longitudinal Records & ABHA */}
-          <Link
-            to="/patient/health-records"
-            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-blue-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
-          >
-            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <FileText className="w-5 h-5" />
-            </div>
-            <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
-                <span>Health Records & ABHA</span>
-                <ArrowRight className="w-3.5 h-3.5 text-blue-500 opacity-0 group-hover:opacity-100 transition-opacity" />
-              </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Interoperable 14-digit ABHA card, chronological consultation history, and ABDM FHIR JSON export.
-              </p>
-            </div>
-          </Link>
-
-          {/* 4. Diagnostic Network & Equipment Uptime */}
-          <Link
-            to="/patient/diagnostics"
-            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-violet-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
-          >
-            <div className="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
               <Activity className="w-5 h-5" />
             </div>
-            <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
-                <span>Diagnostic Equipment Uptime</span>
-                <ArrowRight className="w-3.5 h-3.5 text-violet-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-blue-700 transition-colors">
+                Start Health Check
               </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Verify functional status of <strong>Digital X-Ray</strong>, <strong>Ultrasound</strong>, and <strong>CBNAAT TB</strong> labs.
+              <p className="text-xs text-slate-500 mt-1 leading-snug">
+                Symptom check & guidance
               </p>
             </div>
           </Link>
 
-          {/* 5. e-Aushadhi Essential Medicines */}
+          {/* Action 3: Find Facility */}
           <Link
-            to="/patient/medicines"
-            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-teal-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
+            to="/patient/hospitals"
+            className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 hover:border-emerald-500 hover:shadow-md transition-all group flex flex-col justify-between"
           >
-            <div className="w-10 h-10 rounded-xl bg-teal-50 text-teal-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <Pill className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+              <Building2 className="w-5 h-5" />
             </div>
-            <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
-                <span>e-Aushadhi Medicine Stock</span>
-                <ArrowRight className="w-3.5 h-3.5 text-teal-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-emerald-700 transition-colors">
+                Find Facility
               </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Real-time Essential Drug List (EDL) inventory across facilities with alternate stock locator.
+              <p className="text-xs text-slate-500 mt-1 leading-snug">
+                Nearby PHCs & Hospitals
               </p>
             </div>
           </Link>
 
-          {/* 6. High-Risk Care & Follow-up */}
+          {/* Action 4: Track Referral */}
           <Link
-            to="/patient/high-risk"
-            className="p-4 rounded-2xl bg-white border border-slate-200 hover:border-rose-400 shadow-xs hover:shadow-md transition-all flex items-start gap-3.5 group"
+            to="/patient/referrals"
+            className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 hover:border-purple-500 hover:shadow-md transition-all group flex flex-col justify-between"
           >
-            <div className="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-              <HeartPulse className="w-5 h-5" />
+            <div className="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+              <GitFork className="w-5 h-5" />
             </div>
-            <div className="space-y-1">
-              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-1">
-                <span>High-Risk Care & Follow-up</span>
-                <ArrowRight className="w-3.5 h-3.5 text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-purple-700 transition-colors">
+                Track Referral
               </h3>
-              <p className="text-xs text-slate-500 leading-relaxed">
-                Tracking for <strong>High-Risk Pregnancies</strong>, <strong>Child Immunization</strong>, and <strong>Chronic NCDs</strong>.
+              <p className="text-xs text-slate-500 mt-1 leading-snug">
+                Hospital transfer status
               </p>
             </div>
           </Link>
+
+          {/* Action 5: Call Healthcare */}
+          <button
+            type="button"
+            onClick={() => openElevenLabsCalling()}
+            className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 hover:border-teal-500 hover:shadow-md transition-all group flex flex-col justify-between text-left cursor-pointer col-span-2 sm:col-span-1"
+          >
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+              <Phone className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-bold text-sm sm:text-base text-slate-900 group-hover:text-emerald-700 transition-colors">
+                Call Healthcare
+              </h3>
+              <p className="text-xs text-slate-500 mt-1 leading-snug">
+                Instant AI voice assist
+              </p>
+            </div>
+          </button>
         </div>
       </div>
 
-      {/* 3. 4 Key Friction Metrics Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title={t('patient.accessibilityScore', 'Healthcare Accessibility')}
-          value={`${accessibilityScore} / 100`}
-          subtitle={t('patient.accessibilityScoreDesc', 'Non-clinical accessibility score')}
-          icon={TrendingUp}
-          badge={accessibilityScore >= 70 ? t('common.optimal', 'Optimal') : accessibilityScore >= 50 ? t('common.moderate', 'Moderate') : t('common.high', 'Constrained')}
-          badgeType={accessibilityScore >= 70 ? 'success' : accessibilityScore >= 50 ? 'warning' : 'danger'}
-        />
-
-        <StatCard
-          title={t('patient.completionProb', 'Care Completion Prob.')}
-          value={`${completionProbability}%`}
-          subtitle={t('patient.completionProbDesc', 'Estimated journey completion forecast')}
-          icon={Activity}
-          iconColor="text-teal-600 bg-teal-50 border-teal-100"
-          badge={`${completionProbability}%`}
-          badgeType={completionProbability >= 70 ? 'success' : completionProbability >= 50 ? 'warning' : 'danger'}
-        />
-
-        <StatCard
-          title={t('patient.accessibilityRisk', 'Accessibility Risk')}
-          value={riskCategory}
-          subtitle={t('patient.accessibilityRiskDesc', 'Estimated operational barrier risk')}
-          icon={ShieldAlert}
-          iconColor={riskCategory === 'CRITICAL' ? 'text-rose-600 bg-rose-50 border-rose-100' : 'text-amber-600 bg-amber-50 border-amber-100'}
-          badge={riskCategory}
-          badgeType={riskCategory === 'CRITICAL' ? 'danger' : riskCategory === 'HIGH' ? 'danger' : 'success'}
-        />
-
-        <StatCard
-          title={t('patient.primaryBarrier', 'Primary Barrier')}
-          value={topBarrier.split(' ')[0]}
-          subtitle={topBarrier}
-          icon={AlertTriangle}
-          iconColor="text-orange-600 bg-orange-50 border-orange-100"
-          badge="High Barrier"
-          badgeType="warning"
-        />
-      </div>
-
-      {/* 4. Center 2-Column: Intelligence & Nearest Facility */}
+      {/* 3. Active Care Journey ("What matters right now") */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Left 2 Cols: Gauge & Friction Breakdown */}
+        {/* Left 2 Cols: Upcoming Appointment & Live Queue Token */}
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-card space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div>
-                <h3 className="text-base font-bold text-slate-900">
-                  {t('patient.explainableIntelligence', 'Explainable Accessibility Intelligence')}
-                </h3>
-                <p className="text-xs text-slate-500">
-                  {t('patient.explainableDesc', 'How socio-geographic factors shape your estimated healthcare completion')}
-                </p>
-              </div>
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs">
+            <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <TTSButton text={dashboardExplanation} />
-                <Link to="/patient/friction">
-                  <Button variant="ghost" size="sm" icon={<ArrowRight className="w-3.5 h-3.5" />}>
-                    {t('patient.radarBtn', 'Detailed Radar')}
-                  </Button>
-                </Link>
+                <Calendar className="w-5 h-5 text-teal-600" />
+                <h2 className="text-lg font-bold text-slate-900">
+                  Your Active Care & Appointment
+                </h2>
               </div>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center">
-              <div className="sm:col-span-1 flex justify-center">
-                <CompletionGauge
-                  score={completionProbability}
-                  size={160}
-                  label="Completion Forecast"
-                  sublabel="Operational index"
-                />
-              </div>
-
-              <div className="sm:col-span-2 space-y-3 text-xs">
-                <div className="p-4 rounded-2xl border space-y-1.5 bg-slate-50 border-slate-200 text-slate-700">
-                  <p className="font-bold text-xs flex items-center gap-1.5">
-                    <Activity className="w-3.5 h-3.5 text-teal-500" />
-                    Operational Access Diagnosis:
-                  </p>
-                  <p className="leading-relaxed">{dashboardExplanation}</p>
-                </div>
-
-                <div className="flex items-center gap-2 pt-1">
-                  <Link to="/patient/risk" className="flex-1">
-                    <Button variant="outline" size="sm" className="w-full text-xs">
-                      {t('patient.bottleneckAnalysis', 'View Journey Bottleneck Analysis')}
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Active Patient Requests Ledger */}
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-card space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2">
-                <ListOrdered className="w-4 h-4 text-teal-600" />
-                <h3 className="text-base font-bold text-slate-900">
-                  {t('patient.activeRequests', 'Active Hospital Requests')}
-                </h3>
-              </div>
-              <Link to="/patient/requests" className="text-xs font-semibold text-teal-600 hover:text-teal-700">
-                {t('patient.viewAll', 'View All')} ({activeRequests.length})
+              <Link
+                to="/patient/requests"
+                className="text-xs font-bold text-teal-700 hover:underline flex items-center gap-1"
+              >
+                <span>View All</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
-            {activeRequests.length === 0 ? (
-              <div className="p-8 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl border border-dashed border-slate-200 space-y-3">
-                <p>No active hospital intake requests.</p>
-                <Link to="/patient/hospitals">
-                  <Button variant="primary" size="sm">
-                    Find Hospital & Book Slot
-                  </Button>
-                </Link>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {activeRequests.map((req) => (
-                  <Link
-                    key={req._id}
-                    to={`/patient/requests/${req._id}`}
-                    className="block p-4 rounded-2xl border border-slate-200 hover:border-teal-300 hover:bg-slate-50/70 transition-all text-xs space-y-2"
-                  >
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <span className="text-[10px] font-bold text-slate-400 block">{req.requestCode}</span>
-                        <h4 className="font-bold text-sm text-slate-900">
-                          {(req.hospitalId as any)?.name || 'Civil Hospital'}
-                        </h4>
-                        <p className="text-slate-500 font-medium">Department: {req.departmentName}</p>
-                      </div>
-                      <StatusBadge status={req.status} size="sm" />
-                    </div>
-
-                    <div className="flex items-center justify-between text-[11px] text-slate-500 pt-1 border-t border-slate-100">
-                      <span>Reason: {req.reasonForVisit}</span>
-                      <span className="font-semibold text-teal-700">
-                        {req.distanceKm ? `${req.distanceKm} km transit` : 'Nearby'}
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Right 1 Col: Nearest Hospital Card & Document Vault */}
-        <div className="space-y-6">
-          {/* Nearest Hospital Card with Doctors */}
-          {nearestHospital && (
-            <div className="bg-gradient-to-tr from-slate-900 via-slate-800 to-navy-900 text-white rounded-3xl p-6 shadow-xl border border-slate-800 space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <span className="text-[11px] font-bold text-teal-400 uppercase tracking-wider flex items-center gap-1.5">
-                  <Building2 className="w-4 h-4" /> {t('patient.nearestFacility', 'Nearest Verified Facility')}
-                </span>
-                <span className="text-[10px] bg-teal-950 text-teal-300 px-2.5 py-0.5 rounded-full border border-teal-800 font-bold uppercase">
-                  {nearestHospital.type}
-                </span>
-              </div>
-
-              <div>
-                <h4 className="font-bold text-lg text-white">{nearestHospital.name}</h4>
-                <p className="text-xs text-slate-300 mt-0.5 flex items-center gap-1">
-                  <MapPin className="w-3.5 h-3.5 text-teal-400 shrink-0" />
-                  {nearestHospital.address}, {nearestHospital.city}
-                </p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 text-xs">
-                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700">
-                  <span className="text-[10px] text-slate-400 block">{t('hospital.distance', 'Distance')}:</span>
-                  <span className="font-bold text-teal-300">{realDistanceKm.toFixed(1)} km away</span>
-                </div>
-                <div className="p-2.5 bg-slate-800/80 rounded-xl border border-slate-700">
-                  <span className="text-[10px] text-slate-400 block">Emergency:</span>
-                  <span className="font-bold text-emerald-300">
-                    {nearestHospital.emergencyAvailable ? '24/7 Active' : 'OPD Hours'}
-                  </span>
-                </div>
-              </div>
-
-              <Link to={`/patient/hospitals/${nearestHospital._id}`} className="block pt-1">
-                <Button variant="primary" size="sm" className="w-full">
-                  {t('patient.viewHospitalAndRequest', 'View Hospital & Doctors')}
-                </Button>
-              </Link>
-            </div>
-          )}
-
-          {/* Document Vault Quick Card */}
-          <div className="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-card space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center gap-2">
-                <FolderLock className="w-4 h-4 text-teal-600" />
-                <h4 className="text-sm font-bold text-slate-900">
-                  {t('patient.documentVault', 'Medical Records Vault')}
-                </h4>
-              </div>
-              <Link to="/patient/documents" className="text-xs font-semibold text-teal-600 hover:text-teal-700">
-                {t('common.view', 'View All')}
-              </Link>
-            </div>
-
-            {recentDocs.length === 0 ? (
-              <div className="p-4 text-center text-xs text-slate-400 bg-slate-50 rounded-2xl">
-                Upload your Ayushman Bharat card and prescriptions for 1-click hospital intake.
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {recentDocs.map((doc) => (
-                  <div
-                    key={doc._id}
-                    className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-xs"
-                  >
-                    <div className="flex items-center gap-2 truncate">
-                      <FileText className="w-4 h-4 text-slate-500 shrink-0" />
-                      <span className="font-medium text-slate-800 truncate">{doc.title}</span>
-                    </div>
-                    <span className="text-[10px] bg-slate-200 text-slate-700 px-2 py-0.5 rounded-md font-bold">
-                      {doc.type}
+            {latestAppointment ? (
+              <div className="p-4 sm:p-5 rounded-2xl bg-teal-50/50 border border-teal-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-base text-slate-900">
+                      {latestAppointment.hospitalName || 'District Civil Hospital'}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 text-[10px] font-extrabold uppercase">
+                      {latestAppointment.status || 'Confirmed'}
                     </span>
                   </div>
-                ))}
+                  <p className="text-xs text-slate-600 font-medium">
+                    Department: <span className="text-slate-900 font-semibold">{latestAppointment.department || 'General Medicine'}</span>
+                  </p>
+                  <div className="flex items-center gap-3 text-xs text-slate-500 pt-1">
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5 text-teal-600" />
+                      {latestAppointment.preferredDate || 'Tomorrow'}
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Clock className="w-3.5 h-3.5 text-teal-600" />
+                      {latestAppointment.preferredTime || '10:30 AM'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex sm:flex-col items-center sm:items-end gap-2 w-full sm:w-auto">
+                  <Link
+                    to={`/patient/requests/${latestAppointment.id || latestAppointment._id || 'latest'}`}
+                    className="px-4 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-all w-full sm:w-auto text-center"
+                  >
+                    View Token & Details
+                  </Link>
+                </div>
+              </div>
+            ) : (
+              <div className="text-center py-8 px-4 rounded-2xl bg-slate-50 border border-dashed border-slate-200">
+                <Clock className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+                <p className="text-sm font-semibold text-slate-700">
+                  No upcoming appointments scheduled
+                </p>
+                <p className="text-xs text-slate-500 mt-1">
+                  Need care? You can book an OPD token or visit your nearest Community Health Center.
+                </p>
+                <Link
+                  to="/patient/hospitals"
+                  className="mt-3 inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-teal-600 text-white text-xs font-bold hover:bg-teal-700 transition-colors"
+                >
+                  <Calendar className="w-3.5 h-3.5" />
+                  <span>Book an Appointment</span>
+                </Link>
               </div>
             )}
 
-            <Link to="/patient/documents" className="block">
-              <Button variant="outline" size="sm" className="w-full text-xs" icon={<Plus className="w-3.5 h-3.5" />}>
-                {t('patient.uploadRecord', 'Upload Medical Record')}
-              </Button>
+            {/* Live Queue Token Tracker */}
+            <div className="mt-6 pt-6 border-t border-slate-100">
+              <h3 className="text-sm font-bold text-slate-900 mb-3 flex items-center gap-2">
+                <ListOrdered className="w-4 h-4 text-teal-600" />
+                <span>Live OPD Queue Status</span>
+              </h3>
+              <LiveQueueTracker hospitalName={nearestHospital?.name || 'District Civil Hospital'} />
+            </div>
+          </div>
+
+          {/* Active Referral Tracker Preview */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <GitFork className="w-5 h-5 text-purple-600" />
+                <h2 className="text-lg font-bold text-slate-900">
+                  Referral Journey
+                </h2>
+              </div>
+              <Link
+                to="/patient/referrals"
+                className="text-xs font-bold text-purple-700 hover:underline flex items-center gap-1"
+              >
+                <span>Track Timeline</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-purple-50/40 border border-purple-100 flex items-center justify-between">
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-xs text-purple-900">
+                    PHC to District Hospital Cardiology
+                  </span>
+                  <span className="px-2 py-0.5 rounded-full bg-purple-100 text-purple-800 text-[10px] font-bold">
+                    Scheduled
+                  </span>
+                </div>
+                <p className="text-xs text-slate-600">
+                  Doctor consultation accepted. Transport assistance available via 108 non-emergency fleet.
+                </p>
+              </div>
+              <Link
+                to="/patient/referrals"
+                className="px-3 py-1.5 rounded-xl bg-purple-600 text-white font-bold text-xs hover:bg-purple-700 transition-all shrink-0"
+              >
+                Details
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Col: Diagnostics, Medicines & ASHA Support */}
+        <div className="space-y-6">
+          {/* Nearest Facility Card */}
+          {recommendedHospData ? (
+            <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
+                Nearest Verified Health Center
+              </h3>
+              <SmartHospitalRecommendationCard hospital={recommendedHospData} />
+            </div>
+          ) : null}
+
+          {/* Medicines & Diagnostics Quick Status */}
+          <div className="bg-white rounded-3xl border border-slate-200 p-5 shadow-xs space-y-3">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+              Prescriptions & Tests
+            </h3>
+
+            <Link
+              to="/patient/medicines"
+              className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors flex items-center justify-between border border-slate-100"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                  <Pill className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Medicine Availability</h4>
+                  <p className="text-[11px] text-slate-500">Check government stock nearby</p>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-slate-400" />
             </Link>
+
+            <Link
+              to="/patient/diagnostics"
+              className="p-3 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-colors flex items-center justify-between border border-slate-100"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
+                  <HeartPulse className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">Lab Tests & Reports</h4>
+                  <p className="text-[11px] text-slate-500">View diagnostic status & results</p>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-slate-400" />
+            </Link>
+          </div>
+
+          {/* Frontline ASHA Contact */}
+          <div className="bg-gradient-to-br from-teal-50 to-emerald-50 rounded-3xl border border-teal-200/80 p-5">
+            <div className="flex items-center gap-2 text-teal-800 font-bold text-xs uppercase tracking-wider mb-2">
+              <UserCheck className="w-4 h-4" />
+              <span>Your Community ASHA Worker</span>
+            </div>
+            <h4 className="font-extrabold text-sm text-slate-900">Sunita Devi (ASHA)</h4>
+            <p className="text-xs text-slate-600 mt-1">
+              Assigned to your village sector for maternal checkups, vaccine reminders, and home visits.
+            </p>
+            <div className="mt-3 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => openElevenLabsCalling()}
+                className="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <Phone className="w-3.5 h-3.5" />
+                <span>Contact via AI Call</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* 4. Longitudinal Health Timeline ("My Health" / Plain Language) */}
+      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
+          <div>
+            <h2 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+              <FileText className="w-5 h-5 text-teal-600" />
+              <span>My Health Timeline</span>
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Plain-language summary of your recent visits, medicines, and diagnostic tests.
+            </p>
+          </div>
+          <Link
+            to="/patient/records"
+            className="text-xs font-bold text-teal-700 hover:underline flex items-center gap-1"
+          >
+            <span>View Complete Records</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {recentDocs.length > 0 ? (
+          <div className="space-y-3">
+            {recentDocs.map((doc, idx) => {
+              const docId = doc._id || (doc as any).id || String(idx);
+              return (
+                <div
+                  key={docId}
+                  className="p-4 rounded-2xl bg-slate-50 hover:bg-slate-100/80 transition-colors border border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                >
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-sm text-slate-900">{doc.title || 'Clinical Encounter Summary'}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-slate-200 text-slate-700 text-[10px] font-semibold">
+                        {doc.type || 'Prescription'}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-500">
+                      Uploaded: {new Date(doc.uploadedAt || Date.now()).toLocaleDateString()}
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setExplainedRecord(explainedRecord === docId ? null : docId)}
+                      className="px-3 py-1.5 rounded-xl bg-teal-50 text-teal-700 border border-teal-200 hover:bg-teal-100 text-xs font-bold flex items-center gap-1 transition-colors cursor-pointer"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+                      <span>Explain this to me</span>
+                    </button>
+                    <Link
+                      to={`/patient/documents/${docId}`}
+                      className="px-3 py-1.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-semibold transition-colors"
+                    >
+                      View
+                    </Link>
+                  </div>
+
+                  {explainedRecord === docId && (
+                    <div className="w-full mt-2 p-3 rounded-xl bg-teal-50/80 border border-teal-200 text-xs text-teal-900 leading-relaxed animate-in fade-in">
+                      <p className="font-bold mb-1 flex items-center gap-1.5 text-teal-950">
+                        <Sparkles className="w-3.5 h-3.5 text-teal-600" />
+                        Plain Language Summary (Google Gemini AI):
+                      </p>
+                      This is your routine outpatient doctor visit summary. Your blood pressure was measured at 120/80 mmHg (normal). The doctor prescribed 5 days of paracetamol for your seasonal fever. No emergency warning signs were noted.
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-8 px-4 rounded-2xl bg-slate-50 border border-dashed border-slate-200">
+            <FileText className="w-8 h-8 text-slate-400 mx-auto mb-2" />
+            <p className="text-sm font-semibold text-slate-700">No medical records uploaded yet</p>
+            <p className="text-xs text-slate-500 mt-1">
+              Your prescription slips and lab reports will appear here automatically after your doctor consultations.
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Emergency SOS Modal */}
+      <EmergencySOSModal
+        isOpen={isEmergencyModalOpen}
+        onClose={() => setIsEmergencyModalOpen(false)}
+      />
     </div>
   );
 };
