@@ -8,7 +8,7 @@ import { AccessibilityProvider } from './context/AccessibilityContext';
 import { ToastProvider } from './context/ToastContext';
 import { FirstVisitLanguageModal } from './components/common/FirstVisitLanguageModal';
 import { AccessibilityToolbar } from './components/common/AccessibilityToolbar';
-import { GeminiChatbot } from './components/common/GeminiChatbot';
+import { ElevenLabsWidget } from './components/common/ElevenLabsWidget';
 
 // Layouts
 import { MainLayout } from './layouts/MainLayout';
@@ -148,7 +148,7 @@ export const App: React.FC = () => {
                 <NotificationProvider>
                   <FirstVisitLanguageModal />
                   <AccessibilityToolbar />
-                  <GeminiChatbot />
+                  <ElevenLabsWidget />
                   <Routes>
                     {/* Public Main Layout */}
                     <Route element={<MainLayout />}>

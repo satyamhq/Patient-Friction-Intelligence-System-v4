@@ -4,6 +4,7 @@ import { CallLog } from '../models/CallLog.js';
 import { FrictionEvent } from '../models/FrictionEvent.js';
 import { Hospital } from '../models/Hospital.js';
 import { telephonyBridge } from '../services/telephonyBridgeService.js';
+import { geminiRagService } from '../services/geminiService.js';
 
 // 1. POST /api/appointments - Create or register appointment in MongoDB
 export const createAppointment = async (req: Request, res: Response): Promise<void> => {
@@ -495,3 +496,35 @@ function normalizeFrictionType(rawType?: string): string {
   if (t.includes('cost') || t.includes('wage') || t.includes('fee')) return 'cost';
   return 'appointment_timing';
 }
+
+// 7. POST /api/appointments/voice-agent/gemini-brain - Gemini AI Backend for ElevenLabs
+export const processVoiceAgentGeminiBrain = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { query, prompt, conversationId, role, history } = req.body;
+    const userPrompt = query || prompt || 'Healthcare appointment inquiry and hospital guidance';
+
+    const geminiResult = await geminiRagService.chat({
+      query: userPrompt,
+      history: Array.isArray(history) ? history : [],
+      role: role || 'patient',
+      currentPath: '/voice-agent',
+    });
+
+    res.status(200).json({
+      success: true,
+      brain: 'Google Gemini (RAG Engine)',
+      agentId: 'agent_2901m2hw983kfcesprd47f904gbk',
+      conversationId: conversationId || `conv_${Date.now()}`,
+      answer: geminiResult.answer,
+      suggestedQuestions: geminiResult.suggestedQuestions,
+      sources: geminiResult.sources,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error: any) {
+    console.error('[ElevenLabs Gemini Brain Error]', error);
+    res.status(500).json({
+      success: false,
+      message: error.message || 'Gemini voice brain processing error',
+    });
+  }
+};

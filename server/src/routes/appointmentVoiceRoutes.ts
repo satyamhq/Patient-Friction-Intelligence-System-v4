@@ -9,6 +9,7 @@ import {
   recordVoiceFriction,
   getLatestVoiceAppointmentStatus,
   getVoiceContextDirectory,
+  processVoiceAgentGeminiBrain,
 } from '../controllers/appointmentVoiceController.js';
 
 const router = Router();
@@ -36,7 +37,7 @@ router.patch('/:id', updateAppointment);
 router.post('/webhook/elevenlabs', handleElevenLabsWebhook);
 
 // ============================================================
-// Voice Agent Integration Endpoints
+// Voice Agent Integration Endpoints & Gemini AI Brain
 // ============================================================
 router.get('/voice-agent/context', getVoiceContextDirectory);
 router.post('/voice-agent/book', createAppointment);
@@ -44,5 +45,7 @@ router.post('/voice-agent/call-log', logVoiceCall);
 router.post('/voice-agent/friction', recordVoiceFriction);
 router.get('/voice-agent/status', getLatestVoiceAppointmentStatus);
 router.get('/voice-agent/status/:patientId', getLatestVoiceAppointmentStatus);
+router.post('/voice-agent/gemini-brain', processVoiceAgentGeminiBrain);
+router.post('/voice-agent/chat', processVoiceAgentGeminiBrain);
 
 export default router;
