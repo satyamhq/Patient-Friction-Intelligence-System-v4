@@ -28,13 +28,12 @@ import { Button } from '../components/common/Button';
 import { TTSButton } from '../components/common/TTSButton';
 import { AiAppointmentAssistanceCard } from '../components/common/AiAppointmentAssistanceCard';
 import { EmergencySOSModal } from '../components/common/EmergencySOSModal';
-import { AiAppointmentAssistanceModal } from '../components/common/AiAppointmentAssistanceModal';
+import { openElevenLabsCalling } from '../services/elevenlabsCallingService';
 
 export const LandingPage: React.FC = () => {
   const { t } = useTranslation();
   const { isAuthenticated, user } = useAuth();
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = React.useState(false);
-  const [isAiAssistanceOpen, setIsAiAssistanceOpen] = React.useState(false);
 
   return (
     <div className="space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-24 pb-16 overflow-hidden">
@@ -164,7 +163,7 @@ export const LandingPage: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-10 relative z-20">
         <AiAppointmentAssistanceCard
           onOpen108Emergency={() => setIsEmergencyModalOpen(true)}
-          onOpenAiAssistance={() => setIsAiAssistanceOpen(true)}
+          onOpenAiAssistance={openElevenLabsCalling}
         />
       </section>
 
@@ -738,13 +737,6 @@ export const LandingPage: React.FC = () => {
       <EmergencySOSModal
         isOpen={isEmergencyModalOpen}
         onClose={() => setIsEmergencyModalOpen(false)}
-      />
-
-      {/* AI Call & Appointment Assistance Modal */}
-      <AiAppointmentAssistanceModal
-        isOpen={isAiAssistanceOpen}
-        onClose={() => setIsAiAssistanceOpen(false)}
-        onOpen108Emergency={() => setIsEmergencyModalOpen(true)}
       />
     </div>
   );

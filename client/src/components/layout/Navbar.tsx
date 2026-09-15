@@ -32,7 +32,7 @@ import { useNotifications } from '../../context/NotificationContext';
 import { LanguageSelector } from '../common/LanguageSelector';
 import { OfflineSyncIndicator } from '../common/OfflineSyncIndicator';
 import { EmergencySOSModal } from '../common/EmergencySOSModal';
-import { AiAppointmentAssistanceModal } from '../common/AiAppointmentAssistanceModal';
+import { openElevenLabsCalling } from '../../services/elevenlabsCallingService';
 
 export const Navbar: React.FC = () => {
   const { t } = useTranslation();
@@ -46,7 +46,6 @@ export const Navbar: React.FC = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isMobileNotifExpanded, setIsMobileNotifExpanded] = useState(false);
   const [isEmergencyModalOpen, setIsEmergencyModalOpen] = useState(false);
-  const [isAiAssistanceOpen, setIsAiAssistanceOpen] = useState(false);
 
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
@@ -354,16 +353,15 @@ export const Navbar: React.FC = () => {
               <span className="font-extrabold tracking-wider whitespace-nowrap">108 SOS</span>
             </button>
 
-            {/* AI Call & Appointment Assistance Button (Placed Immediately After 108) */}
+            {/* ElevenLabs Calling Button (Placed Immediately After 108 - Only 📞) */}
             <button
               type="button"
-              onClick={() => setIsAiAssistanceOpen(true)}
-              className="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white text-xs font-bold tracking-wide border border-teal-700 shadow-sm flex items-center gap-1.5 transition-all cursor-pointer select-none shrink-0"
-              title="Get help booking, rescheduling, or finding a healthcare appointment."
-              aria-label="Talk to AI: AI Call and Appointment Assistance"
+              onClick={openElevenLabsCalling}
+              className="w-9 h-9 rounded-xl bg-teal-600 hover:bg-teal-700 active:scale-95 text-white text-base shadow-sm border border-teal-700/80 flex items-center justify-center transition-all cursor-pointer select-none shrink-0"
+              title="Call with ElevenLabs Healthcare AI"
+              aria-label="Call with ElevenLabs Healthcare AI"
             >
-              <span className="text-sm leading-none" role="img" aria-label="phone">📞</span>
-              <span className="hidden xs:inline font-bold">Talk to AI</span>
+              <span className="leading-none select-none" role="img" aria-label="phone">📞</span>
             </button>
 
             {/* Desktop & Tablet Action Controls */}
@@ -740,11 +738,12 @@ export const Navbar: React.FC = () => {
                     type="button"
                     onClick={() => {
                       setIsMobileMenuOpen(false);
-                      setIsAiAssistanceOpen(true);
+                      openElevenLabsCalling();
                     }}
-                    className="px-3 py-1.5 rounded-xl bg-teal-600 text-white text-xs font-bold tracking-wide shadow-xs cursor-pointer select-none shrink-0"
+                    className="w-9 h-9 rounded-xl bg-teal-600 active:scale-95 text-white text-base shadow-xs flex items-center justify-center cursor-pointer select-none shrink-0"
+                    title="Call with ElevenLabs Healthcare AI"
                   >
-                    Talk to AI
+                    📞
                   </button>
                 </div>
               </div>
@@ -1201,13 +1200,6 @@ export const Navbar: React.FC = () => {
       <EmergencySOSModal
         isOpen={isEmergencyModalOpen}
         onClose={() => setIsEmergencyModalOpen(false)}
-      />
-
-      {/* AI Call & Appointment Assistance Modal */}
-      <AiAppointmentAssistanceModal
-        isOpen={isAiAssistanceOpen}
-        onClose={() => setIsAiAssistanceOpen(false)}
-        onOpen108Emergency={() => setIsEmergencyModalOpen(true)}
       />
     </header>
   );

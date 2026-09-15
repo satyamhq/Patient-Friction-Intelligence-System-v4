@@ -43,7 +43,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { appointmentVoiceService } from '../../services/appointmentVoiceService';
-import { AiAppointmentAssistanceModal } from '../../components/common/AiAppointmentAssistanceModal';
+import { openElevenLabsCalling } from '../../services/elevenlabsCallingService';
 
 export const PatientDashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -59,7 +59,6 @@ export const PatientDashboard: React.FC = () => {
   const [nearestHospital, setNearestHospital] = useState<Hospital | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(!profile);
   const [voiceStatusData, setVoiceStatusData] = useState<any>(null);
-  const [isVoiceAssistanceOpen, setIsVoiceAssistanceOpen] = useState(false);
 
   useEffect(() => {
     const loadDashboard = async () => {
@@ -306,7 +305,7 @@ export const PatientDashboard: React.FC = () => {
 
             <button
               type="button"
-              onClick={() => setIsVoiceAssistanceOpen(true)}
+              onClick={openElevenLabsCalling}
               className="px-3.5 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer shrink-0"
             >
               <Phone className="w-3.5 h-3.5" />
@@ -841,12 +840,6 @@ export const PatientDashboard: React.FC = () => {
           </div>
         </div>
       </div>
-
-      {/* AI Call & Appointment Assistance Modal */}
-      <AiAppointmentAssistanceModal
-        isOpen={isVoiceAssistanceOpen}
-        onClose={() => setIsVoiceAssistanceOpen(false)}
-      />
     </div>
   );
 };
