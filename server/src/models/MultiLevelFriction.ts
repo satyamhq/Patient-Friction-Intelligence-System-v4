@@ -9,6 +9,17 @@ export interface IJourneyStageFriction {
   severity: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
 }
 
+export interface IFrictionFactors {
+  accessibility: number; // 0 - 100
+  waitingTime: number; // 0 - 100
+  cost: number; // 0 - 100
+  processComplexity: number; // 0 - 100
+  referralDelays: number; // 0 - 100
+  facilityCapacity: number; // 0 - 100
+  informationBarriers: number; // 0 - 100
+  continuityOfCare: number; // 0 - 100
+}
+
 export interface IPatientJourneyRecord extends Document {
   journeyId: string;
   patientId: string;
@@ -20,11 +31,12 @@ export interface IPatientJourneyRecord extends Document {
   village: string;
   facilityId: string;
   facilityName: string;
-  serviceCategory: string; // Maternal, Cardiology, Oncology, General Medicine, Pediatrics, Orthopedics
+  serviceCategory: string; // Maternal, Cardiology, Oncology, General Medicine, Pediatrics, Orthopedics, Nephrology
   transitDistanceKm: number;
   transitDurationMinutes: number;
   transitCostInr: number;
   dailyWageLossInr: number;
+  outOfPocketExpensesInr: number;
   householdIncomeTier: 'bpl' | 'low_income' | 'middle_income';
   languageDissonance: boolean;
   preferredLanguage: string;
@@ -33,6 +45,13 @@ export interface IPatientJourneyRecord extends Document {
   queueWaitMinutes: number;
   diagnosticDelayHours: number;
   pharmacyStockoutExperienced: boolean;
+  processStepsCount: number;
+  referralDelayDays: number;
+  facilityCapacityUtilizationPct: number;
+  staffingRatioScore: number;
+  serviceHoursPerDay: number;
+  informationAvailabilityScore: number;
+  factors: IFrictionFactors;
   frictionScore: number;
   frictionTier: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
   careFailureRisk: number; // 0 - 100%
@@ -58,6 +77,7 @@ const PatientJourneyRecordSchema = new Schema<IPatientJourneyRecord>(
     transitDurationMinutes: { type: Number, required: true },
     transitCostInr: { type: Number, required: true },
     dailyWageLossInr: { type: Number, required: true },
+    outOfPocketExpensesInr: { type: Number, default: 150 },
     householdIncomeTier: { type: String, default: 'bpl' },
     languageDissonance: { type: Boolean, default: false },
     preferredLanguage: { type: String, default: 'Hindi' },
@@ -66,6 +86,22 @@ const PatientJourneyRecordSchema = new Schema<IPatientJourneyRecord>(
     queueWaitMinutes: { type: Number, default: 45 },
     diagnosticDelayHours: { type: Number, default: 2 },
     pharmacyStockoutExperienced: { type: Boolean, default: false },
+    processStepsCount: { type: Number, default: 3 },
+    referralDelayDays: { type: Number, default: 0 },
+    facilityCapacityUtilizationPct: { type: Number, default: 80 },
+    staffingRatioScore: { type: Number, default: 65 },
+    serviceHoursPerDay: { type: Number, default: 8 },
+    informationAvailabilityScore: { type: Number, default: 70 },
+    factors: {
+      accessibility: { type: Number, default: 50 },
+      waitingTime: { type: Number, default: 50 },
+      cost: { type: Number, default: 50 },
+      processComplexity: { type: Number, default: 50 },
+      referralDelays: { type: Number, default: 30 },
+      facilityCapacity: { type: Number, default: 50 },
+      informationBarriers: { type: Number, default: 40 },
+      continuityOfCare: { type: Number, default: 45 },
+    },
     frictionScore: { type: Number, required: true, index: true },
     frictionTier: { type: String, enum: ['LOW', 'MODERATE', 'HIGH', 'CRITICAL'], required: true },
     careFailureRisk: { type: Number, required: true },

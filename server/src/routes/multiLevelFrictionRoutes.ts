@@ -4,6 +4,7 @@ import {
   getIndividualFriction,
   getVillageFriction,
   getDistrictFriction,
+  getScenarios,
   simulateIntervention,
   approveIntervention,
   recordOutcome,
@@ -14,6 +15,9 @@ const router = Router();
 
 // Hierarchy of districts and villages
 router.get('/hierarchy', getHierarchy);
+
+// Predefined Simulation Scenarios Catalog
+router.get('/scenarios', getScenarios);
 
 // Individual patient / journey calculations
 router.get('/individual/:journeyId', getIndividualFriction);

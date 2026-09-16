@@ -131,11 +131,53 @@ export const getDistrictFriction = async (req: Request, res: Response): Promise<
   }
 };
 
+export const getScenarios = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const catalog = multiLevelFrictionEngine.getScenarioCatalog();
+    res.status(200).json({
+      success: true,
+      data: catalog,
+    });
+  } catch (error: any) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 export const simulateIntervention = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { baselineScore, candidateName, costBudgetInr, implementationType } = req.body;
-    const base = Number(baselineScore) || 75;
+    const {
+      level = 'individual',
+      targetId = 'JRN-PAT-001',
+      scenarioType,
+      parameterModifications = {},
+      baselineScore,
+      candidateName,
+      costBudgetInr,
+      implementationType,
+    } = req.body;
 
+    const journeys = getSeedJourneys();
+
+    // Enhanced Multi-Level Healthcare-System Variable Simulation
+    if (scenarioType || req.body.level) {
+      const simScenario = scenarioType || 'reduce_waiting_time';
+      const result = multiLevelFrictionEngine.simulateScenario(
+        level,
+        targetId,
+        simScenario,
+        parameterModifications,
+        journeys
+      );
+
+      res.status(200).json({
+        success: true,
+        data: result,
+      });
+      return;
+    }
+
+    // Fallback handler for legacy baselineScore simulations
+    const base = Number(baselineScore) || 75;
     let frictionReductionPct = 45;
     let completionGainPct = 38;
     let cost = Number(costBudgetInr) || 85000;

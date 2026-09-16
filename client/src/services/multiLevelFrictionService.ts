@@ -2,6 +2,91 @@ import { api } from './api';
 
 export type FrictionTier = 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
 
+export interface IFrictionFactors {
+  accessibility: number; // 0 - 100
+  waitingTime: number; // 0 - 100
+  cost: number; // 0 - 100
+  processComplexity: number; // 0 - 100
+  referralDelays: number; // 0 - 100
+  facilityCapacity: number; // 0 - 100
+  informationBarriers: number; // 0 - 100
+  continuityOfCare: number; // 0 - 100
+}
+
+export type SimulationScenarioType =
+  | 'increase_facility_capacity'
+  | 'reduce_waiting_time'
+  | 'add_healthcare_staff'
+  | 'improve_referral_coordination'
+  | 'add_mobile_health_services'
+  | 'improve_transportation_access'
+  | 'extend_service_hours'
+  | 'reduce_process_steps'
+  | 'improve_information_availability';
+
+export interface IScenarioTemplate {
+  id: SimulationScenarioType;
+  title: string;
+  description: string;
+  targetFactor: keyof IFrictionFactors;
+  defaultCostInr: number;
+  recommendedAuthority: string;
+  defaultParameters: Record<string, any>;
+}
+
+export interface ISimulationDriver {
+  factor: string;
+  factorKey: keyof IFrictionFactors;
+  baselineScore: number;
+  simulatedScore: number;
+  delta: number;
+  description: string;
+}
+
+export interface ISimulationResult {
+  simulationId: string;
+  level: 'individual' | 'village' | 'district';
+  targetId: string;
+  targetName: string;
+  scenarioType: SimulationScenarioType;
+  scenarioTitle: string;
+  scenarioDescription: string;
+  parameterModifications: Record<string, any>;
+  currentScore: number;
+  simulatedScore: number;
+  scoreDifference: number;
+  currentTier: FrictionTier;
+  simulatedTier: FrictionTier;
+  affectedPopulation: number;
+  mainDrivers: ISimulationDriver[];
+  expectedImpact: {
+    frictionReductionPct: number;
+    completionGainPct: number;
+    qalySavedEst: number;
+    adherenceRecoveryCount: number;
+  };
+  confidenceDataQuality: {
+    confidenceScore: number;
+    sampleSize: number;
+    dataQuality: 'HIGH' | 'MEDIUM' | 'ADEQUATE';
+    marginOfErrorPct: number;
+  };
+  baselineFactors: IFrictionFactors;
+  simulatedFactors: IFrictionFactors;
+  recommendedIntervention: {
+    authorityTitle: string;
+    responsibleAuthority: string;
+    recommendedAction: string;
+    directiveSummary: string;
+    estimatedCostInr: number;
+    implementationTimeline: string;
+    successKpi: string;
+    policyMandateCode: string;
+  };
+  requiresHumanApproval: boolean;
+  approvalStatus: 'PENDING_OFFICER_REVIEW' | 'APPROVED' | 'REJECTED';
+}
+
 export interface IStageFriction {
   stage: string;
   stageName: string;
@@ -64,6 +149,7 @@ export interface IIndividualFrictionResult {
   topContributingFactors: { factor: string; score: number; description: string }[];
   stages: IStageFriction[];
   rootCauses: string[];
+  factors?: IFrictionFactors;
   recommendation: IRecommendation;
 }
 
@@ -83,6 +169,7 @@ export interface IVillageFrictionResult {
   affectedCohorts: { cohort: string; riskLevel: FrictionTier; description: string }[];
   journeyStageBottlenecks: IStageFriction[];
   trendVsLastMonth: { scoreDelta: number; direction: 'improving' | 'deteriorating' | 'stable' };
+  factors?: IFrictionFactors;
   recommendation: IRecommendation;
 }
 
@@ -115,6 +202,7 @@ export interface IDistrictFrictionResult {
     rootCause: string;
   }[];
   trendOverTime: { month: string; score: number }[];
+  factors?: IFrictionFactors;
   recommendations: IRecommendation[];
 }
 
@@ -142,6 +230,11 @@ export const multiLevelFrictionService = {
     return res.data?.data || [];
   },
 
+  async getScenarios(): Promise<IScenarioTemplate[]> {
+    const res = await api.get('/friction/scenarios');
+    return res.data?.data || [];
+  },
+
   async getIndividualFriction(journeyId: string): Promise<IIndividualFrictionResult> {
     const res = await api.get(`/friction/individual/${journeyId}`);
     return res.data?.data;
@@ -154,6 +247,16 @@ export const multiLevelFrictionService = {
 
   async getDistrictFriction(district: string): Promise<IDistrictFrictionResult> {
     const res = await api.get('/friction/district', { params: { district } });
+    return res.data?.data;
+  },
+
+  async runMultiLevelSimulation(params: {
+    level: 'individual' | 'village' | 'district';
+    targetId: string;
+    scenarioType: SimulationScenarioType;
+    parameterModifications?: Record<string, any>;
+  }): Promise<ISimulationResult> {
+    const res = await api.post('/friction/simulate', params);
     return res.data?.data;
   },
 

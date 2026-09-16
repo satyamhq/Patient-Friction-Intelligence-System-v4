@@ -4,897 +4,227 @@ import { multiLevelFrictionEngine } from '../intelligence/friction/multiLevelFri
 export const SYNTHETIC_DISTRICTS = [
   {
     district: 'Patna',
-    villages: ['Danapur Diara', 'Phulwari Sharif', 'Fatuha'],
+    villages: ['Danapur Diara', 'Phulwari Sharif', 'Fatuha', 'Bakhtiyarpur'],
   },
   {
     district: 'Gaya',
-    villages: ['Tekari', 'Bodh Gaya', 'Barachatti'],
+    villages: ['Tekari', 'Bodh Gaya', 'Barachatti', 'Sherghati'],
   },
   {
     district: 'Purnia',
-    villages: ['Banmankhi', 'Dhamdaha', 'Sparse Cohort'],
+    villages: ['Banmankhi', 'Dhamdaha', 'Baisi', 'Kasba'],
   },
   {
     district: 'Muzaffarpur',
-    villages: ['Marwan', 'Kanti', 'Sahebganj'],
+    villages: ['Marwan', 'Kanti', 'Sahebganj', 'Minapur'],
   },
 ];
 
-export const RAW_SYNTHETIC_JOURNEYS: Partial<IPatientJourneyRecord>[] = [
-  // 1. Patna - Danapur Diara (Riverine High Friction)
-  {
-    journeyId: 'JRN-PAT-001',
-    patientId: 'PAT-PAT-01',
-    patientNameMasked: 'Meera Devi (ABHA: 91-***-4091)',
-    abhaIdMasked: '91-8472-1092-4091',
-    age: 28,
-    gender: 'Female',
-    district: 'Patna',
-    village: 'Danapur Diara',
-    facilityId: 'HOSP-PMCH',
-    facilityName: 'Patna Medical College Hospital (PMCH)',
-    serviceCategory: 'Maternal & High-Risk Obstetric',
-    transitDistanceKm: 34,
-    transitDurationMinutes: 85,
-    transitCostInr: 240,
-    dailyWageLossInr: 450,
-    householdIncomeTier: 'bpl',
-    languageDissonance: true,
-    preferredLanguage: 'Bhojpuri',
-    caregiverEscortAvailable: false,
-    documentationStatus: 'missing_golden_card',
-    queueWaitMinutes: 95,
-    diagnosticDelayHours: 4,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-PAT-002',
-    patientId: 'PAT-PAT-02',
-    patientNameMasked: 'Suresh Paswan (ABHA: 91-***-1120)',
-    abhaIdMasked: '91-4921-8841-1120',
-    age: 54,
-    gender: 'Male',
-    district: 'Patna',
-    village: 'Danapur Diara',
-    facilityId: 'HOSP-PMCH',
-    facilityName: 'Patna Medical College Hospital (PMCH)',
-    serviceCategory: 'Cardiology & Hypertension',
-    transitDistanceKm: 32,
-    transitDurationMinutes: 75,
-    transitCostInr: 220,
-    dailyWageLossInr: 500,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 110,
-    diagnosticDelayHours: 3,
-    pharmacyStockoutExperienced: false,
-  },
-  {
-    journeyId: 'JRN-PAT-003',
-    patientId: 'PAT-PAT-03',
-    patientNameMasked: 'Anita Kumari (ABHA: 91-***-9023)',
-    abhaIdMasked: '91-1029-3847-9023',
-    age: 22,
-    gender: 'Female',
-    district: 'Patna',
-    village: 'Danapur Diara',
-    facilityId: 'HOSP-NMCH',
-    facilityName: 'Nalanda Medical College Hospital',
-    serviceCategory: 'Maternal Health (ANC-3)',
-    transitDistanceKm: 38,
-    transitDurationMinutes: 90,
-    transitCostInr: 260,
-    dailyWageLossInr: 400,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'partial',
-    queueWaitMinutes: 80,
-    diagnosticDelayHours: 2,
-    pharmacyStockoutExperienced: true,
-  },
+// District Facilities Metadata
+const DISTRICT_FACILITIES: Record<string, { id: string; name: string }[]> = {
+  Patna: [
+    { id: 'HOSP-PMCH', name: 'Patna Medical College Hospital (PMCH)' },
+    { id: 'HOSP-NMCH', name: 'Nalanda Medical College Hospital (NMCH)' },
+    { id: 'HOSP-IGIMS', name: 'Indira Gandhi Institute of Medical Sciences' },
+    { id: 'HOSP-FATUHA-CHC', name: 'Fatuha Community Health Centre' },
+  ],
+  Gaya: [
+    { id: 'HOSP-ANMMCH', name: 'Anugrah Narayan Magadh Medical College' },
+    { id: 'HOSP-BODHGAYA-CHC', name: 'Bodh Gaya Community Health Centre' },
+    { id: 'HOSP-TEKARI-SDH', name: 'Tekari Sub-Divisional Hospital' },
+    { id: 'HOSP-SHERGHATI-SDH', name: 'Sherghati Sub-Divisional Hospital' },
+  ],
+  Purnia: [
+    { id: 'HOSP-PURNIA-SADAR', name: 'Purnia Sadar District Hospital' },
+    { id: 'HOSP-BANMANKHI-SDH', name: 'Banmankhi Sub-Divisional Hospital' },
+    { id: 'HOSP-DHAMDAHA-CHC', name: 'Dhamdaha Community Health Centre' },
+    { id: 'HOSP-BAISI-PHC', name: 'Baisi Primary Health Centre' },
+  ],
+  Muzaffarpur: [
+    { id: 'HOSP-SKMCH', name: 'Sri Krishna Medical College Hospital (SKMCH)' },
+    { id: 'HOSP-KANTI-RH', name: 'Kanti Referral Hospital' },
+    { id: 'HOSP-SAHEBGANJ-CHC', name: 'Sahebganj Community Health Centre' },
+    { id: 'HOSP-MARWAN-PHC', name: 'Marwan Primary Health Centre' },
+  ],
+};
 
-  // 2. Patna - Phulwari Sharif (Moderate Friction)
-  {
-    journeyId: 'JRN-PAT-004',
-    patientId: 'PAT-PAT-04',
-    patientNameMasked: 'Mohammad Tariq (ABHA: 91-***-5512)',
-    abhaIdMasked: '91-7721-3948-5512',
-    age: 42,
-    gender: 'Male',
-    district: 'Patna',
-    village: 'Phulwari Sharif',
-    facilityId: 'HOSP-AIIMS-PAT',
-    facilityName: 'AIIMS Patna',
-    serviceCategory: 'Orthopedics & Trauma',
-    transitDistanceKm: 12,
-    transitDurationMinutes: 30,
-    transitCostInr: 60,
-    dailyWageLossInr: 300,
-    householdIncomeTier: 'low_income',
-    languageDissonance: false,
-    preferredLanguage: 'Urdu',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 65,
-    diagnosticDelayHours: 1.5,
-    pharmacyStockoutExperienced: false,
-  },
-  {
-    journeyId: 'JRN-PAT-005',
-    patientId: 'PAT-PAT-05',
-    patientNameMasked: 'Fatima Begum (ABHA: 91-***-8821)',
-    abhaIdMasked: '91-3829-1192-8821',
-    age: 61,
-    gender: 'Female',
-    district: 'Patna',
-    village: 'Phulwari Sharif',
-    facilityId: 'HOSP-AIIMS-PAT',
-    facilityName: 'AIIMS Patna',
-    serviceCategory: 'Diabetes & Ophthalmology',
-    transitDistanceKm: 14,
-    transitDurationMinutes: 35,
-    transitCostInr: 70,
-    dailyWageLossInr: 250,
-    householdIncomeTier: 'middle_income',
-    languageDissonance: false,
-    preferredLanguage: 'Urdu',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 50,
-    diagnosticDelayHours: 1,
-    pharmacyStockoutExperienced: false,
-  },
-  {
-    journeyId: 'JRN-PAT-006',
-    patientId: 'PAT-PAT-06',
-    patientNameMasked: 'Raju Kumar (ABHA: 91-***-7711)',
-    abhaIdMasked: '91-8812-3341-7711',
-    age: 33,
-    gender: 'Male',
-    district: 'Patna',
-    village: 'Phulwari Sharif',
-    facilityId: 'HOSP-PMCH',
-    facilityName: 'Patna Medical College Hospital (PMCH)',
-    serviceCategory: 'General Surgery OPD',
-    transitDistanceKm: 16,
-    transitDurationMinutes: 40,
-    transitCostInr: 80,
-    dailyWageLossInr: 350,
-    householdIncomeTier: 'low_income',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: false,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 70,
-    diagnosticDelayHours: 2,
-    pharmacyStockoutExperienced: false,
-  },
-
-  // 3. Patna - Fatuha (Low/Moderate Friction)
-  {
-    journeyId: 'JRN-PAT-007',
-    patientId: 'PAT-PAT-07',
-    patientNameMasked: 'Sunil Singh (ABHA: 91-***-6019)',
-    abhaIdMasked: '91-2940-1092-6019',
-    age: 48,
-    gender: 'Male',
-    district: 'Patna',
-    village: 'Fatuha',
-    facilityId: 'HOSP-FATUHA-CHC',
-    facilityName: 'Fatuha Community Health Centre',
-    serviceCategory: 'General Medicine',
-    transitDistanceKm: 6,
-    transitDurationMinutes: 18,
-    transitCostInr: 30,
-    dailyWageLossInr: 150,
-    householdIncomeTier: 'middle_income',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 30,
-    diagnosticDelayHours: 0.5,
-    pharmacyStockoutExperienced: false,
-  },
-  {
-    journeyId: 'JRN-PAT-008',
-    patientId: 'PAT-PAT-08',
-    patientNameMasked: 'Geeta Devi (ABHA: 91-***-4412)',
-    abhaIdMasked: '91-5829-1928-4412',
-    age: 39,
-    gender: 'Female',
-    district: 'Patna',
-    village: 'Fatuha',
-    facilityId: 'HOSP-FATUHA-CHC',
-    facilityName: 'Fatuha Community Health Centre',
-    serviceCategory: 'Pediatrics & Immunization',
-    transitDistanceKm: 8,
-    transitDurationMinutes: 22,
-    transitCostInr: 40,
-    dailyWageLossInr: 200,
-    householdIncomeTier: 'low_income',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 35,
-    diagnosticDelayHours: 1,
-    pharmacyStockoutExperienced: false,
-  },
-  {
-    journeyId: 'JRN-PAT-009',
-    patientId: 'PAT-PAT-09',
-    patientNameMasked: 'Kamlesh Rai (ABHA: 91-***-3301)',
-    abhaIdMasked: '91-4920-1928-3301',
-    age: 52,
-    gender: 'Male',
-    district: 'Patna',
-    village: 'Fatuha',
-    facilityId: 'HOSP-NMCH',
-    facilityName: 'Nalanda Medical College Hospital',
-    serviceCategory: 'Dermatology',
-    transitDistanceKm: 18,
-    transitDurationMinutes: 45,
-    transitCostInr: 70,
-    dailyWageLossInr: 250,
-    householdIncomeTier: 'middle_income',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 40,
-    diagnosticDelayHours: 1,
-    pharmacyStockoutExperienced: false,
-  },
-
-  // 4. Gaya - Tekari (Queue & Specialist Deficit)
-  {
-    journeyId: 'JRN-GAY-001',
-    patientId: 'PAT-GAY-01',
-    patientNameMasked: 'Ramesh Yadav (ABHA: 91-***-1940)',
-    abhaIdMasked: '91-9281-3940-1940',
-    age: 46,
-    gender: 'Male',
-    district: 'Gaya',
-    village: 'Tekari',
-    facilityId: 'HOSP-ANMMCH',
-    facilityName: 'Anugrah Narayan Magadh Medical College',
-    serviceCategory: 'Oncology Screening',
-    transitDistanceKm: 28,
-    transitDurationMinutes: 65,
-    transitCostInr: 160,
-    dailyWageLossInr: 450,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Magahi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'missing_golden_card',
-    queueWaitMinutes: 120,
-    diagnosticDelayHours: 5,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-GAY-002',
-    patientId: 'PAT-GAY-02',
-    patientNameMasked: 'Lalita Devi (ABHA: 91-***-7721)',
-    abhaIdMasked: '91-3829-1928-7721',
-    age: 31,
-    gender: 'Female',
-    district: 'Gaya',
-    village: 'Tekari',
-    facilityId: 'HOSP-ANMMCH',
-    facilityName: 'Anugrah Narayan Magadh Medical College',
-    serviceCategory: 'Maternal ANC High Risk',
-    transitDistanceKm: 26,
-    transitDurationMinutes: 60,
-    transitCostInr: 150,
-    dailyWageLossInr: 400,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Magahi',
-    caregiverEscortAvailable: false,
-    documentationStatus: 'partial',
-    queueWaitMinutes: 105,
-    diagnosticDelayHours: 4,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-GAY-003',
-    patientId: 'PAT-GAY-03',
-    patientNameMasked: 'Birendra Prasad (ABHA: 91-***-2291)',
-    abhaIdMasked: '91-4920-1928-2291',
-    age: 63,
-    gender: 'Male',
-    district: 'Gaya',
-    village: 'Tekari',
-    facilityId: 'HOSP-TEKARI-SDH',
-    facilityName: 'Tekari Sub-Divisional Hospital',
-    serviceCategory: 'Geriatric & Pulmonology',
-    transitDistanceKm: 10,
-    transitDurationMinutes: 25,
-    transitCostInr: 50,
-    dailyWageLossInr: 300,
-    householdIncomeTier: 'low_income',
-    languageDissonance: false,
-    preferredLanguage: 'Magahi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 85,
-    diagnosticDelayHours: 3,
-    pharmacyStockoutExperienced: false,
-  },
-
-  // 5. Gaya - Barachatti (Critical Tribal/Forest Transit Barrier)
-  {
-    journeyId: 'JRN-GAY-004',
-    patientId: 'PAT-GAY-04',
-    patientNameMasked: 'Birju Manjhi (ABHA: 91-***-0012)',
-    abhaIdMasked: '91-1029-4920-0012',
-    age: 50,
-    gender: 'Male',
-    district: 'Gaya',
-    village: 'Barachatti',
-    facilityId: 'HOSP-ANMMCH',
-    facilityName: 'Anugrah Narayan Magadh Medical College',
-    serviceCategory: 'Tuberculosis & DOTS Clinic',
-    transitDistanceKm: 52,
-    transitDurationMinutes: 130,
-    transitCostInr: 320,
-    dailyWageLossInr: 450,
-    householdIncomeTier: 'bpl',
-    languageDissonance: true,
-    preferredLanguage: 'Santhali / Magahi',
-    caregiverEscortAvailable: false,
-    documentationStatus: 'missing_id',
-    queueWaitMinutes: 90,
-    diagnosticDelayHours: 6,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-GAY-005',
-    patientId: 'PAT-GAY-05',
-    patientNameMasked: 'Champa Devi (ABHA: 91-***-4921)',
-    abhaIdMasked: '91-8392-1928-4921',
-    age: 26,
-    gender: 'Female',
-    district: 'Gaya',
-    village: 'Barachatti',
-    facilityId: 'HOSP-BARACHATTI-PHC',
-    facilityName: 'Barachatti Primary Health Centre',
-    serviceCategory: 'Maternal Delivery',
-    transitDistanceKm: 22,
-    transitDurationMinutes: 55,
-    transitCostInr: 180,
-    dailyWageLossInr: 350,
-    householdIncomeTier: 'bpl',
-    languageDissonance: true,
-    preferredLanguage: 'Santhali',
-    caregiverEscortAvailable: false,
-    documentationStatus: 'partial',
-    queueWaitMinutes: 60,
-    diagnosticDelayHours: 3,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-GAY-006',
-    patientId: 'PAT-GAY-06',
-    patientNameMasked: 'Somar Manjhi (ABHA: 91-***-8841)',
-    abhaIdMasked: '91-3940-1928-8841',
-    age: 38,
-    gender: 'Male',
-    district: 'Gaya',
-    village: 'Barachatti',
-    facilityId: 'HOSP-ANMMCH',
-    facilityName: 'Anugrah Narayan Magadh Medical College',
-    serviceCategory: 'Malaria & Vector Borne',
-    transitDistanceKm: 48,
-    transitDurationMinutes: 120,
-    transitCostInr: 300,
-    dailyWageLossInr: 450,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Magahi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 80,
-    diagnosticDelayHours: 4,
-    pharmacyStockoutExperienced: true,
-  },
-
-  // 6. Gaya - Bodh Gaya (Moderate Friction)
-  {
-    journeyId: 'JRN-GAY-007',
-    patientId: 'PAT-GAY-07',
-    patientNameMasked: 'Pankaj Kumar (ABHA: 91-***-3392)',
-    abhaIdMasked: '91-1920-3940-3392',
-    age: 34,
-    gender: 'Male',
-    district: 'Gaya',
-    village: 'Bodh Gaya',
-    facilityId: 'HOSP-BODHGAYA-CHC',
-    facilityName: 'Bodh Gaya Community Health Centre',
-    serviceCategory: 'General Medicine',
-    transitDistanceKm: 8,
-    transitDurationMinutes: 20,
-    transitCostInr: 40,
-    dailyWageLossInr: 250,
-    householdIncomeTier: 'middle_income',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 45,
-    diagnosticDelayHours: 1,
-    pharmacyStockoutExperienced: false,
-  },
-  {
-    journeyId: 'JRN-GAY-008',
-    patientId: 'PAT-GAY-08',
-    patientNameMasked: 'Ritu Kumari (ABHA: 91-***-9921)',
-    abhaIdMasked: '91-4920-1928-9921',
-    age: 23,
-    gender: 'Female',
-    district: 'Gaya',
-    village: 'Bodh Gaya',
-    facilityId: 'HOSP-ANMMCH',
-    facilityName: 'Anugrah Narayan Magadh Medical College',
-    serviceCategory: 'Dermatology',
-    transitDistanceKm: 14,
-    transitDurationMinutes: 35,
-    transitCostInr: 60,
-    dailyWageLossInr: 200,
-    householdIncomeTier: 'middle_income',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 50,
-    diagnosticDelayHours: 1.5,
-    pharmacyStockoutExperienced: false,
-  },
-  {
-    journeyId: 'JRN-GAY-009',
-    patientId: 'PAT-GAY-09',
-    patientNameMasked: 'Devendra Sharma (ABHA: 91-***-6612)',
-    abhaIdMasked: '91-8839-1928-6612',
-    age: 58,
-    gender: 'Male',
-    district: 'Gaya',
-    village: 'Bodh Gaya',
-    facilityId: 'HOSP-BODHGAYA-CHC',
-    facilityName: 'Bodh Gaya Community Health Centre',
-    serviceCategory: 'Hypertension',
-    transitDistanceKm: 9,
-    transitDurationMinutes: 22,
-    transitCostInr: 45,
-    dailyWageLossInr: 300,
-    householdIncomeTier: 'low_income',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 40,
-    diagnosticDelayHours: 1,
-    pharmacyStockoutExperienced: false,
-  },
-
-  // 7. Purnia - Banmankhi (Flood Inundation & High Friction)
-  {
-    journeyId: 'JRN-PUR-001',
-    patientId: 'PAT-PUR-01',
-    patientNameMasked: 'Kunti Devi (ABHA: 91-***-5921)',
-    abhaIdMasked: '91-2940-1928-5921',
-    age: 32,
-    gender: 'Female',
-    district: 'Purnia',
-    village: 'Banmankhi',
-    facilityId: 'HOSP-PUR-SADAR',
-    facilityName: 'Purnia Sadar District Hospital',
-    serviceCategory: 'Maternal High Risk & USG',
-    transitDistanceKm: 42,
-    transitDurationMinutes: 110,
-    transitCostInr: 280,
-    dailyWageLossInr: 400,
-    householdIncomeTier: 'bpl',
-    languageDissonance: true,
-    preferredLanguage: 'Maithili',
-    caregiverEscortAvailable: false,
-    documentationStatus: 'missing_golden_card',
-    queueWaitMinutes: 130,
-    diagnosticDelayHours: 6,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-PUR-002',
-    patientId: 'PAT-PUR-02',
-    patientNameMasked: 'Md. Israfil (ABHA: 91-***-3312)',
-    abhaIdMasked: '91-8829-1928-3312',
-    age: 49,
-    gender: 'Male',
-    district: 'Purnia',
-    village: 'Banmankhi',
-    facilityId: 'HOSP-PUR-SADAR',
-    facilityName: 'Purnia Sadar District Hospital',
-    serviceCategory: 'Cardiology & ECG',
-    transitDistanceKm: 40,
-    transitDurationMinutes: 100,
-    transitCostInr: 260,
-    dailyWageLossInr: 500,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Maithili',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 115,
-    diagnosticDelayHours: 4,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-PUR-003',
-    patientId: 'PAT-PUR-03',
-    patientNameMasked: 'Nirmala Soren (ABHA: 91-***-7192)',
-    abhaIdMasked: '91-1029-3847-7192',
-    age: 27,
-    gender: 'Female',
-    district: 'Purnia',
-    village: 'Banmankhi',
-    facilityId: 'HOSP-BANMANKHI-CHC',
-    facilityName: 'Banmankhi Community Health Centre',
-    serviceCategory: 'Pediatric Severe Anemia',
-    transitDistanceKm: 18,
-    transitDurationMinutes: 50,
-    transitCostInr: 120,
-    dailyWageLossInr: 350,
-    householdIncomeTier: 'bpl',
-    languageDissonance: true,
-    preferredLanguage: 'Santhali',
-    caregiverEscortAvailable: false,
-    documentationStatus: 'partial',
-    queueWaitMinutes: 75,
-    diagnosticDelayHours: 3,
-    pharmacyStockoutExperienced: true,
-  },
-
-  // 8. Purnia - Dhamdaha (High Friction)
-  {
-    journeyId: 'JRN-PUR-004',
-    patientId: 'PAT-PUR-04',
-    patientNameMasked: 'Shankar Murmu (ABHA: 91-***-1192)',
-    abhaIdMasked: '91-3940-1928-1192',
-    age: 44,
-    gender: 'Male',
-    district: 'Purnia',
-    village: 'Dhamdaha',
-    facilityId: 'HOSP-PUR-SADAR',
-    facilityName: 'Purnia Sadar District Hospital',
-    serviceCategory: 'General Surgery',
-    transitDistanceKm: 34,
-    transitDurationMinutes: 80,
-    transitCostInr: 200,
-    dailyWageLossInr: 450,
-    householdIncomeTier: 'bpl',
-    languageDissonance: true,
-    preferredLanguage: 'Santhali',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 90,
-    diagnosticDelayHours: 3,
-    pharmacyStockoutExperienced: false,
-  },
-  {
-    journeyId: 'JRN-PUR-005',
-    patientId: 'PAT-PUR-05',
-    patientNameMasked: 'Basanti Hembram (ABHA: 91-***-8829)',
-    abhaIdMasked: '91-9920-1928-8829',
-    age: 36,
-    gender: 'Female',
-    district: 'Purnia',
-    village: 'Dhamdaha',
-    facilityId: 'HOSP-DHAMDAHA-SDH',
-    facilityName: 'Dhamdaha Sub-Divisional Hospital',
-    serviceCategory: 'Maternal ANC',
-    transitDistanceKm: 12,
-    transitDurationMinutes: 30,
-    transitCostInr: 60,
-    dailyWageLossInr: 300,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Maithili',
-    caregiverEscortAvailable: false,
-    documentationStatus: 'partial',
-    queueWaitMinutes: 70,
-    diagnosticDelayHours: 2,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-PUR-006',
-    patientId: 'PAT-PUR-06',
-    patientNameMasked: 'Ajay Mandal (ABHA: 91-***-4019)',
-    abhaIdMasked: '91-4920-1928-4019',
-    age: 55,
-    gender: 'Male',
-    district: 'Purnia',
-    village: 'Dhamdaha',
-    facilityId: 'HOSP-PUR-SADAR',
-    facilityName: 'Purnia Sadar District Hospital',
-    serviceCategory: 'Orthopedics',
-    transitDistanceKm: 36,
-    transitDurationMinutes: 85,
-    transitCostInr: 210,
-    dailyWageLossInr: 400,
-    householdIncomeTier: 'low_income',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 85,
-    diagnosticDelayHours: 2.5,
-    pharmacyStockoutExperienced: false,
-  },
-
-  // 9. Purnia - Sparse Cohort (Single Record to test Insufficient Data Gate!)
-  {
-    journeyId: 'JRN-PUR-SPARSE-01',
-    patientId: 'PAT-PUR-SP-01',
-    patientNameMasked: 'Sparse Citizen (ABHA: 91-***-0001)',
-    abhaIdMasked: '91-0000-0000-0001',
-    age: 29,
-    gender: 'Female',
-    district: 'Purnia',
-    village: 'Sparse Cohort',
-    facilityId: 'HOSP-PUR-SADAR',
-    facilityName: 'Purnia Sadar District Hospital',
-    serviceCategory: 'General Medicine',
-    transitDistanceKm: 25,
-    transitDurationMinutes: 60,
-    transitCostInr: 150,
-    dailyWageLossInr: 350,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 45,
-    diagnosticDelayHours: 1,
-    pharmacyStockoutExperienced: false,
-  },
-
-  // 10. Muzaffarpur - Marwan (High Friction)
-  {
-    journeyId: 'JRN-MUZ-001',
-    patientId: 'PAT-MUZ-01',
-    patientNameMasked: 'Pramod Thakur (ABHA: 91-***-4920)',
-    abhaIdMasked: '91-1029-4920-4920',
-    age: 51,
-    gender: 'Male',
-    district: 'Muzaffarpur',
-    village: 'Marwan',
-    facilityId: 'HOSP-SKMCH',
-    facilityName: 'Sri Krishna Medical College Hospital (SKMCH)',
-    serviceCategory: 'Neurology & Acute Encephalitis (AES)',
-    transitDistanceKm: 32,
-    transitDurationMinutes: 75,
-    transitCostInr: 180,
-    dailyWageLossInr: 450,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Bajjika / Hindi',
-    caregiverEscortAvailable: false,
-    documentationStatus: 'missing_golden_card',
-    queueWaitMinutes: 110,
-    diagnosticDelayHours: 4,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-MUZ-002',
-    patientId: 'PAT-MUZ-02',
-    patientNameMasked: 'Urmila Devi (ABHA: 91-***-8821)',
-    abhaIdMasked: '91-4920-1928-8821',
-    age: 24,
-    gender: 'Female',
-    district: 'Muzaffarpur',
-    village: 'Marwan',
-    facilityId: 'HOSP-SKMCH',
-    facilityName: 'Sri Krishna Medical College Hospital (SKMCH)',
-    serviceCategory: 'Maternal Delivery Care',
-    transitDistanceKm: 30,
-    transitDurationMinutes: 70,
-    transitCostInr: 170,
-    dailyWageLossInr: 400,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 95,
-    diagnosticDelayHours: 3,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-MUZ-003',
-    patientId: 'PAT-MUZ-03',
-    patientNameMasked: 'Binod Sah (ABHA: 91-***-3319)',
-    abhaIdMasked: '91-8839-1928-3319',
-    age: 41,
-    gender: 'Male',
-    district: 'Muzaffarpur',
-    village: 'Marwan',
-    facilityId: 'HOSP-MARWAN-PHC',
-    facilityName: 'Marwan Primary Health Centre',
-    serviceCategory: 'Pediatrics Malnutrition (SAM)',
-    transitDistanceKm: 14,
-    transitDurationMinutes: 35,
-    transitCostInr: 70,
-    dailyWageLossInr: 300,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'partial',
-    queueWaitMinutes: 65,
-    diagnosticDelayHours: 2,
-    pharmacyStockoutExperienced: false,
-  },
-
-  // 11. Muzaffarpur - Kanti (Moderate Friction)
-  {
-    journeyId: 'JRN-MUZ-004',
-    patientId: 'PAT-MUZ-04',
-    patientNameMasked: 'Rakesh Ranjan (ABHA: 91-***-2291)',
-    abhaIdMasked: '91-1920-3940-2291',
-    age: 37,
-    gender: 'Male',
-    district: 'Muzaffarpur',
-    village: 'Kanti',
-    facilityId: 'HOSP-SKMCH',
-    facilityName: 'Sri Krishna Medical College Hospital (SKMCH)',
-    serviceCategory: 'Gastroenterology',
-    transitDistanceKm: 18,
-    transitDurationMinutes: 40,
-    transitCostInr: 90,
-    dailyWageLossInr: 350,
-    householdIncomeTier: 'low_income',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 60,
-    diagnosticDelayHours: 1.5,
-    pharmacyStockoutExperienced: false,
-  },
-  {
-    journeyId: 'JRN-MUZ-005',
-    patientId: 'PAT-MUZ-05',
-    patientNameMasked: 'Pooja Kumari (ABHA: 91-***-9941)',
-    abhaIdMasked: '91-4920-1928-9941',
-    age: 21,
-    gender: 'Female',
-    district: 'Muzaffarpur',
-    village: 'Kanti',
-    facilityId: 'HOSP-KANTI-CHC',
-    facilityName: 'Kanti Community Health Centre',
-    serviceCategory: 'Antenatal Care',
-    transitDistanceKm: 10,
-    transitDurationMinutes: 25,
-    transitCostInr: 50,
-    dailyWageLossInr: 250,
-    householdIncomeTier: 'middle_income',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 45,
-    diagnosticDelayHours: 1,
-    pharmacyStockoutExperienced: false,
-  },
-  {
-    journeyId: 'JRN-MUZ-006',
-    patientId: 'PAT-MUZ-06',
-    patientNameMasked: 'Mukesh Bhagat (ABHA: 91-***-5521)',
-    abhaIdMasked: '91-8839-1928-5521',
-    age: 50,
-    gender: 'Male',
-    district: 'Muzaffarpur',
-    village: 'Kanti',
-    facilityId: 'HOSP-SKMCH',
-    facilityName: 'Sri Krishna Medical College Hospital (SKMCH)',
-    serviceCategory: 'Chest & Pulmonology',
-    transitDistanceKm: 20,
-    transitDurationMinutes: 45,
-    transitCostInr: 100,
-    dailyWageLossInr: 350,
-    householdIncomeTier: 'low_income',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 70,
-    diagnosticDelayHours: 2,
-    pharmacyStockoutExperienced: false,
-  },
-
-  // 12. Muzaffarpur - Sahebganj (High Friction)
-  {
-    journeyId: 'JRN-MUZ-007',
-    patientId: 'PAT-MUZ-07',
-    patientNameMasked: 'Dharmendra Ram (ABHA: 91-***-1102)',
-    abhaIdMasked: '91-1029-4920-1102',
-    age: 43,
-    gender: 'Male',
-    district: 'Muzaffarpur',
-    village: 'Sahebganj',
-    facilityId: 'HOSP-SKMCH',
-    facilityName: 'Sri Krishna Medical College Hospital (SKMCH)',
-    serviceCategory: 'Orthopedics & Fractures',
-    transitDistanceKm: 46,
-    transitDurationMinutes: 105,
-    transitCostInr: 240,
-    dailyWageLossInr: 450,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: false,
-    documentationStatus: 'missing_golden_card',
-    queueWaitMinutes: 100,
-    diagnosticDelayHours: 4,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-MUZ-008',
-    patientId: 'PAT-MUZ-08',
-    patientNameMasked: 'Shobha Devi (ABHA: 91-***-7781)',
-    abhaIdMasked: '91-4920-1928-7781',
-    age: 33,
-    gender: 'Female',
-    district: 'Muzaffarpur',
-    village: 'Sahebganj',
-    facilityId: 'HOSP-SAHEBGANJ-SDH',
-    facilityName: 'Sahebganj Sub-Divisional Hospital',
-    serviceCategory: 'Maternal ANC-4',
-    transitDistanceKm: 16,
-    transitDurationMinutes: 40,
-    transitCostInr: 80,
-    dailyWageLossInr: 300,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'partial',
-    queueWaitMinutes: 80,
-    diagnosticDelayHours: 3,
-    pharmacyStockoutExperienced: true,
-  },
-  {
-    journeyId: 'JRN-MUZ-009',
-    patientId: 'PAT-MUZ-09',
-    patientNameMasked: 'Arun Sahni (ABHA: 91-***-3341)',
-    abhaIdMasked: '91-8839-1928-3341',
-    age: 47,
-    gender: 'Male',
-    district: 'Muzaffarpur',
-    village: 'Sahebganj',
-    facilityId: 'HOSP-SKMCH',
-    facilityName: 'Sri Krishna Medical College Hospital (SKMCH)',
-    serviceCategory: 'Cardiology & Hypertension',
-    transitDistanceKm: 48,
-    transitDurationMinutes: 110,
-    transitCostInr: 250,
-    dailyWageLossInr: 450,
-    householdIncomeTier: 'bpl',
-    languageDissonance: false,
-    preferredLanguage: 'Hindi',
-    caregiverEscortAvailable: true,
-    documentationStatus: 'complete',
-    queueWaitMinutes: 90,
-    diagnosticDelayHours: 3.5,
-    pharmacyStockoutExperienced: false,
-  },
+const FIRST_NAMES_FEMALE = [
+  'Meera', 'Sunita', 'Anita', 'Pooja', 'Gita', 'Reena', 'Pinky', 'Rekha', 'Pratima', 'Shanti',
+  'Malti', 'Babita', 'Sarita', 'Asha', 'Urmila', 'Manju', 'Kiran', 'Sangeeta', 'Kavita', 'Rani',
+  'Priyanka', 'Chanda', 'Sobha', 'Lalita', 'Munni', 'Rupa', 'Sanju', 'Kunti', 'Parvati', 'Radha'
 ];
+
+const FIRST_NAMES_MALE = [
+  'Suresh', 'Ramesh', 'Rajesh', 'Manoj', 'Anil', 'Santosh', 'Dharmendra', 'Vinod', 'Ajay', 'Sanjay',
+  'Mukesh', 'Arvind', 'Deepak', 'Pramod', 'Rakesh', 'Sunil', 'Vijay', 'Pankaj', 'Dinesh', 'Ashok',
+  'Naresh', 'Mahesh', 'Birendra', 'Satendra', 'Ganesh', 'Subhash', 'Amresh', 'Rambabu', 'Ranjit', 'Munna'
+];
+
+const SURNAMES = [
+  'Devi', 'Yadav', 'Kumari', 'Paswan', 'Sharma', 'Singh', 'Manjhi', 'Ansari', 'Khatoon', 'Sah',
+  'Gupta', 'Das', 'Choudhary', 'Jha', 'Mahto', 'Prasad', 'Thakur', 'Mandal', 'Mishra', 'Raza'
+];
+
+const SERVICE_CATEGORIES = [
+  'Maternal & High-Risk Obstetric',
+  'Cardiology & Hypertension',
+  'Oncology & Palliative Care',
+  'General Medicine & Chronic Fever',
+  'Pediatrics & Immunization',
+  'Orthopedics & Physical Trauma',
+  'Nephrology & Renal Dialysis'
+];
+
+const LANGUAGES = ['Hindi', 'Bhojpuri', 'Maithili', 'Magahi', 'Urdu'];
+
+// Deterministic Pseudo-Random Generator based on linear congruential algorithm (Seed = 104729)
+class DeterministicPRNG {
+  private state: number;
+
+  constructor(seed: number = 104729) {
+    this.state = seed;
+  }
+
+  public next(): number {
+    this.state = (this.state * 1664525 + 1013904223) % 4294967296;
+    return this.state / 4294967296;
+  }
+
+  public range(min: number, max: number): number {
+    return Math.floor(this.next() * (max - min + 1)) + min;
+  }
+
+  public pick<T>(arr: T[]): T {
+    return arr[Math.floor(this.next() * arr.length)];
+  }
+
+  public boolean(probTrue: number = 0.5): boolean {
+    return this.next() < probTrue;
+  }
+}
+
+// Generate exactly 500 realistic synthetic patient journeys
+const generate500SyntheticJourneys = (): Partial<IPatientJourneyRecord>[] => {
+  const prng = new DeterministicPRNG(42069);
+  const journeys: Partial<IPatientJourneyRecord>[] = [];
+
+  const districtPrefixes: Record<string, string> = {
+    Patna: 'PAT',
+    Gaya: 'GAY',
+    Purnia: 'PUR',
+    Muzaffarpur: 'MUZ',
+  };
+
+  let globalIndex = 1;
+
+  SYNTHETIC_DISTRICTS.forEach((d) => {
+    const districtName = d.district;
+    const prefix = districtPrefixes[districtName] || 'BHR';
+    const facilities = DISTRICT_FACILITIES[districtName] || [{ id: 'HOSP-GEN', name: 'District General Hospital' }];
+
+    // Exactly 125 records per district (4 * 125 = 500)
+    for (let i = 1; i <= 125; i++) {
+      const villageName = d.villages[(i - 1) % d.villages.length];
+      const isFemale = prng.boolean(0.52);
+      const firstName = isFemale ? prng.pick(FIRST_NAMES_FEMALE) : prng.pick(FIRST_NAMES_MALE);
+      const surname = isFemale && prng.boolean(0.7) ? 'Devi' : prng.pick(SURNAMES);
+      const patientName = `${firstName} ${surname}`;
+
+      // Masked ABHA ID: 91-XXXX-XXXX-XXXX
+      const abhaP1 = prng.range(1000, 9999);
+      const abhaP2 = prng.range(1000, 9999);
+      const abhaP3 = prng.range(1000, 9999);
+      const abhaIdMasked = `91-${abhaP1}-${abhaP2}-${abhaP3}`;
+      const patientNameMasked = `${patientName} (ABHA: 91-***-${abhaP3})`;
+
+      const age = isFemale && prng.boolean(0.35) ? prng.range(19, 36) : prng.range(18, 79);
+      const facility = prng.pick(facilities);
+      const serviceCategory = (isFemale && age <= 36 && prng.boolean(0.5))
+        ? 'Maternal & High-Risk Obstetric'
+        : prng.pick(SERVICE_CATEGORIES);
+
+      // Village-based transit variance
+      const isRiverine = villageName.includes('Diara') || villageName.includes('Mand') || villageName.includes('Baisi');
+      const baseDist = isRiverine ? prng.range(28, 58) : prng.range(6, 38);
+      const transitDistanceKm = baseDist;
+      const transitDurationMinutes = Math.round(baseDist * (isRiverine ? prng.range(32, 45) / 10 : prng.range(20, 30) / 10));
+      const transitCostInr = Math.round(baseDist * prng.range(45, 80) / 10) + prng.range(20, 60);
+
+      // Household socioeconomics
+      const incomeRoll = prng.next();
+      const householdIncomeTier: 'bpl' | 'low_income' | 'middle_income' =
+        incomeRoll < 0.58 ? 'bpl' : (incomeRoll < 0.90 ? 'low_income' : 'middle_income');
+
+      const dailyWageLossInr = householdIncomeTier === 'bpl' ? prng.range(350, 500) : (householdIncomeTier === 'low_income' ? prng.range(450, 650) : prng.range(200, 400));
+      const outOfPocketExpensesInr = prng.range(80, 850);
+
+      // Language & Documentation
+      const preferredLanguage = prng.pick(LANGUAGES);
+      const languageDissonance = preferredLanguage !== 'Hindi' && prng.boolean(0.65);
+      const caregiverEscortAvailable = prng.boolean(householdIncomeTier === 'bpl' ? 0.65 : 0.85);
+
+      const docRoll = prng.next();
+      const documentationStatus: 'complete' | 'partial' | 'missing_golden_card' | 'missing_id' =
+        docRoll < 0.48 ? 'complete' : (docRoll < 0.76 ? 'partial' : (docRoll < 0.94 ? 'missing_golden_card' : 'missing_id'));
+
+      // Queue & Facilities Telemetry
+      const queueWaitMinutes = prng.range(25, 185);
+      const diagnosticDelayHours = +(prng.range(5, 65) / 10).toFixed(1);
+      const pharmacyStockoutExperienced = prng.boolean(isRiverine ? 0.45 : 0.28);
+      const processStepsCount = prng.range(2, 6);
+      const referralDelayDays = serviceCategory.includes('Cardiology') || serviceCategory.includes('Oncology') || serviceCategory.includes('Nephrology')
+        ? prng.range(2, 11)
+        : prng.range(0, 3);
+      const facilityCapacityUtilizationPct = prng.range(65, 122);
+      const staffingRatioScore = prng.range(42, 88);
+      const serviceHoursPerDay = prng.boolean(0.7) ? 8 : (prng.boolean(0.5) ? 12 : 6);
+      const informationAvailabilityScore = languageDissonance ? prng.range(30, 60) : prng.range(55, 90);
+
+      const journeyId = `JRN-${prefix}-${String(i).padStart(3, '0')}`;
+      const patientId = `PAT-${prefix}-${String(i).padStart(3, '0')}`;
+
+      journeys.push({
+        journeyId,
+        patientId,
+        patientNameMasked,
+        abhaIdMasked,
+        age,
+        gender: isFemale ? 'Female' : 'Male',
+        district: districtName,
+        village: villageName,
+        facilityId: facility.id,
+        facilityName: facility.name,
+        serviceCategory,
+        transitDistanceKm,
+        transitDurationMinutes,
+        transitCostInr,
+        dailyWageLossInr,
+        outOfPocketExpensesInr,
+        householdIncomeTier,
+        languageDissonance,
+        preferredLanguage,
+        caregiverEscortAvailable,
+        documentationStatus,
+        queueWaitMinutes,
+        diagnosticDelayHours,
+        pharmacyStockoutExperienced,
+        processStepsCount,
+        referralDelayDays,
+        facilityCapacityUtilizationPct,
+        staffingRatioScore,
+        serviceHoursPerDay,
+        informationAvailabilityScore,
+      });
+
+      globalIndex++;
+    }
+  });
+
+  return journeys;
+};
+
+// Raw 500 Synthetic Healthcare Records
+export const RAW_SYNTHETIC_JOURNEYS: Partial<IPatientJourneyRecord>[] = generate500SyntheticJourneys();
 
 // In-memory / persistent seed cache
 let cachedJourneys: IPatientJourneyRecord[] = [];
@@ -902,11 +232,12 @@ let cachedJourneys: IPatientJourneyRecord[] = [];
 export const getSeedJourneys = (): IPatientJourneyRecord[] => {
   if (cachedJourneys.length > 0) return cachedJourneys;
 
-  // Process raw journeys through MultiLevelFrictionEngine
+  // Process all 500 raw synthetic journeys through MultiLevelFrictionEngine
   cachedJourneys = RAW_SYNTHETIC_JOURNEYS.map((raw) => {
     const calculated = multiLevelFrictionEngine.calculateIndividualFriction(raw);
     return {
       ...raw,
+      factors: calculated.factors,
       frictionScore: calculated.overallFrictionScore,
       frictionTier: calculated.frictionTier,
       careFailureRisk: calculated.careFailureRisk,
@@ -917,4 +248,22 @@ export const getSeedJourneys = (): IPatientJourneyRecord[] => {
   });
 
   return cachedJourneys;
+};
+
+// Seed MongoDB database with 500 synthetic records if empty
+export const seedPatientJourneys = async (): Promise<void> => {
+  try {
+    const count = await PatientJourneyModel.countDocuments();
+    if (count >= 500) {
+      console.log(`[PFIS Seed] Database already populated with ${count} synthetic journeys.`);
+      return;
+    }
+
+    const journeys = getSeedJourneys();
+    await PatientJourneyModel.deleteMany({});
+    await PatientJourneyModel.insertMany(journeys);
+    console.log(`[PFIS Seed] Successfully seeded exactly ${journeys.length} realistic synthetic patient journeys into MongoDB.`);
+  } catch (error: any) {
+    console.warn(`[PFIS Seed] MongoDB seed skipped or offline (using in-memory synthetic seed cache): ${error.message}`);
+  }
 };
