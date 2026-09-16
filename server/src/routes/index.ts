@@ -20,6 +20,8 @@ import digitalTwinRoutes from './digitalTwinRoutes.js';
 import aiRoutes from './aiRoutes.js';
 import appointmentVoiceRoutes from './appointmentVoiceRoutes.js';
 import webhookRoutes from './webhookRoutes.js';
+import officerWorkflowRoutes from './officerWorkflowRoutes.js';
+import multiLevelFrictionRoutes from './multiLevelFrictionRoutes.js';
 
 const router = Router();
 
@@ -41,6 +43,10 @@ router.use('/languages', languageRoutes);
 router.use('/public-health', publicHealthRoutes);
 router.use('/doctors', doctorRoutes);
 router.use('/asha', ashaRoutes);
+router.use('/government/workflow', officerWorkflowRoutes);
+router.use('/admin/workflow', officerWorkflowRoutes);
+router.use('/friction', multiLevelFrictionRoutes);
+router.use('/government/friction', multiLevelFrictionRoutes);
 router.use('/government', governmentRoutes);
 router.use('/queue', queueRoutes);
 router.use('/friction-reports', frictionReportRoutes);

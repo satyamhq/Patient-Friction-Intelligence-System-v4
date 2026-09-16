@@ -62,7 +62,7 @@ export const createAppointment = async (req: Request, res: Response): Promise<vo
       source: resolvedSource,
       conversationId: conversationId || undefined,
       callId: callId || undefined,
-      assistedBy: 'AI Voice Agent (ElevenLabs)',
+      assistedBy: 'AI Healthcare Assistant',
       operationalNotes: operationalNotes || 'Stored in MongoDB appointments collection',
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -233,13 +233,13 @@ export const updateAppointment = async (req: Request, res: Response): Promise<vo
   }
 };
 
-// 5. POST /api/webhooks/elevenlabs - Webhook for ElevenLabs Voice Agent events
-export const handleElevenLabsWebhook = async (req: Request, res: Response): Promise<void> => {
+// 5. POST /api/webhooks/helpline - Webhook for Helpline & Telephony Call events
+export const handleHelplineCallWebhook = async (req: Request, res: Response): Promise<void> => {
   try {
     const payload = req.body || {};
     const conversationId = payload.conversation_id || payload.call_id || `conv_${Date.now()}`;
     const callDuration = Number(payload.duration_secs || payload.duration || 0);
-    const transcript = payload.transcript || payload.summary || 'ElevenLabs conversational session completed.';
+    const transcript = payload.transcript || payload.summary || 'Healthcare helpline session completed.';
     const metadata = payload.metadata || payload.custom_data || {};
 
     const appointmentId = metadata.appointmentId || payload.appointment_id;
@@ -257,8 +257,8 @@ export const handleElevenLabsWebhook = async (req: Request, res: Response): Prom
       outcome,
       duration: callDuration,
       transcriptReference: String(transcript).substring(0, 500),
-      telephonyProvider: 'web_elevenlabs',
-      agentId: 'agent_2901m2hw983kfcesprd47f904gbk',
+      telephonyProvider: 'helpline_direct',
+      agentId: 'care_helpline_coordinator',
       createdAt: new Date(),
     });
 
@@ -271,8 +271,8 @@ export const handleElevenLabsWebhook = async (req: Request, res: Response): Prom
         appointmentId,
         type: normalizeFrictionType(barrierType),
         severity,
-        source: 'ai_voice_agent',
-        notes: `Recorded via ElevenLabs Webhook for session ${conversationId}`,
+        source: 'care_helpline',
+        notes: `Recorded via Helpline Coordination Session ${conversationId}`,
         createdAt: new Date(),
       });
     }
@@ -290,14 +290,14 @@ export const handleElevenLabsWebhook = async (req: Request, res: Response): Prom
 
     res.status(200).json({
       success: true,
-      message: 'ElevenLabs webhook received and persisted to MongoDB collections',
+      message: 'Helpline call session received and persisted to MongoDB collections',
       callLogId: callLog.id || callLog._id,
     });
   } catch (error: any) {
-    console.error('[ElevenLabs Webhook Error]', error);
+    console.error('[Helpline Webhook Error]', error);
     res.status(500).json({
       success: false,
-      message: error.message || 'Failed to process ElevenLabs webhook',
+      message: error.message || 'Failed to process helpline call webhook',
     });
   }
 };
@@ -328,8 +328,8 @@ export const logVoiceCall = async (req: Request, res: Response): Promise<void> =
       duration: Number(duration || durationSeconds || 0),
       transcriptReference: transcriptReference ? String(transcriptReference).substring(0, 500) : undefined,
       operationalBarriersIdentified: Array.isArray(operationalBarriersIdentified) ? operationalBarriersIdentified : [],
-      telephonyProvider: 'web_elevenlabs',
-      agentId: 'agent_2901m2hw983kfcesprd47f904gbk',
+      telephonyProvider: 'helpline_direct',
+      agentId: 'care_helpline_coordinator',
       createdAt: new Date(),
     });
 
@@ -497,7 +497,7 @@ function normalizeFrictionType(rawType?: string): string {
   return 'appointment_timing';
 }
 
-// 7. POST /api/appointments/voice-agent/gemini-brain - Gemini AI Backend for ElevenLabs
+// 7. POST /api/appointments/voice-agent/gemini-brain - Google Gemini Healthcare AI Brain
 export const processVoiceAgentGeminiBrain = async (req: Request, res: Response): Promise<void> => {
   try {
     const { query, prompt, conversationId, role, history } = req.body;
@@ -512,8 +512,8 @@ export const processVoiceAgentGeminiBrain = async (req: Request, res: Response):
 
     res.status(200).json({
       success: true,
-      brain: 'Google Gemini (RAG Engine)',
-      agentId: 'agent_2901m2hw983kfcesprd47f904gbk',
+      brain: 'Google Gemini (Healthcare RAG Engine)',
+      agentId: 'gemini_healthcare_assistant',
       conversationId: conversationId || `conv_${Date.now()}`,
       answer: geminiResult.answer,
       suggestedQuestions: geminiResult.suggestedQuestions,
@@ -521,10 +521,10 @@ export const processVoiceAgentGeminiBrain = async (req: Request, res: Response):
       timestamp: new Date().toISOString(),
     });
   } catch (error: any) {
-    console.error('[ElevenLabs Gemini Brain Error]', error);
+    console.error('[Gemini Healthcare Brain Error]', error);
     res.status(500).json({
       success: false,
-      message: error.message || 'Gemini voice brain processing error',
+      message: error.message || 'Gemini healthcare brain processing error',
     });
   }
 };

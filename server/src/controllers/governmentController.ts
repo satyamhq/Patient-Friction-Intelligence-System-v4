@@ -15,6 +15,7 @@ import { OperationalIntervention } from '../models/OperationalIntervention.js';
 import { AuditLog } from '../models/AuditLog.js';
 import { AuditService } from '../services/auditService.js';
 import { getDB } from '../database/db.js';
+import { GovernmentActionEngine, AuthorityLevel, RootCauseCategory, FrictionTier } from '../intelligence/friction/governmentActionEngine.js';
 
 export class GovernmentController {
   /**
@@ -696,4 +697,153 @@ export class GovernmentController {
       res.status(500).json({ success: false, message: err.message });
     }
   }
+
+  /**
+   * Friction Score -> Government Action Recommendation Engine (District Aggregate)
+   */
+  public static async getActionRecommendations(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const { authority, category, tier, district } = req.query;
+
+      const recommendations = await GovernmentActionEngine.generateDistrictActionPlans({
+        district: (district as string) || 'Kapurthala',
+        authorityFilter: authority ? (authority as AuthorityLevel) : undefined,
+        categoryFilter: category ? (category as RootCauseCategory) : undefined,
+        frictionTierFilter: tier ? (tier as FrictionTier) : undefined,
+      });
+
+      res.status(200).json({
+        success: true,
+        count: recommendations.length,
+        recommendations,
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+
+  /**
+   * Evaluate a specific friction score or patient profile on demand
+   */
+  public static async evaluateFrictionScore(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const {
+        frictionScore = 65,
+        topBarrier = 'Transport Availability',
+        secondaryBarrier = 'Appointment Timing Flexibility',
+        distanceKm = 24.5,
+        residenceType = 'rural_remote',
+        district = 'Kapurthala',
+        block = 'Phagwara Rural',
+        facilityName = 'Civil Hospital Phagwara',
+        serviceCategory = 'TRANSPORT_TRANSIT',
+        patientName,
+      } = req.body;
+
+      const numericScore = Number(frictionScore);
+      let tier: FrictionTier = 'LOW';
+      if (numericScore >= 70) tier = 'CRITICAL';
+      else if (numericScore >= 50) tier = 'HIGH';
+      else if (numericScore >= 30) tier = 'MODERATE';
+
+      const mockResult: any = {
+        overallFrictionScore: numericScore,
+        overallAccessibilityScore: 100 - numericScore,
+        frictionLevel: tier,
+        topBarrier,
+        secondaryBarrier,
+        explanation: `Evaluated access friction score is ${numericScore}/100. Primary operational barrier identified as ${topBarrier}.`,
+        travel: { score: distanceKm > 20 ? 80 : 35, level: tier, reason: 'Travel evaluation', dimension: 'Travel', weight: 0.15 },
+        transport: { score: 75, level: tier, reason: 'Transport evaluation', dimension: 'Transport', weight: 0.18 },
+        digitalAccess: { score: 40, level: 'MEDIUM', reason: 'Digital access evaluation', dimension: 'Digital Access', weight: 0.12 },
+        language: { score: 15, level: 'LOW', reason: 'Language evaluation', dimension: 'Language', weight: 0.08 },
+        familySupport: { score: 35, level: 'MEDIUM', reason: 'Family support evaluation', dimension: 'Family Support', weight: 0.12 },
+        documentation: { score: 50, level: 'HIGH', reason: 'Documentation evaluation', dimension: 'Documentation', weight: 0.10 },
+        cost: { score: 60, level: 'HIGH', reason: 'Cost evaluation', dimension: 'Cost', weight: 0.15 },
+        appointmentTiming: { score: 55, level: 'HIGH', reason: 'Timing evaluation', dimension: 'Appointment Timing', weight: 0.10 },
+      };
+
+      const recommendation = GovernmentActionEngine.evaluateFromFrictionResult(mockResult, {
+        patientName,
+        residenceType,
+        district,
+        block,
+        facilityName,
+        distanceKm: Number(distanceKm),
+        serviceCategory,
+      });
+
+      res.status(200).json({
+        success: true,
+        recommendation,
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+
+  /**
+   * Convert an Action Recommendation into an active tracked Government Action Ticket
+   */
+  public static async convertRecommendationToTicket(req: AuthenticatedRequest, res: Response): Promise<void> {
+    try {
+      const rec = req.body;
+      if (!rec || !rec.problemIdentified) {
+        res.status(400).json({ success: false, message: 'Valid recommendation data required.' });
+        return;
+      }
+
+      let sev: 'INFO' | 'ATTENTION' | 'HIGH' | 'CRITICAL' = 'ATTENTION';
+      if (rec.priorityLevel === 'CRITICAL' || rec.frictionLevel === 'CRITICAL') sev = 'CRITICAL';
+      else if (rec.priorityLevel === 'URGENT' || rec.priorityLevel === 'HIGH' || rec.frictionLevel === 'HIGH') sev = 'HIGH';
+
+      const action = await GovernmentAction.create({
+        title: rec.problemIdentified,
+        issue: rec.rootCauseDetails || rec.problemIdentified,
+        facilityName: rec.location?.facilityName || 'Civil Hospital Kapurthala',
+        district: rec.location?.district || 'Kapurthala',
+        block: rec.location?.block || 'Central Block',
+        severity: sev,
+        status: 'OPEN',
+        category: rec.serviceCategory || 'SERVICE',
+        recommendedAction: rec.recommendedGovernmentAction,
+        assignedOfficer: req.user?.name || 'District Health Officer',
+        frictionScore: rec.frictionScore,
+        rootCauseCategory: rec.rootCauseCategory,
+        rootCauseDetails: rec.rootCauseDetails,
+        authorityLevel: rec.responsibleAuthority?.level,
+        responsibleDepartment: rec.responsibleAuthority?.departmentOrAgency,
+        nodalOfficer: rec.responsibleAuthority?.nodalOfficerDesignation,
+        priorityScore: rec.priorityScore,
+        expectedImpact: rec.expectedImpact,
+        implementationTimeline: rec.implementationTimeline,
+        estimatedBudgetINR: rec.requiredResources?.estimatedBudgetINR,
+        successMetrics: rec.successMetricsKPI,
+        evidenceDataPoints: rec.evidenceSupportingRecommendation?.dataPoints,
+        confidenceStatus: rec.inferenceAndUncertainty?.confidenceLevel,
+        recommendationId: rec.id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+
+      await AuditService.log('GOV_ACTION_DISPATCHED_FROM_AI_ENGINE', 'GovernmentAction', req, {
+        resourceId: String(action.id || action._id),
+        details: {
+          recommendationId: rec.id,
+          priorityScore: rec.priorityScore,
+          responsibleAuthority: rec.responsibleAuthority?.level,
+          officer: req.user?.name,
+        },
+      });
+
+      res.status(201).json({
+        success: true,
+        message: 'Recommendation converted to active operational action ticket.',
+        action,
+      });
+    } catch (err: any) {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
 }
+

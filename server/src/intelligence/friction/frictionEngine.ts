@@ -2,6 +2,7 @@ import { IPatient } from '../../models/Patient.js';
 import { IHospital } from '../../models/Hospital.js';
 import { IFrictionFactor, IFrictionProfile } from '../../models/FrictionProfile.js';
 import { TranslationService } from '../../services/translationService.js';
+import { GovernmentActionEngine, ActionRecommendation } from './governmentActionEngine.js';
 
 export interface FrictionCalculationResult {
   travel: IFrictionFactor;
@@ -18,6 +19,7 @@ export interface FrictionCalculationResult {
   topBarrier: string;
   secondaryBarrier: string;
   explanation: string;
+  actionRecommendation?: ActionRecommendation;
 }
 
 export class FrictionEngine {
@@ -124,6 +126,28 @@ export class FrictionEngine {
       explanation,
     };
   }
+
+  /**
+   * Generates a concrete Government Action Plan directly from a calculation result
+   */
+  public static generateActionPlan(
+    result: FrictionCalculationResult,
+    patient?: Partial<IPatient>,
+    hospital?: Partial<IHospital> | null,
+    distanceKm?: number
+  ): ActionRecommendation {
+    const p = patient as any;
+    const h = hospital as any;
+    return GovernmentActionEngine.evaluateFromFrictionResult(result, {
+      patientId: p?._id || p?.id,
+      patientName: p?.name || p?.patientCode || 'Anonymous Citizen',
+      residenceType: p?.residenceType,
+      district: h?.district || h?.city || p?.location?.city || 'Kapurthala',
+      facilityName: h?.name || 'Civil Hospital Kapurthala',
+      distanceKm: distanceKm ?? 15,
+    });
+  }
+
 
   private static evaluateTravel(distanceKm: number, residenceType: string): IFrictionFactor {
     let baseScore = 10;

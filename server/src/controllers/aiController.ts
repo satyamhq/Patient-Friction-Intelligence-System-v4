@@ -3,7 +3,7 @@ import { geminiRagService } from '../services/geminiService.js';
 
 export const handleChatQuery = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { query, history, role, currentPath } = req.body;
+    const { query, history, role, currentPath, language } = req.body;
 
     if (!query || typeof query !== 'string' || !query.trim()) {
       res.status(400).json({
@@ -18,6 +18,7 @@ export const handleChatQuery = async (req: Request, res: Response): Promise<void
       history: Array.isArray(history) ? history : [],
       role: typeof role === 'string' ? role : undefined,
       currentPath: typeof currentPath === 'string' ? currentPath : undefined,
+      language: typeof language === 'string' ? language : undefined,
     });
 
     res.status(200).json({

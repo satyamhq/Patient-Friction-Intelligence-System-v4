@@ -127,6 +127,13 @@ export const GovernmentDashboard: React.FC = () => {
 
           <div className="flex flex-wrap gap-2.5 shrink-0">
             <Link
+              to="/government/officer-workflow"
+              className="px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg flex items-center gap-2 transition-all ring-2 ring-emerald-400/40"
+            >
+              <Sparkles className="w-4 h-4 text-emerald-200 animate-pulse" />
+              Officer Workflow (11-Step Engine)
+            </Link>
+            <Link
               to="/government/alerts"
               className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow flex items-center gap-2 transition-all"
             >
@@ -337,14 +344,36 @@ export const GovernmentDashboard: React.FC = () => {
         <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div>
-              <h3 className="font-bold text-slate-900 flex items-center gap-2">
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                  AI RECOMMENDATION ENGINE
+                </span>
+              </div>
+              <h3 className="font-bold text-slate-900 flex items-center gap-2 mt-1">
                 <AlertTriangle className="w-4 h-4 text-amber-500" />
-                Government Action Center
+                Action Center & Policy Directives
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">High priority operational response tickets.</p>
+              <p className="text-xs text-slate-500 mt-0.5">Automated friction-to-intervention translation.</p>
             </div>
-            <Link to="/government/alerts" className="text-xs font-semibold text-blue-600 hover:text-blue-800">
-              View All ({analytics?.recentActions?.length ?? 0})
+            <Link to="/government/alerts" className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1">
+              Engine <ArrowRight className="w-3 h-3" />
+            </Link>
+          </div>
+
+          <div className="p-3 rounded-2xl bg-indigo-50/60 border border-indigo-100/80 flex items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <span className="text-[10px] font-bold text-indigo-900 uppercase tracking-wider block">
+                Friction Score → Action Directives
+              </span>
+              <p className="text-xs text-indigo-950 font-semibold">
+                Evidence-based executive directives prioritized by severity, reach, and urgency.
+              </p>
+            </div>
+            <Link
+              to="/government/alerts"
+              className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold shrink-0 transition-all shadow-xs"
+            >
+              Open Engine
             </Link>
           </div>
 

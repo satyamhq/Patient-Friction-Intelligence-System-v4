@@ -4,7 +4,7 @@ import {
   initiateAppointmentCall,
   getAppointmentById,
   updateAppointment,
-  handleElevenLabsWebhook,
+  handleHelplineCallWebhook,
   logVoiceCall,
   recordVoiceFriction,
   getLatestVoiceAppointmentStatus,
@@ -31,10 +31,10 @@ router.get('/:id', getAppointmentById);
 router.patch('/:id', updateAppointment);
 
 // ============================================================
-// ElevenLabs Webhook Endpoint
+// Helpline Telephony Webhook Endpoint
 // ============================================================
-// POST /api/appointments/webhook/elevenlabs
-router.post('/webhook/elevenlabs', handleElevenLabsWebhook);
+// POST /api/appointments/webhook/helpline
+router.post('/webhook/helpline', handleHelplineCallWebhook);
 
 // ============================================================
 // Voice Agent Integration Endpoints & Gemini AI Brain

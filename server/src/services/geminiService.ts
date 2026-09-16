@@ -14,6 +14,7 @@ export interface ChatRequest {
   history?: ChatMessage[];
   role?: string;
   currentPath?: string;
+  language?: string;
 }
 
 export interface SourceReference {
@@ -29,6 +30,7 @@ export interface ChatResponse {
   suggestedQuestions: string[];
   model: string;
   retrievedCount: number;
+  detectedLanguage: string;
   timestamp: string;
 }
 
@@ -180,9 +182,220 @@ export class GeminiRagService {
     });
   }
 
+  public detectLanguage(text: string, history?: ChatMessage[], fallbackLang?: string): string {
+    const raw = (text || '').trim();
+    if (!raw) return fallbackLang && fallbackLang !== 'auto' ? fallbackLang : 'en';
+
+    // 1. Script checks for Indian native scripts
+    if (/[\u0A00-\u0A7F]/.test(raw)) return 'pa'; // Gurmukhi / Punjabi
+    if (/[\u0980-\u09FF]/.test(raw)) return 'bn'; // Bengali
+    if (/[\u0B80-\u0BFF]/.test(raw)) return 'ta'; // Tamil
+    if (/[\u0C00-\u0C7F]/.test(raw)) return 'te'; // Telugu
+    if (/[\u0A80-\u0AFF]/.test(raw)) return 'gu'; // Gujarati
+    if (/[\u0C80-\u0CFF]/.test(raw)) return 'kn'; // Kannada
+    if (/[\u0D00-\u0D7F]/.test(raw)) return 'ml'; // Malayalam
+    if (/[\u0600-\u06FF]/.test(raw)) return 'ur'; // Urdu / Arabic script
+    if (/[\u0900-\u097F]/.test(raw)) {
+      if (/\b(आहे|नाही|कसे|कुठे|मला|काय|करावे|रुग्णालय|डॉक्टर|औषध|तपासणी|बाळ|आरोग्य|होय|नाही)\b/i.test(raw)) {
+        return 'mr'; // Marathi
+      }
+      return 'hi'; // Hindi
+    }
+
+    // 2. Hinglish check: Roman Hindi vocabulary, grammar constructs, interrogatives, healthcare slang
+    const hinglishTokens = [
+      'mujhe', 'mera', 'meri', 'mere', 'hum', 'humara', 'humari', 'aap', 'aapka', 'aapki', 'aapke', 'tum', 'tera', 'teri',
+      'kya', 'kyun', 'kyu', 'kaise', 'kab', 'kahan', 'kidhar', 'kisko', 'chahiye', 'mangta', 'mangti',
+      'karo', 'karna', 'karein', 'kare', 'karu', 'hoga', 'hogi', 'honge', 'hote', 'hota', 'hoti',
+      'hain', 'hai', 'nahi', 'nahin', 'na', 'haan', 'hanji', 'theek', 'thik', 'batao', 'bataye', 'batayein', 'bataiye',
+      'bimar', 'bimari', 'dawa', 'dawai', 'dawakhana', 'aspataal', 'aspatal', 'ilaaj', 'ilaj',
+      'parchi', 'doctor', 'dikhana', 'dikhao', 'check', 'kitna', 'kitni', 'paise', 'paisa',
+      'lagega', 'lagti', 'card', 'banna', 'banaye', 'banayein', 'banega', 'banta',
+      'ambulance', 'bukhar', 'pet', 'sir', 'sar', 'khansi', 'saans', 'chot', 'chhati', 'seena',
+      'delivery', 'bacha', 'bachhe', 'baccha', 'garbhavati', 'pregnant', 'mahila', 'aurat',
+      'asha', 'didi', 'token', 'line', 'samay', 'waqt', 'milna', 'milega', 'madad', 'sahayata',
+      'bhaiya', 'namaste', 'namaskar', 'khoon', 'jaanch', 'takleef', 'dard', 'sujan', 'chot',
+      'ulti', 'dast', 'chakkar', 'kamzori', 'sasta', 'sasti', 'sarkari', 'jan aushadhi',
+      'ayushman', 'suvidha', 'pension', 'muft', 'free'
+    ];
+
+    const lower = raw.toLowerCase();
+    const hitCount = hinglishTokens.filter((token) => new RegExp(`\\b${token}\\b`, 'i').test(lower)).length;
+    if (hitCount >= 1) {
+      return 'hinglish';
+    }
+
+    // 3. Conversation Continuity: If query is short or neutral (e.g. "ok", "yes", "tell me more", "thanks", "schedule"),
+    // inspect previous history to keep language consistent throughout conversation
+    if (history && history.length > 0) {
+      for (let i = history.length - 1; i >= 0; i--) {
+        const h = history[i];
+        if (h && h.content) {
+          const prevLang = this.detectLanguage(h.content);
+          if (prevLang && prevLang !== 'en') {
+            return prevLang;
+          }
+        }
+      }
+    }
+
+    if (fallbackLang && fallbackLang !== 'auto') {
+      return fallbackLang;
+    }
+
+    return 'en';
+  }
+
+  private expandMultilingualQuery(query: string): string {
+    const termMap: Record<string, string> = {
+      // Hindi & Hinglish
+      'pet': 'stomach abdominal gastric pain',
+      'dard': 'pain emergency acute severe ache',
+      'दर्द': 'pain emergency stomach chest ache',
+      'ulti': 'vomiting nausea emesis',
+      'उल्टी': 'vomiting nausea',
+      'bukhar': 'fever pyrexia temperature',
+      'बुखार': 'fever temperature pyrexia',
+      'saans': 'breathing respiratory asthma shortness dyspnea',
+      'सांस': 'breathing respiratory asthma shortness',
+      'khansi': 'cough cold chest pulmonary bronchitis',
+      'खांसी': 'cough cold pulmonary chest',
+      'chhati': 'chest cardiac heart myocardial infarction',
+      'छाती': 'chest cardiac heart',
+      'dawa': 'medicine prescription pharmacy generic jan aushadhi',
+      'dawai': 'medicine prescription pharmacy generic jan aushadhi',
+      'दवा': 'medicine prescription pharmacy generic jan aushadhi',
+      'aspataal': 'hospital facility opd clinic casualty emergency',
+      'aspatal': 'hospital facility opd clinic',
+      'अस्पताल': 'hospital facility opd clinic casualty',
+      'ilaaj': 'treatment therapy consultation management care',
+      'इलाज': 'treatment consultation therapy care',
+      'parchi': 'token opd registration queue appointment',
+      'पर्ची': 'token opd registration queue appointment',
+      'token': 'queue opd token registration schedule wait time',
+      'ayushman': 'ayushman bharat pmjay cashless insurance golden card abha',
+      'आयुष्मान': 'ayushman bharat pmjay cashless insurance golden card',
+      'bistar': 'bed icu ward admission occupancy casualty',
+      'bed': 'bed icu ward admission occupancy availability',
+      'बेड': 'bed icu ward admission occupancy',
+      'delivery': 'delivery maternal pregnancy anc jsy pmsma obstetric labor',
+      'garbhavati': 'pregnant maternal pregnancy anc high risk',
+      'गर्भवती': 'pregnant maternal pregnancy anc',
+      'bacha': 'child infant pediatric immunization vaccine rbsk newborn',
+      'बच्चा': 'child infant pediatric immunization vaccine',
+      'asha': 'asha frontline community health worker visit escort',
+      'आशा': 'asha frontline community health worker visit escort',
+      'jaanch': 'lab test diagnostic pathology blood urine xray usg',
+      'जांच': 'lab test diagnostic pathology blood',
+      'khoon': 'blood anemia transfusion hemoglobin bleeding',
+      'खून': 'blood anemia transfusion hemoglobin',
+      'paise': 'cost fee free cashless pmjay subsidy expenditure',
+      'phone': 'helpline calling contact phone 6205844155 108',
+      'call': 'call phone helpline direct 6205844155',
+
+      // Punjabi
+      'ਦਰਦ': 'pain emergency severe ache',
+      'ਬੁਖ਼ਾਰ': 'fever temperature pyrexia',
+      'ਖੰਘ': 'cough pulmonary chest',
+      'ਦਵਾਈ': 'medicine prescription pharmacy',
+      'ਹਸਪਤਾਲ': 'hospital facility clinic opd',
+      'ਪਰਚੀ': 'token opd queue registration',
+      'ਆਯੁਸ਼ਮਾਨ': 'ayushman bharat pmjay insurance card',
+      'ਗਰਭਵਤੀ': 'pregnant maternal anc',
+      'ਬੱਚਾ': 'child pediatric immunization',
+      'ਐਂਬੂਲੈਂਸ': 'ambulance emergency 108',
+
+      // Bengali
+      'ব্যথা': 'pain emergency severe ache',
+      'জ্বর': 'fever temperature pyrexia',
+      'কাশি': 'cough cold chest',
+      'ওষুধ': 'medicine prescription pharmacy generic',
+      'হাসপাতাল': 'hospital facility opd clinic',
+      'টোকেন': 'queue opd token registration',
+      'আয়ুষ্মান': 'ayushman bharat pmjay card',
+      'গর্ভবতী': 'pregnant maternal anc delivery',
+      'শিশু': 'child infant pediatric immunization',
+
+      // Marathi
+      'वेदना': 'pain emergency ache',
+      'ताप': 'fever temperature pyrexia',
+      'खोकला': 'cough cold chest',
+      'औषध': 'medicine prescription pharmacy generic',
+      'रुग्णालय': 'hospital facility opd clinic',
+      'तपासणी': 'lab test diagnostic pathology blood',
+      'बाळ': 'child infant pediatric immunization',
+
+      // Tamil
+      'வலி': 'pain emergency severe ache',
+      'காய்ச்சல்': 'fever temperature pyrexia',
+      'இருமல்': 'cough cold chest',
+      'மருந்து': 'medicine prescription pharmacy generic',
+      'மருத்துவமனை': 'hospital facility opd clinic',
+      'டோக்கன்': 'queue opd token appointment',
+      'ஆயுஷ்மான்': 'ayushman bharat pmjay card',
+      'கர்ப்பிணி': 'pregnant maternal anc delivery',
+
+      // Telugu
+      'నొప్పి': 'pain emergency severe ache',
+      'జ్వరం': 'fever temperature pyrexia',
+      'దగ్గు': 'cough cold chest',
+      'మందులు': 'medicine prescription pharmacy generic',
+      'ఆసుపత్రి': 'hospital facility opd clinic',
+      'టోకెన్': 'queue opd token appointment',
+      'ఆయుష్మాన్': 'ayushman bharat pmjay card',
+      'గర్భిణీ': 'pregnant maternal anc delivery',
+
+      // Gujarati
+      'દર્દ': 'pain emergency ache',
+      'તાવ': 'fever temperature pyrexia',
+      'ખાંસી': 'cough cold chest',
+      'દવા': 'medicine prescription pharmacy',
+      'હોસ્પિટલ': 'hospital facility opd clinic',
+      'ટોકન': 'queue opd token appointment',
+      'આયુષ્માન': 'ayushman bharat pmjay card',
+
+      // Kannada
+      'ನೋವು': 'pain emergency severe ache',
+      'ಜ್ವರ': 'fever temperature pyrexia',
+      'ಕೆಮ್ಮು': 'cough cold chest',
+      'ಔಷಧಿ': 'medicine prescription pharmacy generic',
+      'ಆಸ್ಪತ್ರೆ': 'hospital facility opd clinic',
+      'ಟೋಕನ್': 'queue opd token appointment',
+      'ಆಯುಷ್ಮಾನ್': 'ayushman bharat pmjay card',
+
+      // Malayalam
+      'വേദന': 'pain emergency severe ache',
+      'പനി': 'fever temperature pyrexia',
+      'ചുമ': 'cough cold chest',
+      'മരുന്ന്': 'medicine prescription pharmacy generic',
+      'ആശുപത്രി': 'hospital facility opd clinic',
+      'ടോക്കൺ': 'queue opd token appointment',
+      'ആയുഷ്മാൻ': 'ayushman bharat pmjay card',
+
+      // Urdu
+      'درد': 'pain emergency severe ache',
+      'بخار': 'fever temperature pyrexia',
+      'کھانسی': 'cough cold chest',
+      'دوا': 'medicine prescription pharmacy generic',
+      'ہسپتال': 'hospital facility opd clinic',
+      'پرچی': 'queue opd token appointment',
+      'حمل': 'pregnant maternal anc delivery',
+      'علاج': 'treatment consultation therapy care',
+    };
+
+    let expanded = query.toLowerCase();
+    for (const [k, v] of Object.entries(termMap)) {
+      if (expanded.includes(k.toLowerCase())) {
+        expanded += ' ' + v;
+      }
+    }
+    return expanded;
+  }
+
   public retrieveContext(query: string, userRole?: string, topK = 6): { item: KnowledgeItem; score: number }[] {
     if (this.knowledgeBase.length === 0) return [];
-    const queryTokens = this.tokenize(query);
+    const expandedQuery = this.expandMultilingualQuery(query);
+    const queryTokens = this.tokenize(expandedQuery);
     if (queryTokens.length === 0) {
       return this.knowledgeBase.slice(0, topK).map((item) => ({ item, score: 1.0 }));
     }
@@ -403,7 +616,13 @@ export class GeminiRagService {
   // -------------------------------------------------------------
 
   public async chat(request: ChatRequest): Promise<ChatResponse> {
-    const { query, history = [], role = 'all', currentPath = '/' } = request;
+    const { query, history = [], role = 'all', currentPath = '/', language } = request;
+
+    // Detect user language or respect explicit choice, taking history and conversation continuity into account
+    let targetLang = (language && language !== 'auto') ? language : '';
+    if (!targetLang) {
+      targetLang = this.detectLanguage(query, history, language === 'auto' ? undefined : language);
+    }
 
     // 1. Retrieve most relevant context items
     const searchResults = this.retrieveContext(query, role, 6);
@@ -437,26 +656,90 @@ export class GeminiRagService {
       )
       .join('\n---\n');
 
-    const systemPrompt = `You are the official Gemini-Powered AI Copilot for the Patient Friction Intelligence System (PFIS).
-PFIS is a non-clinical healthcare logistics and accessibility platform that resolves real-world operational, geographical, linguistic, financial, and bureaucratic barriers preventing patient care completion.
+    let languageDirective = '';
+    switch (targetLang) {
+      case 'hinglish':
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: The user communicated in Hinglish (Hindi written using English/Roman characters).
+You MUST reply ENTIRELY in natural, conversational, polite Indian Hinglish (e.g., "Namaste! Aapka swasthya hamari priority hai. Pet dard aur ulti ke case mein sabse pehle...").
+Do NOT answer in pure English or pure Devanagari script. Retain standard medical abbreviations in English (e.g., OPD, ICU, ABHA ID, PM-JAY, ECG, BP).`;
+        break;
+      case 'hi':
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: The user communicated in Hindi (हिन्दी).
+You MUST reply ENTIRELY in grammatically correct, polite, and empathetic Hindi using Devanagari script (हिन्दी).
+Include medical terms in brackets if helpful (e.g., ओपीडी (OPD), आईसीयू (ICU), आयुष्मान भारत (PM-JAY)).`;
+        break;
+      case 'pa':
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: The user communicated in Punjabi (ਪੰਜਾਬੀ).
+You MUST reply ENTIRELY in fluent, respectful Punjabi using Gurmukhi script (ਪੰਜਾਬੀ).`;
+        break;
+      case 'bn':
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: The user communicated in Bengali (বাংলা).
+You MUST reply ENTIRELY in polite, authentic Bengali using Bengali script (বাংলা).`;
+        break;
+      case 'mr':
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: The user communicated in Marathi (मराठी).
+You MUST reply ENTIRELY in fluent Marathi using Devanagari script (मराठी).`;
+        break;
+      case 'ta':
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: The user communicated in Tamil (தமிழ்).
+You MUST reply ENTIRELY in polite Tamil using Tamil script (தமிழ்).`;
+        break;
+      case 'te':
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: The user communicated in Telugu (తెలుగు).
+You MUST reply ENTIRELY in polite Telugu using Telugu script (తెలుగు).`;
+        break;
+      case 'gu':
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: The user communicated in Gujarati (ગુજરાતી).
+You MUST reply ENTIRELY in polite Gujarati using Gujarati script (ગુજરાતી).`;
+        break;
+      case 'kn':
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: The user communicated in Kannada (ಕನ್ನಡ).
+You MUST reply ENTIRELY in polite Kannada using Kannada script (ಕನ್ನಡ).`;
+        break;
+      case 'ml':
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: The user communicated in Malayalam (മലയാളം).
+You MUST reply ENTIRELY in polite Malayalam using Malayalam script (മലയാളം).`;
+        break;
+      case 'ur':
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: The user communicated in Urdu (اردو).
+You MUST reply ENTIRELY in polite, formal Urdu using Urdu/Arabic script (اردو).`;
+        break;
+      case 'en':
+      default:
+        languageDirective = `CRITICAL LANGUAGE REQUIREMENT: Reply in clear, professional, empathetic English.`;
+        break;
+    }
 
-Instructions:
-1. Provide an accurate, detailed, and directly helpful answer based on the provided Codebase Knowledge Context and PFIS system architecture.
-2. Maintain a professional, empathetic, and technically precise medical-logistics tone.
-3. Explicitly cite the relevant source files (e.g. \`server/src/intelligence/friction/frictionEngine.ts\`, \`client/src/pages/patient/DigitalTwinSimulator.tsx\`) so the user can verify the codebase implementation.
-4. Format your response cleanly using GitHub markdown (bullet points, bold highlights, tables, and short code snippets where appropriate).
-5. If the user asks for actions relevant to their role (${role.toUpperCase()}) or current page (\`${currentPath}\`), provide actionable steps they can take on the platform.`;
+    const systemPrompt = `You are the official Gemini-Powered Healthcare Copilot for the Patient Friction Intelligence System (PFIS).
+PFIS is a comprehensive healthcare accessibility and operational platform unifying Patients, Citizens, Doctors, ASHA Community Health Workers, Hospital Administrators, and Government Policy Makers.
+
+${languageDirective}
+
+Knowledge Base Instructions:
+1. You are equipped with a primary knowledge base of 1,000+ pre-built, verified healthcare questions and answers covering:
+   - Patient & Citizen care: OPD booking, ABHA ID creation, Ayushman Bharat PM-JAY eligibility and claims, Jan Aushadhi generic medicines, barrier checks, non-clinical triage.
+   - Doctor & Specialist: OPD queue triage, e-prescriptions, clinical notes, lab investigations, teleconsultation rooms.
+   - Hospital Desk: Live ICU/ward bed availability, casualty triage (Red/Yellow/Green/Black), blood bank, pharmacy inventory.
+   - ASHA Field Workers: Antenatal care (ANC) registration, obstetric danger signs, postnatal home visits (HBNC), child immunization schedule, malnutrition (SAM) screening, offline sync.
+   - Government & Schemes: JSY, PMSMA, RBSK, Nikshay Poshan Yojana, Patient Friction Index (PFI) formula.
+   - 24/7 Care Helpline: Citizens can directly call **+91 6205844155**.
+
+2. Primary Knowledge Matching & Translation: Use the retrieved pre-built Q&A context as your primary source of truth. Translate and synthesize the answers faithfully into the requested target language without losing medical meaning.
+3. Fallback Reasoning: If the user's question does not exactly match the pre-built questions, use clinical-logistical reasoning to formulate an accurate, safe, empathetic, and actionable response in the target language.
+4. Calling & Emergencies: If the user asks about calling, speaking with a human, or needs emergency care, explicitly inform them that they can directly call the 24/7 Healthcare Helpline at **+91 6205844155** or dial **108** for critical emergencies.
+5. Format cleanly with GitHub markdown (bullet points, bold highlights, clear sections). Keep answers fast, concise, and easy to read.`;
 
     const userPromptWithContext = `User Query: "${query}"
+Target Response Language: ${targetLang.toUpperCase()}
 
 User Context:
 - Active Role: ${role.toUpperCase()}
 - Current Page Path: ${currentPath}
 
-Retrieved Codebase Knowledge Context:
+Retrieved Healthcare Knowledge Context (1,000+ Verified Q&A Base):
 ${contextSnippet}
 
-Please provide a comprehensive answer directly answering the user's question, citing the source files mentioned above.`;
+Please provide the most accurate, helpful, and concise answer directly addressing the user's query in the designated target language (${targetLang}), synthesizing from the verified knowledge base and applying safe reasoning where necessary.`;
 
     let generatedText = '';
     let usedModel = this.primaryModel;
@@ -480,21 +763,7 @@ Please provide a comprehensive answer directly answering the user's question, ci
     if (!succeeded || !generatedText) {
       console.warn('[Gemini RAG] All Gemini models failed or offline. Synthesizing direct RAG response.');
       usedModel = 'Local RAG Knowledge Engine (Offline Fallback)';
-      if (retrievedItems.length > 0) {
-        const top = retrievedItems[0];
-        const secondary = retrievedItems.slice(1, 3);
-
-        generatedText = `### ${top.question}\n\n${top.answer}\n\n`;
-        if (secondary.length > 0) {
-          generatedText += `#### Related Platform Knowledge:\n`;
-          secondary.forEach((item) => {
-            generatedText += `- **${item.question}**: ${item.answer.substring(0, 180)}...\n`;
-          });
-        }
-        generatedText += `\n*Source references: ${(top.sourceFiles || []).map((f) => `\`${f}\``).join(', ')}*`;
-      } else {
-        generatedText = `I could not locate specific matching records for "${query}". You can explore the role dashboards or ask about the Patient Friction Index, Digital Twin Simulator, ASHA Offline Sync, or API endpoints.`;
-      }
+      generatedText = this.synthesizeOfflineResponse(query, retrievedItems, targetLang);
     }
 
     // 4. Determine intelligent follow-up suggestions
@@ -506,8 +775,103 @@ Please provide a comprehensive answer directly answering the user's question, ci
       suggestedQuestions,
       model: usedModel,
       retrievedCount: retrievedItems.length,
+      detectedLanguage: targetLang,
       timestamp: new Date().toISOString(),
     };
+  }
+
+  private synthesizeOfflineResponse(query: string, retrievedItems: KnowledgeItem[], targetLang: string): string {
+    const top = retrievedItems[0];
+    const secondary = retrievedItems.slice(1, 3);
+    const hasMatch = retrievedItems.length > 0;
+
+    const phrases: Record<string, { heading: string; related: string; helpline: string; noMatch: string }> = {
+      hinglish: {
+        heading: 'Health Guidance',
+        related: 'Sambandhit Jankari:',
+        helpline: '*Kisi bhi emergency ya turant guidance ke liye hamare 24/7 Helpline par call karein: **+91 6205844155** ya **108** dial karein.*',
+        noMatch: `Mujhe "${query}" ke liye direct knowledge record nahi mila. Aap OPD appointment, Ayushman Bharat PM-JAY card, ya ASHA protocols ke bare mein pooch sakte hain.\n\n*Turant madad ke liye hamari 24/7 Healthcare Helpline par call karein: **+91 6205844155**.*`
+      },
+      hi: {
+        heading: 'स्वास्थ्य मार्गदर्शन',
+        related: 'संबंधित स्वास्थ्य जानकारी:',
+        helpline: '*किसी भी आपात स्थिति या तत्काल मार्गदर्शन हेतु हमारी 24/7 हेल्पलाइन पर कॉल करें: **+91 6205844155** अथवा **108** डायल करें।*',
+        noMatch: `"${query}" के लिए सीधा रिकॉर्ड नहीं मिला। आप ओपीडी पर्ची, आयुष्मान कार्ड, या जन औषधि केंद्र के बारे में पूछ सकते हैं।\n\n*तत्काल सहायता के लिए 24/7 हेल्पलाइन पर संपर्क करें: **+91 6205844155**।*`
+      },
+      pa: {
+        heading: 'ਸਿਹਤ ਮਾਰਗਦਰਸ਼ਨ',
+        related: 'ਸੰਬੰਧਿਤ ਸਿਹਤ ਜਾਣਕਾਰੀ:',
+        helpline: '*ਐਮਰਜੈਂਸੀ ਜਾਂ ਤੁਰੰਤ ਮਦਦ ਲਈ ਸਾਡੀ 24/7 ਹੈਲਪਲਾਈਨ ਨੰਬਰ **+91 6205844155** ਜਾਂ **108** ਡਾਇਲ ਕਰੋ।*',
+        noMatch: `"${query}" ਲਈ ਸਿੱਧਾ ਰਿਕਾਰਡ ਨਹੀਂ ਮਿਲਿਆ। ਤੁਸੀਂ ਓਪੀਡੀ ਟੋਕਨ, ਆਯੁਸ਼ਮਾਨ ਕਾਰਡ, ਜਾਂ ਦਵਾਈਆਂ ਬਾਰੇ ਪੁੱਛ ਸਕਦੇ ਹੋ।\n\n*ਸਾਡੀ 24/7 ਹੈਲਪਲਾਈਨ: **+91 6205844155**।*`
+      },
+      bn: {
+        heading: 'স্বাস্থ্য নির্দেশিকা',
+        related: 'সম্পর্কিত তথ্য:',
+        helpline: '*জরুরি বা তাৎক্ষণিক সহায়তার জন্য আমাদের ২৪/৭ হেল্পলাইনে কল করুন: **+91 6205844155** বা **১০৮** ডায়াল করুন।*',
+        noMatch: `"${query}" এর জন্য সরাসরি তথ্য মেলেনি। আপনি ওপিডি টোকেন, আয়ুষ্মান কার্ড বা ওষুধ সম্পর্কে জিজ্ঞাসা করতে পারেন।\n\n*২৪/৭ হেল্পলাইন: **+91 6205844155**।*`
+      },
+      mr: {
+        heading: 'आरोग्य मार्गदर्शन',
+        related: 'संबंधित माहिती:',
+        helpline: '*तातडीच्या मदतीसाठी आमच्या २४/७ हेल्पलाइनवर कॉल करा: **+91 6205844155** किंवा **१०८** डायल करा.*',
+        noMatch: `"${query}" साठी थेट माहिती सापडली नाही. आपण ओपीडी टोकन, आयुष्मान कार्ड किंवा औषधांबद्दल विचारू शकता.\n\n*२४/७ हेल्पलाइन: **+91 6205844155**.*`
+      },
+      ta: {
+        heading: 'சுகாதார வழிகாட்டல்',
+        related: 'தொடர்புடைய தகவல்:',
+        helpline: '*அவசர உதவிக்கு எங்கள் 24/7 உதவி எண்ணை அழைக்கவும்: **+91 6205844155** அல்லது **108** ஐ டயல் செய்யவும்.*',
+        noMatch: `"${query}" க்கான நேரடி பதிவு கிடைக்கவில்லை. OPD டோக்கன், ஆயுஷ்மான் அட்டை பற்றி கேட்கலாம்.\n\n*24/7 உதவி எண்: **+91 6205844155**.*`
+      },
+      te: {
+        heading: 'ఆరోగ్య మార్గదర్శకత్వం',
+        related: 'సంబంధిత సమాచారం:',
+        helpline: '*తక్షణ సహాయం కోసం మా 24/7 హెల్ప్‌లైన్‌కు కాల్ చేయండి: **+91 6205844155** లేదా **108** డయల్ చేయండి.*',
+        noMatch: `"${query}" కోసం నేరుగా సమాచారం దొరకలేదు. OPD టోకెన్ లేదా ఆయుష్మాన్ కార్డు గురించి అడగవచ్చు.\n\n*24/7 హెల్ప్‌లైన్: **+91 6205844155**.*`
+      },
+      gu: {
+        heading: 'આરોગ્ય માર્ગદર્શન',
+        related: 'સંબંધિત માહિતી:',
+        helpline: '*તાત્કાલિક સહાય માટે અમારી 24/7 હેલ્પલાઇન પર કૉલ કરો: **+91 6205844155** અથવા **108** ડાયલ કરો.*',
+        noMatch: `"${query}" માટે સીધો રેકોર્ડ મળ્યો નથી. આપ OPD ટોકન અથવા આયુષ્માન કાર્ડ વિશે પૂછી શકો છો.\n\n*24/7 હેલ્પલાઇન: **+91 6205844155**.*`
+      },
+      kn: {
+        heading: 'ಆರೋಗ್ಯ ಮಾರ್ಗದರ್ಶನ',
+        related: 'ಸಂಬಂಧಿತ ಮಾಹಿತಿ:',
+        helpline: '*ತುರ್ತು ನೆರವಿಗಾಗಿ ನಮ್ಮ 24/7 ಹೆಲ್ಪ್‌ಲೈನ್‌ಗೆ ಕರೆ ಮಾಡಿ: **+91 6205844155** ಅಥವಾ **108** ಡಯಲ್ ಮಾಡಿ.*',
+        noMatch: `"${query}" ಗಾಗಿ ಮಾಹಿತಿ ಲಭ್ಯವಿಲ್ಲ. OPD ಟೋಕನ್ ಅಥವಾ ಆಯುಷ್ಮಾನ್ ಕಾರ್ಡ್ ಬಗ್ಗೆ ನೀವು ಕೇಳಬಹುದು.\n\n*24/7 ಹೆಲ್ಪ್‌ಲೈನ್: **+91 6205844155**.*`
+      },
+      ml: {
+        heading: 'ആരോഗ്യ മാർഗ്ഗനിർദ്ദേശം',
+        related: 'ബന്ധപ്പെട്ട വിവരങ്ങൾ:',
+        helpline: '*അടിയന്തര സഹായത്തിന് ഞങ്ങളുടെ 24/7 ഹെൽപ്പ്‌ലൈൻ വിളിക്കുക: **+91 6205844155** അല്ലെങ്കിൽ **108** ഡയൽ ചെയ്യുക.*',
+        noMatch: `"${query}" സംബന്ധിച്ച വിവരങ്ങൾ ലഭ്യമല്ല. OPD ടോക്കൺ അല്ലെങ്കിൽ ആയുഷ്മാൻ കാർഡിനെക്കുറിച്ച് ചോദിക്കാം.\n\n*24/7 ഹെൽപ്പ്‌ലൈൻ: **+91 6205844155**.*`
+      },
+      ur: {
+        heading: 'طبی رہنمائی',
+        related: 'متعلقہ معلومات:',
+        helpline: '*فوری مدد کے لیے ہماری 24/7 ہیلپ لائن پر کال کریں: **+91 6205844155** یا **108** ملائیں۔*',
+        noMatch: `"${query}" کے لیے ریکارڈ نہیں ملا۔ آپ او پی ڈی پرچی یا آیوشمان کارڈ کے متعلق پوچھ سکتے ہیں۔\n\n*24/7 ہیلپ لائن: **+91 6205844155**.*`
+      },
+      en: {
+        heading: 'Platform Health Guidance',
+        related: 'Related Platform Knowledge:',
+        helpline: '*Need immediate human assistance? Call our 24/7 Healthcare Helpline directly at **+91 6205844155** or dial **108** for emergency.*',
+        noMatch: `I could not locate specific matching records for "${query}". You can explore the role dashboards or ask about OPD appointments, Ayushman Bharat PM-JAY, ASHA worker protocols, or emergency services.\n\n*For immediate assistance, dial our 24/7 Healthcare Helpline at **+91 6205844155**.*`
+      }
+    };
+
+    const p = phrases[targetLang] || phrases.en;
+    if (!hasMatch) return p.noMatch;
+
+    let res = `### ${top.question}\n\n${top.answer}\n\n`;
+    if (secondary.length > 0) {
+      res += `#### ${p.related}\n`;
+      secondary.forEach((item) => {
+        res += `- **${item.question}**: ${item.answer.substring(0, 180)}...\n`;
+      });
+    }
+    res += `\n${p.helpline}`;
+    return res;
   }
 
   private deriveFollowUpQuestions(query: string, retrieved: KnowledgeItem[], role: string): string[] {

@@ -23,9 +23,13 @@ import { LanguageSelector } from '../common/LanguageSelector';
 import { OfflineSyncIndicator } from '../common/OfflineSyncIndicator';
 import { SimpleModeToggle } from '../common/SimpleModeToggle';
 import { EmergencySOSModal } from '../common/EmergencySOSModal';
-import { openElevenLabsCalling } from '../../services/elevenlabsCallingService';
+import { initiateHelplineCall, HELPLINE_PHONE_NUMBER } from '../../services/helplineCallingService';
 
-export const Navbar: React.FC = () => {
+export interface NavbarProps {
+  onToggleMobileSidebar?: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileSidebar }) => {
   const { t } = useTranslation();
   const { user, isAuthenticated, logout } = useAuth();
   const { notifications, unreadCount, markAsRead } = useNotifications();
@@ -372,12 +376,17 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center gap-3 shrink-0">
             <button
               type="button"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              aria-label={isMobileMenuOpen ? 'Close mobile menu' : 'Open mobile menu'}
-              aria-expanded={isMobileMenuOpen}
+              onClick={() => {
+                if (onToggleMobileSidebar) {
+                  onToggleMobileSidebar();
+                } else {
+                  setIsMobileMenuOpen(!isMobileMenuOpen);
+                }
+              }}
+              aria-label="Toggle navigation menu"
               className="lg:hidden touch-target flex items-center justify-center p-2 text-slate-700 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
             >
-              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              <Menu className="w-5 h-5" />
             </button>
 
             <Link to="/" className="flex items-center gap-2.5 group">
@@ -414,15 +423,15 @@ export const Navbar: React.FC = () => {
             {/* Language Selector */}
             <LanguageSelector />
 
-            {/* AI Voice Assistant Trigger */}
+            {/* 24/7 Healthcare Helpline Call Trigger */}
             <button
               type="button"
-              onClick={() => openElevenLabsCalling()}
+              onClick={() => initiateHelplineCall()}
               className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-teal-50 hover:bg-teal-100 text-teal-800 border border-teal-200 text-xs font-bold transition-all cursor-pointer"
-              title="Speak with AI Healthcare Assistant"
+              title={`Call 24/7 Healthcare Helpline (${HELPLINE_PHONE_NUMBER})`}
             >
               <Phone className="w-3.5 h-3.5 text-teal-600" />
-              <span>Voice Assist</span>
+              <span>Call Helpline</span>
             </button>
 
             {/* Emergency SOS Button */}
@@ -567,12 +576,12 @@ export const Navbar: React.FC = () => {
                 type="button"
                 onClick={() => {
                   setIsMobileMenuOpen(false);
-                  openElevenLabsCalling();
+                  initiateHelplineCall();
                 }}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-teal-50 text-teal-800 font-bold text-xs border border-teal-200"
               >
                 <Phone className="w-4 h-4 text-teal-600" />
-                <span>AI Voice Assistant</span>
+                <span>Call Helpline (+91 6205844155)</span>
               </button>
 
               {isAuthenticated && (

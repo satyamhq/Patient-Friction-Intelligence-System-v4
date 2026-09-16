@@ -6,6 +6,7 @@ export interface ChatMessage {
   sources?: SourceReference[];
   suggestedQuestions?: string[];
   model?: string;
+  detectedLanguage?: string;
   timestamp?: string;
 }
 
@@ -22,6 +23,7 @@ export interface ChatResponse {
   suggestedQuestions: string[];
   model: string;
   retrievedCount: number;
+  detectedLanguage?: string;
   timestamp: string;
 }
 
@@ -46,7 +48,8 @@ export const chatService = {
     query: string,
     history: ChatMessage[] = [],
     role?: string,
-    currentPath?: string
+    currentPath?: string,
+    language?: string
   ): Promise<ChatResponse> {
     try {
       const response = await api.post('/ai/chat', {
@@ -54,6 +57,7 @@ export const chatService = {
         history: history.map((m) => ({ role: m.role, content: m.content })),
         role,
         currentPath,
+        language,
       });
 
       if (response.data && response.data.success && response.data.data) {
@@ -63,8 +67,25 @@ export const chatService = {
     } catch (err: any) {
       console.warn('[Chat Service] Backend chat endpoint error:', err?.message);
       // Client-side offline fallback
+      const offlineAnswers: Record<string, string> = {
+        hinglish: `Main offline mode mein operate kar raha hoon. PFIS ek non-clinical healthcare intelligence platform hai jo hospital wait times, transit, aur documentation friction ko kam karta hai.\n\nKisi bhi zaroorat ya emergency guidance ke liye hamare 24/7 Helpline par call karein: **+91 6205844155** ya **108** dial karein.`,
+        hi: `मैं वर्तमान में ऑफ़लाइन मोड में काम कर रहा हूँ। PFIS स्वास्थ्य पहुंच की बाधाओं (ओपीडी कतार, दूरी, आयुष्मान कवरेज) को हल करता है।\n\nतत्काल सहायता के लिए हमारी 24/7 हेल्पलाइन पर संपर्क करें: **+91 6205844155** अथवा **108** डायल करें।`,
+        pa: `ਮੈਂ ਇਸ ਸਮੇਂ ਔਫਲਾਈਨ ਮੋਡ ਵਿੱਚ ਹਾਂ। PFIS ਸਿਹਤ ਸੇਵਾਵਾਂ ਦੀਆਂ ਰੁਕਾਵਟਾਂ ਨੂੰ ਹੱਲ ਕਰਦਾ ਹੈ।\n\nਤੁਰੰਤ ਮਦਦ ਲਈ ਸਾਡੀ 24/7 ਹੈਲਪਲਾਈਨ: **+91 6205844155** ਜਾਂ **108** ਡਾਇਲ ਕਰੋ।`,
+        bn: `আমি বর্তমানে অফলাইন মোডে রয়েছি। PFIS স্বাস্থ্যসেবার বাধা নিরসনে কাজ করে।\n\nজরুরি সহায়তার জন্য ২৪/৭ হেল্পলাইনে কল করুন: **+91 6205844155** বা **১০৮** ডায়াল করুন।`,
+        mr: `मी सध्या ऑफलाइन मोडमध्ये आहे. PFIS आरोग्य अडथळे दूर करण्यासाठी मदत करते.\n\nतातडीच्या मदतीसाठी २४/৭ हेल्पलाइनवर संपर्क करा: **+91 6205844155** किंवा **१०८** डायल करा.`,
+        ta: `நான் தற்போது ஆஃப்லைன் பயன்முறையில் உள்ளேன். PFIS சுகாதார தடைகளை தீர்க்க உதவுகிறது.\n\nஉடனடி உதவிக்கு 24/7 உதவி எண்: **+91 6205844155** அல்லது **108** அழைக்கவும்.`,
+        te: `నేను ప్రస్తుతం ఆఫ్‌లైన్ మోడ్‌లో ఉన్నాను. PFIS ఆరోగ్య అడ్డంకులను పరిష్కరిస్తుంది.\n\nతక్షణ సహాయం కోసం మా 24/7 హెల్ప్‌లైన్‌కు కాల్ చేయండి: **+91 6205844155** లేదా **108** డయల్ చేయండి.`,
+        gu: `હું હાલમાં ઑફલાઇન મોડમાં કાર્યરત છું. PFIS આરોગ્ય સંભાળની મુશ્કેલીઓ નિવારે છે.\n\nતાત્કાલિક સહાય માટે અમારી 24/7 હેલ્પલાઇન પર કૉલ કરો: **+91 6205844155** અથવા **108** ડાયલ કરો.`,
+        kn: `ನಾನು ಪ್ರಸ್ತುತ ಆಫ್‌ಲೈನ್ ಮೋಡ್‌ನಲ್ಲಿದ್ದೇನೆ. PFIS ಆರೋಗ್ಯ ಅಡೆತಡೆಗಳನ್ನು ನಿವಾರಿಸುತ್ತದೆ.\n\nತುರ್ತು ನೆರವಿಗಾಗಿ ನಮ್ಮ 24/7 ಹೆಲ್ಪ್‌ಲೈನ್‌ಗೆ ಕರೆ ಮಾಡಿ: **+91 6205844155** ಅಥವಾ **108** ಡಯಲ್ ಮಾಡಿ.`,
+        ml: `ഞാൻ ഇപ്പോൾ ഓഫ്‌ലൈൻ മോഡിലാണ് പ്രവർത്തിക്കുന്നത്. PFIS ആരോഗ്യ തടസ്സങ്ങൾ പരിഹരിക്കുന്നു.\n\nഅടിയന്തര സഹായത്തിന് ഞങ്ങളുടെ 24/7 ഹെൽപ്പ്‌ലൈൻ വിളിക്കുക: **+91 6205844155** അല്ലെങ്കിൽ **108** ഡയൽ ചെയ്യുക.`,
+        ur: `میں فی الوقت آف لائن موڈ میں کام کر رہا ہوں۔ PFIS طبی سہولیات کی رسائی کو آسان بناتا ہے۔\n\nفوری رہنمائی کے لیے ہماری 24/7 ہیلپ لائن پر رابطہ کریں: **+91 6205844155** یا **108** ملائیں۔`,
+        en: `I am currently operating in offline resilient mode. PFIS is a non-clinical healthcare logistics platform identifying and resolving friction barriers (wait times, transit distance, language differences, and documentation). For immediate assistance, call our 24/7 Healthcare Helpline at **+91 6205844155** or dial **108** for emergency.`
+      };
+
+      const ans = (language && offlineAnswers[language]) ? offlineAnswers[language] : offlineAnswers.en;
+
       return {
-        answer: `I am currently operating in offline resilient mode. PFIS is a non-clinical healthcare logistics platform identifying and resolving friction barriers (wait times, transit distance, language differences, and documentation). For details, check \`server/src/intelligence/friction/frictionEngine.ts\` or consult the platform documentation.`,
+        answer: ans,
         sources: [
           {
             file: 'server/src/intelligence/friction/frictionEngine.ts',
@@ -80,6 +101,7 @@ export const chatService = {
         ],
         model: 'PFIS Client Offline Fallback',
         retrievedCount: 1,
+        detectedLanguage: language || 'en',
         timestamp: new Date().toISOString(),
       };
     }

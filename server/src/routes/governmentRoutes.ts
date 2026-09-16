@@ -13,9 +13,12 @@ router.get('/profile/me', GovernmentController.getMyProfile);
 router.get('/analytics', GovernmentController.getDashboardAnalytics);
 router.get('/dashboard', GovernmentController.getDashboardAnalytics);
 
-// 2. Action Center
+// 2. Action Center & Friction Action Recommendation Engine
 router.get('/actions', GovernmentController.getActionCenterTickets);
 router.put('/actions/:id', GovernmentController.updateActionTicket);
+router.get('/action-recommendations', GovernmentController.getActionRecommendations);
+router.post('/action-recommendations/evaluate', GovernmentController.evaluateFrictionScore);
+router.post('/action-recommendations/convert-to-ticket', GovernmentController.convertRecommendationToTicket);
 
 // 3. Hospital Registry & Verification
 router.get('/hospitals', GovernmentController.getAllHospitals);

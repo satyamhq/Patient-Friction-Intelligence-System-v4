@@ -28,7 +28,7 @@ import { Button } from '../components/common/Button';
 import { TTSButton } from '../components/common/TTSButton';
 import { AiAppointmentAssistanceCard } from '../components/common/AiAppointmentAssistanceCard';
 import { EmergencySOSModal } from '../components/common/EmergencySOSModal';
-import { openElevenLabsCalling } from '../services/elevenlabsCallingService';
+import { initiateHelplineCall } from '../services/helplineCallingService';
 
 export const LandingPage: React.FC = () => {
   const { t } = useTranslation();
@@ -163,7 +163,7 @@ export const LandingPage: React.FC = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 sm:-mt-10 relative z-20">
         <AiAppointmentAssistanceCard
           onOpen108Emergency={() => setIsEmergencyModalOpen(true)}
-          onOpenAiAssistance={openElevenLabsCalling}
+          onOpenAiAssistance={initiateHelplineCall}
         />
       </section>
 

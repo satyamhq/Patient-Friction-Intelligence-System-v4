@@ -36,7 +36,72 @@ export interface IGovAnalytics {
   recentActions: any[];
 }
 
+export interface IActionRecommendation {
+  id: string;
+  frictionScore: number;
+  frictionLevel: 'LOW' | 'MODERATE' | 'HIGH' | 'CRITICAL';
+  problemIdentified: string;
+  rootCauseCategory:
+    | 'INFRASTRUCTURE'
+    | 'PROCESS'
+    | 'ACCESSIBILITY'
+    | 'STAFFING'
+    | 'AWARENESS'
+    | 'TECHNOLOGY'
+    | 'POLICY'
+    | 'ADMINISTRATIVE';
+  rootCauseDetails: string;
+  serviceCategory: string;
+  location: {
+    district: string;
+    block?: string;
+    facilityName?: string;
+  };
+  affectedPopulationEstimate: number;
+  responsibleAuthority: {
+    level:
+      | 'CENTRAL_GOVERNMENT'
+      | 'STATE_GOVERNMENT'
+      | 'DISTRICT_ADMINISTRATION'
+      | 'MUNICIPAL_LOCAL_BODY'
+      | 'HEALTHCARE_INSTITUTION'
+      | 'SERVICE_PROVIDER';
+    authorityLabel: string;
+    departmentOrAgency: string;
+    nodalOfficerDesignation: string;
+  };
+  recommendedGovernmentAction: string;
+  priorityLevel: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT' | 'CRITICAL';
+  priorityScore: number;
+  expectedImpact: string;
+  implementationTimeline: string;
+  requiredResources: {
+    estimatedBudgetINR: number;
+    personnel: string;
+    equipmentOrLogistics: string;
+  };
+  successMetricsKPI: string[];
+  evidenceSupportingRecommendation: {
+    provenance: string;
+    dataPoints: string[];
+  };
+  inferenceAndUncertainty: {
+    confidenceLevel: 'CONFIRMED_DATA' | 'HIGH_CONFIDENCE_INFERENCE' | 'PROJECTED_ESTIMATE';
+    confidenceScorePercent: number;
+    assumptions: string[];
+    uncertaintyFactors: string[];
+  };
+}
+
+export interface IRecommendationFilter {
+  authority?: string;
+  category?: string;
+  tier?: string;
+  district?: string;
+}
+
 export const governmentService = {
+
   // Profile
   async getMyProfile(): Promise<{ success: boolean; profile: any }> {
     const res = await api.get('/government/profile/me');
@@ -142,4 +207,27 @@ export const governmentService = {
     const res = await api.get('/government/audit-logs');
     return res.data;
   },
+
+  // Friction Score -> Government Action Recommendation Engine
+  async getActionRecommendations(
+    filters?: IRecommendationFilter
+  ): Promise<{ success: boolean; count: number; recommendations: IActionRecommendation[] }> {
+    const res = await api.get('/government/action-recommendations', { params: filters });
+    return res.data;
+  },
+
+  async evaluateFrictionAction(
+    payload: any
+  ): Promise<{ success: boolean; recommendation: IActionRecommendation }> {
+    const res = await api.post('/government/action-recommendations/evaluate', payload);
+    return res.data;
+  },
+
+  async convertRecommendationToTicket(
+    recommendation: any
+  ): Promise<{ success: boolean; message: string; action: any }> {
+    const res = await api.post('/government/action-recommendations/convert-to-ticket', recommendation);
+    return res.data;
+  },
 };
+

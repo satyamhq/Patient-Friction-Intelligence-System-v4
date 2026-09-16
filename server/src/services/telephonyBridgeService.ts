@@ -2,10 +2,7 @@
  * Telephony Bridge Service
  * 
  * Prepares the operational architecture for multi-channel voice connectivity:
- *   Website -> Backend -> ElevenLabs -> Twilio / Exotel -> Hospital Desk / Helpline
- * 
- * Note: Never hardcode telephony credentials. Reads from environment variables
- * when telephony infrastructure is provisioned.
+ *   Website -> Direct Helpline (+91 6205844155) / Twilio / Exotel -> Hospital Desk / Helpline
  */
 
 export interface TelephonyOutboundRequest {
@@ -19,9 +16,10 @@ export interface TelephonyOutboundRequest {
 }
 
 export interface TelephonyBridgeStatus {
-  provider: 'web_elevenlabs' | 'twilio' | 'exotel';
+  provider: 'helpline_direct' | 'twilio' | 'exotel';
   configured: boolean;
   activeGateway: string;
+  helplineNumber: string;
   capabilities: {
     browserAudio: boolean;
     outboundPSTN: boolean;
@@ -36,14 +34,14 @@ export class TelephonyBridgeService {
   private twilioToken: string;
   private exotelSid: string;
   private exotelApiKey: string;
-  private elevenLabsAgentId: string;
+  private helplineNumber: string;
 
   private constructor() {
     this.twilioSid = process.env.TWILIO_ACCOUNT_SID?.trim() || '';
     this.twilioToken = process.env.TWILIO_AUTH_TOKEN?.trim() || '';
     this.exotelSid = process.env.EXOTEL_ACCOUNT_SID?.trim() || '';
     this.exotelApiKey = process.env.EXOTEL_API_KEY?.trim() || '';
-    this.elevenLabsAgentId = process.env.ELEVENLABS_AGENT_ID?.trim() || 'agent_2901m2hw983kfcesprd47f904gbk';
+    this.helplineNumber = process.env.HELPLINE_PHONE_NUMBER?.trim() || '+91 6205844155';
   }
 
   public static getInstance(): TelephonyBridgeService {
@@ -57,17 +55,18 @@ export class TelephonyBridgeService {
     const hasTwilio = Boolean(this.twilioSid && this.twilioToken);
     const hasExotel = Boolean(this.exotelSid && this.exotelApiKey);
 
-    let provider: 'web_elevenlabs' | 'twilio' | 'exotel' = 'web_elevenlabs';
+    let provider: 'helpline_direct' | 'twilio' | 'exotel' = 'helpline_direct';
     if (hasExotel) provider = 'exotel';
     else if (hasTwilio) provider = 'twilio';
 
     return {
       provider,
-      configured: hasTwilio || hasExotel,
-      activeGateway: provider === 'web_elevenlabs' ? 'ElevenLabs Conversational AI WebRTC' : `${provider.toUpperCase()} Telephony PSTN Relay`,
+      configured: hasTwilio || hasExotel || Boolean(this.helplineNumber),
+      activeGateway: provider === 'helpline_direct' ? `Direct Helpline Gateway (${this.helplineNumber})` : `${provider.toUpperCase()} Telephony PSTN Relay`,
+      helplineNumber: this.helplineNumber,
       capabilities: {
-        browserAudio: true, // Native official ElevenLabs web widget
-        outboundPSTN: hasTwilio || hasExotel,
+        browserAudio: true,
+        outboundPSTN: true,
         inboundIVR: hasTwilio || hasExotel,
       },
     };
@@ -78,28 +77,32 @@ export class TelephonyBridgeService {
     channel: string;
     message: string;
     trackingId?: string;
+    helplineNumber?: string;
   }> {
     const status = this.getStatus();
 
-    if (!status.configured) {
-      // Clean fallback: When telephony credentials are not yet configured in environment variables,
-      // route via WebRTC ElevenLabs widget session
+    if (!hasTwilioAndExotel(this.twilioSid, this.exotelSid)) {
       return {
         success: true,
-        channel: 'web_elevenlabs_widget',
-        message: 'Interactive voice session established via ElevenLabs Healthcare Conversational AI agent.',
+        channel: 'helpline_direct',
+        message: `Call routed to official healthcare care coordination desk: ${this.helplineNumber}`,
+        helplineNumber: this.helplineNumber,
         trackingId: `VOICE-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
       };
     }
 
-    // When provider credentials are set via env:
     return {
       success: true,
       channel: status.provider,
       message: `PSTN Relay dispatched to hospital via ${status.provider.toUpperCase()} gateway.`,
       trackingId: `CALL-${Date.now()}-${Math.random().toString(36).substring(2, 7).toUpperCase()}`,
+      helplineNumber: this.helplineNumber,
     };
   }
+}
+
+function hasTwilioAndExotel(twilioSid: string, exotelSid: string): boolean {
+  return Boolean(twilioSid || exotelSid);
 }
 
 export const telephonyBridge = TelephonyBridgeService.getInstance();

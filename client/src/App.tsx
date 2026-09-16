@@ -8,7 +8,7 @@ import { AccessibilityProvider } from './context/AccessibilityContext';
 import { ToastProvider } from './context/ToastContext';
 import { FirstVisitLanguageModal } from './components/common/FirstVisitLanguageModal';
 import { AccessibilityToolbar } from './components/common/AccessibilityToolbar';
-import { ElevenLabsWidget } from './components/common/ElevenLabsWidget';
+import { GeminiHealthChatbot } from './components/common/GeminiHealthChatbot';
 import { MobileBottomBar } from './components/layout/MobileBottomBar';
 import { LoadingSkeleton } from './components/common/LoadingSkeleton';
 
@@ -68,6 +68,7 @@ const HighRiskFollowUpPage = lazyNamed(() => import('./pages/patient/HighRiskFol
 const FrontlineWorkerPortal = lazyNamed(() => import('./pages/patient/FrontlineWorkerPortal'), 'FrontlineWorkerPortal');
 const PatientFrictionReportPage = lazyNamed(() => import('./pages/patient/PatientFrictionReportPage'), 'PatientFrictionReportPage');
 const PatientAccessAssessment = lazyNamed(() => import('./pages/patient/PatientAccessAssessment'), 'PatientAccessAssessment');
+const PatientServicesDirectory = lazyNamed(() => import('./pages/patient/PatientServicesDirectory'), 'PatientServicesDirectory');
 
 // Hospital Pages (Lazy Loaded)
 const HospitalDashboard = lazyNamed(() => import('./pages/hospital/HospitalDashboard'), 'HospitalDashboard');
@@ -76,6 +77,11 @@ const HospitalRequestDetails = lazyNamed(() => import('./pages/hospital/Hospital
 const HospitalDepartments = lazyNamed(() => import('./pages/hospital/HospitalDepartments'), 'HospitalDepartments');
 const HospitalProfile = lazyNamed(() => import('./pages/hospital/HospitalProfile'), 'HospitalProfile');
 const FacilityQualityDashboard = lazyNamed(() => import('./pages/hospital/FacilityQualityDashboard'), 'FacilityQualityDashboard');
+const HospitalPatientIntake = lazyNamed(() => import('./pages/hospital/HospitalPatientIntake'), 'HospitalPatientIntake');
+const HospitalStaffManagement = lazyNamed(() => import('./pages/hospital/HospitalStaffManagement'), 'HospitalStaffManagement');
+const HospitalResourcesHub = lazyNamed(() => import('./pages/hospital/HospitalResourcesHub'), 'HospitalResourcesHub');
+const HospitalAlertsCenter = lazyNamed(() => import('./pages/hospital/HospitalAlertsCenter'), 'HospitalAlertsCenter');
+const HospitalSettings = lazyNamed(() => import('./pages/hospital/HospitalSettings'), 'HospitalSettings');
 
 // Doctor Pages (Lazy Loaded)
 const DoctorDashboard = lazyNamed(() => import('./pages/doctor/DoctorDashboard'), 'DoctorDashboard');
@@ -88,12 +94,17 @@ const DoctorLabOrders = lazyNamed(() => import('./pages/doctor/DoctorLabOrders')
 const DoctorReferrals = lazyNamed(() => import('./pages/doctor/DoctorReferrals'), 'DoctorReferrals');
 const DoctorFollowUps = lazyNamed(() => import('./pages/doctor/DoctorFollowUps'), 'DoctorFollowUps');
 const DoctorSchedule = lazyNamed(() => import('./pages/doctor/DoctorSchedule'), 'DoctorSchedule');
+const DoctorNotifications = lazyNamed(() => import('./pages/doctor/DoctorNotifications'), 'DoctorNotifications');
+const DoctorSettings = lazyNamed(() => import('./pages/doctor/DoctorSettings'), 'DoctorSettings');
 
 // ASHA Worker Pages (Lazy Loaded)
 const AshaDashboard = lazyNamed(() => import('./pages/asha/AshaDashboard'), 'AshaDashboard');
 const AshaPatients = lazyNamed(() => import('./pages/asha/AshaPatients'), 'AshaPatients');
 const AshaHouseholds = lazyNamed(() => import('./pages/asha/AshaHouseholds'), 'AshaHouseholds');
+const AshaHouseholdCohorts = lazyNamed(() => import('./pages/asha/AshaHouseholdCohorts'), 'AshaHouseholdCohorts');
+const AshaMaternalRegister = lazyNamed(() => import('./pages/asha/AshaMaternalRegister'), 'AshaMaternalRegister');
 const AshaFieldVisits = lazyNamed(() => import('./pages/asha/AshaFieldVisits'), 'AshaFieldVisits');
+const AshaScreeningDesk = lazyNamed(() => import('./pages/asha/AshaScreeningDesk'), 'AshaScreeningDesk');
 const AshaEscalations = lazyNamed(() => import('./pages/asha/AshaEscalations'), 'AshaEscalations');
 const AshaFrontlineDesk = lazyNamed(() => import('./pages/asha/AshaFrontlineDesk'), 'AshaFrontlineDesk');
 const AshaAppointments = lazyNamed(() => import('./pages/asha/AshaAppointments'), 'AshaAppointments');
@@ -112,6 +123,7 @@ const AshaSettings = lazyNamed(() => import('./pages/asha/AshaSettings'), 'AshaS
 const GovernmentDashboard = lazyNamed(() => import('./pages/government/GovernmentDashboard'), 'GovernmentDashboard');
 const GovernmentHospitals = lazyNamed(() => import('./pages/government/GovernmentHospitals'), 'GovernmentHospitals');
 const GovernmentBeds = lazyNamed(() => import('./pages/government/GovernmentBeds'), 'GovernmentBeds');
+const GovernmentAccreditation = lazyNamed(() => import('./pages/government/GovernmentAccreditation'), 'GovernmentAccreditation');
 const GovernmentReferrals = lazyNamed(() => import('./pages/government/GovernmentReferrals'), 'GovernmentReferrals');
 const GovernmentServices = lazyNamed(() => import('./pages/government/GovernmentServices'), 'GovernmentServices');
 const GovernmentOPDAnalytics = lazyNamed(() => import('./pages/government/GovernmentOPDAnalytics'), 'GovernmentOPDAnalytics');
@@ -122,12 +134,16 @@ const GovernmentDistrictComparison = lazyNamed(() => import('./pages/government/
 const GovernmentActionCenter = lazyNamed(() => import('./pages/government/GovernmentActionCenter'), 'GovernmentActionCenter');
 const GovernmentReports = lazyNamed(() => import('./pages/government/GovernmentReports'), 'GovernmentReports');
 const GovernmentAuditLogs = lazyNamed(() => import('./pages/government/GovernmentAuditLogs'), 'GovernmentAuditLogs');
+const GovernmentSettings = lazyNamed(() => import('./pages/government/GovernmentSettings'), 'GovernmentSettings');
+const AuthorizedOfficerWorkflow = lazyNamed(() => import('./pages/government/AuthorizedOfficerWorkflow'), 'AuthorizedOfficerWorkflow');
+const PatientFrictionIntelligenceSystem = lazyNamed(() => import('./pages/government/PatientFrictionIntelligenceSystem'), 'PatientFrictionIntelligenceSystem');
 
 // Admin Pages (Lazy Loaded)
 const AdminDashboard = lazyNamed(() => import('./pages/admin/AdminDashboard'), 'AdminDashboard');
 const PopulationFrictionMap = lazyNamed(() => import('./pages/admin/PopulationFrictionMap'), 'PopulationFrictionMap');
 const WhatIfSimulator = lazyNamed(() => import('./pages/admin/WhatIfSimulator'), 'WhatIfSimulator');
 const InterventionOptimizer = lazyNamed(() => import('./pages/admin/InterventionOptimizer'), 'InterventionOptimizer');
+const AdminResourceAllocation = lazyNamed(() => import('./pages/admin/AdminResourceAllocation'), 'AdminResourceAllocation');
 const CareLeakage = lazyNamed(() => import('./pages/admin/CareLeakage'), 'CareLeakage');
 const CareFailure = lazyNamed(() => import('./pages/admin/CareFailure'), 'CareFailure');
 const AdminPatients = lazyNamed(() => import('./pages/admin/AdminPatients'), 'AdminPatients');
@@ -142,6 +158,7 @@ const AdminDataQuality = lazyNamed(() => import('./pages/admin/AdminDataQuality'
 const AdminPermissions = lazyNamed(() => import('./pages/admin/AdminPermissions'), 'AdminPermissions');
 const AdminSystemHealth = lazyNamed(() => import('./pages/admin/AdminSystemHealth'), 'AdminSystemHealth');
 const AdminReports = lazyNamed(() => import('./pages/admin/AdminReports'), 'AdminReports');
+const AdminSystemSettings = lazyNamed(() => import('./pages/admin/AdminSystemSettings'), 'AdminSystemSettings');
 
 // Route Loading Fallback Skeleton
 const PageFallback: React.FC = () => (
@@ -173,7 +190,7 @@ export const App: React.FC = () => {
                 <NotificationProvider>
                   <FirstVisitLanguageModal />
                   <AccessibilityToolbar />
-                  <ElevenLabsWidget />
+                  <GeminiHealthChatbot />
                   <MobileBottomBar />
 
                   <main id="main-content" tabIndex={-1} className="outline-none">
@@ -220,6 +237,7 @@ export const App: React.FC = () => {
                           <Route path="profile" element={<PatientProfile />} />
                           <Route path="hospitals" element={<NearbyHospitals />} />
                           <Route path="hospitals/:id" element={<HospitalDetails />} />
+                          <Route path="services" element={<PatientServicesDirectory />} />
                           <Route path="requests" element={<PatientRequests />} />
                           <Route path="requests/:id" element={<RequestDetails />} />
                           <Route path="documents" element={<PatientDocuments />} />
@@ -239,12 +257,13 @@ export const App: React.FC = () => {
                           <Route index element={<Navigate to="/hospital/dashboard" replace />} />
                           <Route path="dashboard" element={<HospitalDashboard />} />
                           <Route path="triage" element={<DigitalTriagePage />} />
+                          <Route path="intake" element={<HospitalPatientIntake />} />
+                          <Route path="opd-capacity" element={<HospitalRequests />} />
                           <Route path="referrals" element={<ReferralTrackingPage />} />
                           <Route path="health-records" element={<LongitudinalRecordsPage />} />
                           <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
                           <Route path="quality" element={<Navigate to="/hospital/facility-metrics" replace />} />
                           <Route path="opd" element={<Navigate to="/hospital/requests" replace />} />
-                          <Route path="opd-queue" element={<Navigate to="/hospital/requests" replace />} />
                           <Route path="medicines" element={<MedicineAvailabilityPage />} />
                           <Route path="diagnostics" element={<DiagnosticsPage />} />
                           <Route path="high-risk" element={<HighRiskFollowUpPage />} />
@@ -252,12 +271,15 @@ export const App: React.FC = () => {
                           <Route path="requests" element={<HospitalRequests />} />
                           <Route path="requests/:id" element={<HospitalRequestDetails />} />
                           <Route path="departments" element={<HospitalDepartments />} />
+                          <Route path="staff" element={<HospitalStaffManagement />} />
+                          <Route path="resources" element={<HospitalResourcesHub />} />
                           <Route path="teleconsult" element={<TeleconsultationRoom />} />
                           <Route path="hospitals" element={<NearbyHospitals />} />
                           <Route path="digital-twin" element={<DigitalTwinSimulator />} />
                           <Route path="profile" element={<HospitalProfile />} />
+                          <Route path="alerts" element={<HospitalAlertsCenter />} />
                           <Route path="notifications" element={<PatientNotifications />} />
-                          <Route path="settings" element={<PatientSettings />} />
+                          <Route path="settings" element={<HospitalSettings />} />
                         </Route>
 
                         {/* Doctor Portal */}
@@ -278,8 +300,8 @@ export const App: React.FC = () => {
                           <Route path="health-records" element={<LongitudinalRecordsPage />} />
                           <Route path="triage" element={<DigitalTriagePage />} />
                           <Route path="diagnostics" element={<DiagnosticsPage />} />
-                          <Route path="notifications" element={<PatientNotifications />} />
-                          <Route path="settings" element={<PatientSettings />} />
+                          <Route path="notifications" element={<DoctorNotifications />} />
+                          <Route path="settings" element={<DoctorSettings />} />
                         </Route>
 
                         {/* ASHA Worker Portal */}
@@ -289,8 +311,11 @@ export const App: React.FC = () => {
                           <Route path="today" element={<Navigate to="/asha/dashboard" replace />} />
                           <Route path="patients" element={<AshaPatients />} />
                           <Route path="households" element={<AshaHouseholds />} />
+                          <Route path="cohorts" element={<AshaHouseholdCohorts />} />
+                          <Route path="maternal-register" element={<AshaMaternalRegister />} />
                           <Route path="visits" element={<AshaFieldVisits />} />
                           <Route path="field-visits" element={<Navigate to="/asha/visits" replace />} />
+                          <Route path="screening" element={<AshaScreeningDesk />} />
                           <Route path="escalations" element={<AshaEscalations />} />
                           <Route path="high-risk" element={<AshaEscalations />} />
                           <Route path="desk" element={<AshaFrontlineDesk />} />
@@ -315,6 +340,7 @@ export const App: React.FC = () => {
                           <Route path="hospitals" element={<GovernmentHospitals />} />
                           <Route path="beds" element={<GovernmentBeds />} />
                           <Route path="friction-map" element={<PopulationFrictionMap />} />
+                          <Route path="accreditation" element={<GovernmentAccreditation />} />
                           <Route path="interventions" element={<InterventionOptimizer />} />
                           <Route path="referrals" element={<GovernmentReferrals />} />
                           <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
@@ -325,16 +351,20 @@ export const App: React.FC = () => {
                           <Route path="asha-coverage" element={<GovernmentAshaCoverage />} />
                           <Route path="district-comparison" element={<GovernmentDistrictComparison />} />
                           <Route path="alerts" element={<GovernmentActionCenter />} />
+                          <Route path="officer-workflow" element={<AuthorizedOfficerWorkflow />} />
+                          <Route path="friction-intelligence" element={<PatientFrictionIntelligenceSystem />} />
                           <Route path="reports" element={<GovernmentReports />} />
                           <Route path="audit-logs" element={<GovernmentAuditLogs />} />
                           <Route path="notifications" element={<PatientNotifications />} />
-                          <Route path="settings" element={<PatientSettings />} />
+                          <Route path="settings" element={<GovernmentSettings />} />
                         </Route>
 
                         {/* Admin Intelligence Suite */}
                         <Route path="/admin" element={<AdminLayout />}>
                           <Route index element={<Navigate to="/admin/dashboard" replace />} />
                           <Route path="dashboard" element={<AdminDashboard />} />
+                          <Route path="officer-workflow" element={<AuthorizedOfficerWorkflow />} />
+                          <Route path="friction-intelligence" element={<PatientFrictionIntelligenceSystem />} />
                           <Route path="state-command" element={<AdminStateCommand />} />
                           <Route path="judge-mode" element={<JudgeImpactDashboard />} />
                           <Route path="judge-mode/" element={<Navigate to="/admin/judge-mode" replace />} />
@@ -349,7 +379,9 @@ export const App: React.FC = () => {
                           <Route path="frontline" element={<FrontlineWorkerPortal />} />
                           <Route path="facility-metrics" element={<FacilityQualityDashboard />} />
                           <Route path="friction-map" element={<PopulationFrictionMap />} />
+                          <Route path="district-comparison" element={<GovernmentDistrictComparison />} />
                           <Route path="simulator" element={<WhatIfSimulator />} />
+                          <Route path="resource-allocation" element={<AdminResourceAllocation />} />
                           <Route path="digital-twin" element={<DigitalTwinSimulator />} />
                           <Route path="teleconsult" element={<TeleconsultationRoom />} />
                           <Route path="interventions" element={<InterventionOptimizer />} />
@@ -365,7 +397,7 @@ export const App: React.FC = () => {
                           <Route path="system-health" element={<AdminSystemHealth />} />
                           <Route path="reports" element={<AdminReports />} />
                           <Route path="feature-flags" element={<AdminFeatureFlags />} />
-                          <Route path="settings" element={<PatientSettings />} />
+                          <Route path="settings" element={<AdminSystemSettings />} />
                         </Route>
 
                         {/* Fallbacks and legacy redirects */}

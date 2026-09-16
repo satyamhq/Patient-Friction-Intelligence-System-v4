@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard,
@@ -7,9 +7,6 @@ import {
   HeartPulse,
   FileText,
   GitFork,
-  MoreHorizontal,
-  ChevronDown,
-  ChevronUp,
   MapPin,
   Pill,
   Activity,
@@ -19,7 +16,6 @@ import {
   Home,
   CheckSquare,
   Clock,
-  ClipboardList,
   Stethoscope,
   Building2,
   ListOrdered,
@@ -27,276 +23,447 @@ import {
   Sliders,
   Landmark,
   Shield,
+  ShieldCheck,
   RefreshCw,
-  Phone,
   FolderLock,
   Layers,
   Database,
   Cpu,
   KeyRound,
   Video,
+  ChevronLeft,
+  ChevronRight,
+  ClipboardCheck,
+  UserCheck,
+  AlertTriangle,
+  FileSpreadsheet,
+  Bell,
+  Sparkles,
+  Phone,
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { initiateHelplineCall, HELPLINE_PHONE_NUMBER } from '../../services/helplineCallingService';
 
-interface NavItem {
+export interface NavItem {
   name: string;
   path: string;
   icon: React.ElementType;
+  badge?: string;
+  badgeColor?: string;
+}
+
+export interface NavSection {
+  title: string;
+  items: NavItem[];
 }
 
 interface SidebarProps {
   forceRole?: string;
+  isMobileOpen?: boolean;
+  onMobileClose?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ forceRole }) => {
+const SIDEBAR_COLLAPSED_KEY = 'pfis_sidebar_collapsed';
+
+export const Sidebar: React.FC<SidebarProps> = ({
+  forceRole,
+  isMobileOpen = false,
+  onMobileClose,
+}) => {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const role = forceRole || user?.role;
-  const [isMoreOpen, setIsMoreOpen] = useState(false);
+  const location = useLocation();
+  const role = (forceRole || user?.role || 'patient').toLowerCase();
 
-  if (!role) return null;
+  // Collapsed state persisted in localStorage (desktop only)
+  const [isCollapsed, setIsCollapsed] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
 
-  // Role Navigation Configuration matching Phase 4 Information Architecture
-  const getNavConfiguration = (): { title: string; primary: NavItem[]; more: NavItem[] } => {
-    switch (role.toLowerCase()) {
+  const toggleCollapsed = () => {
+    const next = !isCollapsed;
+    setIsCollapsed(next);
+    try {
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(next));
+    } catch {}
+  };
+
+  // Close mobile drawer on route change
+  useEffect(() => {
+    if (onMobileClose) {
+      onMobileClose();
+    }
+  }, [location.pathname]);
+
+  // Role Navigation Sections according to exact specification
+  const getSectionsForRole = (): { portalTitle: string; sections: NavSection[] } => {
+    switch (role) {
       case 'patient':
         return {
-          title: 'Patient Portal',
-          primary: [
-            { name: 'Home', path: '/patient/dashboard', icon: LayoutDashboard },
-            { name: 'Appointments', path: '/patient/requests', icon: Calendar },
-            { name: 'My Care', path: '/patient/triage', icon: HeartPulse },
-            { name: 'Records', path: '/patient/health-records', icon: FileText },
-            { name: 'Referrals', path: '/patient/referrals', icon: GitFork },
-          ],
-          more: [
-            { name: 'Find Facility', path: '/patient/hospitals', icon: MapPin },
-            { name: 'Medicine Stock', path: '/patient/medicines', icon: Pill },
-            { name: 'Diagnostics', path: '/patient/diagnostics', icon: Activity },
-            { name: 'High-Risk Follow-up', path: '/patient/high-risk', icon: HeartPulse },
-            { name: 'Teleconsultation', path: '/patient/teleconsult', icon: Video },
-            { name: 'Document Vault', path: '/patient/documents', icon: FolderLock },
-            { name: 'Report Barrier', path: '/patient/report-friction', icon: ShieldAlert },
-            { name: 'Settings & Language', path: '/patient/settings', icon: Settings },
-          ],
-        };
-
-      case 'asha':
-      case 'asha_worker':
-        return {
-          title: 'ASHA Field Desk',
-          primary: [
-            { name: 'Today', path: '/asha/dashboard', icon: LayoutDashboard },
-            { name: 'Patients', path: '/asha/patients', icon: Users },
-            { name: 'Households', path: '/asha/households', icon: Home },
-            { name: 'Visits', path: '/asha/visits', icon: Calendar },
-            { name: 'Follow-ups', path: '/asha/follow-ups', icon: CheckSquare },
-            { name: 'Referrals', path: '/asha/referrals', icon: GitFork },
-          ],
-          more: [
-            { name: 'Escalations', path: '/asha/escalations', icon: ShieldAlert },
-            { name: 'OPD Tokens', path: '/asha/opd-tokens', icon: ListOrdered },
-            { name: 'Teleconsultation', path: '/asha/teleconsult', icon: Video },
-            { name: 'Access Barriers', path: '/asha/access-barriers', icon: Activity },
-            { name: 'Documents', path: '/asha/documents', icon: FileText },
-            { name: 'Offline Sync', path: '/asha/sync', icon: RefreshCw },
-            { name: 'Settings', path: '/asha/settings', icon: Settings },
+          portalTitle: 'Patient & Citizen',
+          sections: [
+            {
+              title: 'Care & Access',
+              items: [
+                { name: 'Dashboard', path: '/patient/dashboard', icon: LayoutDashboard },
+                { name: 'Barrier Check', path: '/patient/assessment', icon: ShieldAlert, badge: 'PFI' },
+                { name: 'Nearby Hospitals', path: '/patient/hospitals', icon: MapPin },
+                { name: 'Health Services', path: '/patient/services', icon: Pill },
+              ],
+            },
+            {
+              title: 'Records & Visits',
+              items: [
+                { name: 'Health Records Vault', path: '/patient/health-records', icon: FolderLock },
+                { name: 'Appointments', path: '/patient/requests', icon: Calendar },
+                { name: 'Care Referrals', path: '/patient/referrals', icon: GitFork },
+                { name: 'Teleconsultation', path: '/patient/teleconsult', icon: Video },
+              ],
+            },
+            {
+              title: 'Account & Safety',
+              items: [
+                { name: 'Notifications', path: '/patient/notifications', icon: Bell },
+                { name: 'Patient Profile', path: '/patient/profile', icon: Users },
+                { name: 'Settings & Language', path: '/patient/settings', icon: Settings },
+              ],
+            },
           ],
         };
 
       case 'doctor':
         return {
-          title: 'Doctor Portal',
-          primary: [
-            { name: 'Today', path: '/doctor/dashboard', icon: LayoutDashboard },
-            { name: 'Queue', path: '/doctor/opd-queue', icon: ListOrdered },
-            { name: 'Patients', path: '/doctor/patients', icon: Users },
-            { name: 'Consultations', path: '/doctor/consultation', icon: Stethoscope },
-            { name: 'Diagnostics', path: '/doctor/lab-orders', icon: Activity },
-            { name: 'Referrals', path: '/doctor/referrals', icon: GitFork },
-            { name: 'Follow-ups', path: '/doctor/follow-ups', icon: Clock },
-          ],
-          more: [
-            { name: 'Prescriptions', path: '/doctor/prescriptions', icon: FileText },
-            { name: 'Schedule', path: '/doctor/schedule', icon: Calendar },
-            { name: 'Teleconsultation', path: '/doctor/teleconsult', icon: Video },
-            { name: 'Longitudinal EHR', path: '/doctor/health-records', icon: Layers },
-            { name: 'Clinical Profile', path: '/doctor/profile', icon: Users },
-            { name: 'Settings', path: '/doctor/settings', icon: Settings },
+          portalTitle: 'Doctor & Specialist',
+          sections: [
+            {
+              title: 'Clinical Desk',
+              items: [
+                { name: 'Doctor Dashboard', path: '/doctor/dashboard', icon: LayoutDashboard },
+                { name: 'OPD Queue', path: '/doctor/opd-queue', icon: ListOrdered, badge: 'Live' },
+                { name: 'Patient Directory', path: '/doctor/patients', icon: Users },
+                { name: 'Consultation Workspace', path: '/doctor/consultation', icon: Stethoscope },
+              ],
+            },
+            {
+              title: 'Care Coordination',
+              items: [
+                { name: 'Teleconsult Room', path: '/doctor/teleconsult', icon: Video },
+                { name: 'Patient EHR Records', path: '/doctor/health-records', icon: Layers },
+                { name: 'Prescriptions & Rx', path: '/doctor/prescriptions', icon: FileText },
+                { name: 'Lab Orders', path: '/doctor/lab-orders', icon: Activity },
+                { name: 'Referrals Network', path: '/doctor/referrals', icon: GitFork },
+                { name: 'Clinical Schedule', path: '/doctor/schedule', icon: Calendar },
+              ],
+            },
+            {
+              title: 'Preferences',
+              items: [
+                { name: 'Clinical Alerts', path: '/doctor/notifications', icon: Bell },
+                { name: 'Doctor Profile', path: '/doctor/profile', icon: UserCheck },
+                { name: 'Practice Settings', path: '/doctor/settings', icon: Settings },
+              ],
+            },
           ],
         };
 
       case 'hospital':
       case 'facility':
         return {
-          title: 'Facility Operations',
-          primary: [
-            { name: 'Overview', path: '/hospital/dashboard', icon: LayoutDashboard },
-            { name: 'OPD', path: '/hospital/requests', icon: ListOrdered },
-            { name: 'Patients', path: '/hospital/requests', icon: Users },
-            { name: 'Services', path: '/hospital/departments', icon: Building2 },
-            { name: 'Diagnostics', path: '/hospital/diagnostics', icon: Activity },
-            { name: 'Medicines', path: '/hospital/medicines', icon: Pill },
-            { name: 'Referrals', path: '/hospital/referrals', icon: GitFork },
-            { name: 'Quality', path: '/hospital/facility-metrics', icon: BarChart3 },
+          portalTitle: 'Hospital & Facility',
+          sections: [
+            {
+              title: 'Triage & Intake',
+              items: [
+                { name: 'Facility Dashboard', path: '/hospital/dashboard', icon: LayoutDashboard },
+                { name: 'Live Casualty Triage', path: '/hospital/triage', icon: HeartPulse, badge: 'Urgent' },
+                { name: 'Patient Intake Desk', path: '/hospital/intake', icon: ClipboardCheck },
+                { name: 'OPD Queue Capacity', path: '/hospital/opd-capacity', icon: ListOrdered },
+              ],
+            },
+            {
+              title: 'Facility Resources',
+              items: [
+                { name: 'Departments', path: '/hospital/departments', icon: Building2 },
+                { name: 'Doctors & Staff', path: '/hospital/staff', icon: Users },
+                { name: 'Resources Hub', path: '/hospital/resources', icon: Pill },
+                { name: 'Referral Transfers', path: '/hospital/referrals', icon: GitFork },
+              ],
+            },
+            {
+              title: 'Quality & Governance',
+              items: [
+                { name: 'Facility Analytics', path: '/hospital/facility-metrics', icon: BarChart3 },
+                { name: 'Operational Alerts', path: '/hospital/alerts', icon: AlertTriangle },
+                { name: 'Facility Settings', path: '/hospital/settings', icon: Settings },
+              ],
+            },
           ],
-          more: [
-            { name: 'Live Triage', path: '/hospital/triage', icon: HeartPulse },
-            { name: 'Teleconsultation', path: '/hospital/teleconsult', icon: Video },
-            { name: 'Facility Profile', path: '/hospital/profile', icon: Building2 },
-            { name: 'Settings', path: '/hospital/settings', icon: Settings },
+        };
+
+      case 'asha':
+      case 'asha_worker':
+        return {
+          portalTitle: 'ASHA Field Worker',
+          sections: [
+            {
+              title: 'Field Operations',
+              items: [
+                { name: 'Field Desk Today', path: '/asha/dashboard', icon: LayoutDashboard },
+                { name: 'Village Households', path: '/asha/households', icon: Home },
+                { name: 'Household Cohorts', path: '/asha/cohorts', icon: Users },
+                { name: 'Maternal Register', path: '/asha/maternal-register', icon: HeartPulse, badge: 'ANC' },
+              ],
+            },
+            {
+              title: 'Frontline Care',
+              items: [
+                { name: 'Field Visits', path: '/asha/visits', icon: Calendar },
+                { name: 'Screening & NCD', path: '/asha/screening', icon: Activity },
+                { name: 'Care Referrals', path: '/asha/referrals', icon: GitFork },
+                { name: 'High-Risk Escalations', path: '/asha/escalations', icon: ShieldAlert, badge: 'Alert' },
+                { name: 'Patient Follow-ups', path: '/asha/follow-ups', icon: CheckSquare },
+              ],
+            },
+            {
+              title: 'Toolkit & Settings',
+              items: [
+                { name: 'OPD Tokens', path: '/asha/opd-tokens', icon: ListOrdered },
+                { name: 'Offline Data Sync', path: '/asha/sync', icon: RefreshCw },
+                { name: 'Field Notifications', path: '/asha/notifications', icon: Bell },
+                { name: 'Field Settings', path: '/asha/settings', icon: Settings },
+              ],
+            },
           ],
         };
 
       case 'government':
         return {
-          title: 'Public Health Command',
-          primary: [
-            { name: 'Overview', path: '/government/dashboard', icon: LayoutDashboard },
-            { name: 'Access', path: '/government/friction-map', icon: Activity },
-            { name: 'Facilities', path: '/government/hospitals', icon: Building2 },
-            { name: 'Referrals', path: '/government/referrals', icon: GitFork },
-            { name: 'Quality', path: '/government/facility-metrics', icon: BarChart3 },
-            { name: 'Insights', path: '/government/district-comparison', icon: Sliders },
-            { name: 'Interventions', path: '/government/interventions', icon: HeartPulse },
-            { name: 'Reports', path: '/government/reports', icon: FileText },
-          ],
-          more: [
-            { name: 'Bed Registry', path: '/government/beds', icon: Building2 },
-            { name: 'OPD Analytics', path: '/government/opd-analytics', icon: ListOrdered },
-            { name: 'Lab Networks', path: '/government/labs', icon: Activity },
-            { name: 'e-Pharmacy', path: '/government/pharmacy', icon: Pill },
-            { name: 'ASHA Coverage', path: '/government/asha-coverage', icon: Users },
-            { name: 'Action Center', path: '/government/alerts', icon: ShieldAlert },
-            { name: 'Audit Logs', path: '/government/audit-logs', icon: FolderLock },
-            { name: 'Settings', path: '/government/settings', icon: Settings },
+          portalTitle: 'Health Authority',
+          sections: [
+            {
+              title: 'Public Health Command',
+              items: [
+                { name: 'Statewide Dashboard', path: '/government/dashboard', icon: LayoutDashboard },
+                { name: 'Friction Intelligence System', path: '/government/friction-intelligence', icon: Activity, badge: 'v4.2' },
+                { name: 'Officer Workflow', path: '/government/officer-workflow', icon: ShieldCheck, badge: 'Loop' },
+                { name: 'District Analytics', path: '/government/district-comparison', icon: Sliders },
+                { name: 'Population Friction Map', path: '/government/friction-map', icon: Activity, badge: 'Map' },
+              ],
+            },
+            {
+              title: 'Facilities & Network',
+              items: [
+                { name: 'Hospitals Network', path: '/government/hospitals', icon: Building2 },
+                { name: 'Bed Registry', path: '/government/beds', icon: Building2 },
+                { name: 'Accreditation & NQAS', path: '/government/accreditation', icon: BarChart3 },
+                { name: 'Referral Analytics', path: '/government/referrals', icon: GitFork },
+              ],
+            },
+            {
+              title: 'Interventions & Action',
+              items: [
+                { name: 'Intervention Optimizer', path: '/government/interventions', icon: HeartPulse },
+                { name: 'Government Action Center', path: '/government/alerts', icon: ShieldAlert, badge: 'Action' },
+                { name: 'Public Health Reports', path: '/government/reports', icon: FileSpreadsheet },
+                { name: 'Audit & Telemetry', path: '/government/audit-logs', icon: FolderLock },
+                { name: 'Authority Settings', path: '/government/settings', icon: Settings },
+              ],
+            },
           ],
         };
 
       case 'admin':
       default:
         return {
-          title: 'System Administration',
-          primary: [
-            { name: 'Overview', path: '/admin/dashboard', icon: LayoutDashboard },
-            { name: 'Users', path: '/admin/users', icon: Users },
-            { name: 'Facilities', path: '/admin/hospitals', icon: Building2 },
-            { name: 'Data', path: '/admin/data-quality', icon: Database },
-            { name: 'Integrations', path: '/admin/integrations', icon: Cpu },
-            { name: 'Security', path: '/admin/permissions', icon: KeyRound },
-            { name: 'System Health', path: '/admin/system-health', icon: Activity },
-          ],
-          more: [
-            { name: 'State Command', path: '/admin/state-command', icon: Landmark },
-            { name: 'Platform Impact (Judge)', path: '/admin/judge-mode', icon: BarChart3 },
-            { name: 'Population Friction Map', path: '/admin/friction-map', icon: Activity },
-            { name: 'Intervention Simulator', path: '/admin/simulator', icon: Sliders },
-            { name: 'Care Leakage', path: '/admin/care-leakage', icon: GitFork },
-            { name: 'Care Failure Analysis', path: '/admin/care-failure', icon: ShieldAlert },
-            { name: 'Feature Flags', path: '/admin/feature-flags', icon: Settings },
-            { name: 'System Audit Logs', path: '/admin/audit-logs', icon: FolderLock },
-            { name: 'Settings', path: '/admin/settings', icon: Settings },
+          portalTitle: 'Health Ministry & Admin',
+          sections: [
+            {
+              title: 'Executive Command',
+              items: [
+                { name: 'Executive Dashboard', path: '/admin/dashboard', icon: LayoutDashboard },
+                { name: 'Friction Intelligence System', path: '/admin/friction-intelligence', icon: Activity, badge: 'v4.2' },
+                { name: 'Officer Workflow', path: '/admin/officer-workflow', icon: ShieldCheck, badge: 'Loop' },
+                { name: 'Statewide Command', path: '/admin/state-command', icon: Landmark },
+                { name: 'Population Friction', path: '/admin/friction-map', icon: Activity, badge: 'PFI' },
+                { name: 'District Comparison', path: '/admin/district-comparison', icon: Sliders },
+              ],
+            },
+            {
+              title: 'Policy & Simulation',
+              items: [
+                { name: 'Policy Simulator', path: '/admin/simulator', icon: Sliders },
+                { name: 'Resource Allocation', path: '/admin/resource-allocation', icon: Building2 },
+                { name: 'Intervention Impact', path: '/admin/judge-mode', icon: BarChart3, badge: 'Judge' },
+                { name: 'Care Leakage Analytics', path: '/admin/care-leakage', icon: GitFork },
+                { name: 'Care Failure Analysis', path: '/admin/care-failure', icon: ShieldAlert },
+              ],
+            },
+            {
+              title: 'System Governance',
+              items: [
+                { name: 'User Management', path: '/admin/users', icon: Users },
+                { name: 'Role Permissions', path: '/admin/permissions', icon: KeyRound },
+                { name: 'System Integrations', path: '/admin/integrations', icon: Cpu },
+                { name: 'System Health & Metrics', path: '/admin/system-health', icon: Activity },
+                { name: 'System Audit Logs', path: '/admin/audit-logs', icon: FolderLock },
+                { name: 'Platform Settings', path: '/admin/settings', icon: Settings },
+              ],
+            },
           ],
         };
     }
   };
 
-  const { title, primary, more } = getNavConfiguration();
+  const { portalTitle, sections } = getSectionsForRole();
 
-  return (
-    <aside
-      aria-label="Sidebar Navigation"
-      className="w-64 bg-white border-r border-slate-200/90 min-h-[calc(100vh-4rem)] p-4 flex flex-col justify-between hidden lg:flex shrink-0 select-none"
-    >
-      <div className="space-y-4 overflow-y-auto pr-1">
-        <div>
-          <div className="flex items-center justify-between px-3 py-1 mb-2">
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-400">
-              {title}
-            </span>
-          </div>
-
-          {/* Primary Task Navigation Links */}
-          <nav className="space-y-1">
-            {primary.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.path}
-                  to={item.path}
-                  className={({ isActive }) =>
-                    `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all ${
-                      isActive
-                        ? 'bg-teal-50 text-teal-800 border border-teal-200/80 shadow-xs'
-                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                    }`
-                  }
-                >
-                  <Icon className="w-4 h-4 shrink-0 text-teal-700" />
-                  <span className="truncate">{item.name}</span>
-                </NavLink>
-              );
-            })}
-          </nav>
+  const sidebarContent = (
+    <div className="h-full flex flex-col justify-between select-none">
+      {/* Top Header & Navigation Links */}
+      <div className="flex-1 overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-slate-200">
+        {/* Role Portal Indicator Header */}
+        <div className={`px-4 pt-4 pb-3 border-b border-slate-100 flex items-center ${isCollapsed ? 'justify-center' : 'justify-between'}`}>
+          {!isCollapsed ? (
+            <div>
+              <span className="text-[10px] font-black uppercase tracking-wider text-teal-700 bg-teal-50 px-2 py-0.5 rounded-md border border-teal-200/60 inline-block mb-1">
+                {role.toUpperCase()} WORKSPACE
+              </span>
+              <h2 className="text-xs font-black text-slate-800 tracking-tight leading-none">
+                {portalTitle}
+              </h2>
+            </div>
+          ) : (
+            <div className="w-8 h-8 rounded-xl bg-teal-600 text-white flex items-center justify-center font-black text-xs shadow-xs" title={portalTitle}>
+              {role.substring(0, 2).toUpperCase()}
+            </div>
+          )}
         </div>
 
-        {/* Progressive Disclosure Section: "More" */}
-        {more && more.length > 0 && (
-          <div className="pt-2 border-t border-slate-100">
-            <button
-              type="button"
-              onClick={() => setIsMoreOpen(!isMoreOpen)}
-              className="w-full flex items-center justify-between px-3.5 py-2 text-xs font-bold text-slate-500 hover:text-slate-800 hover:bg-slate-50 rounded-xl transition-all cursor-pointer"
-              aria-expanded={isMoreOpen}
-            >
-              <span className="flex items-center gap-2">
-                <MoreHorizontal className="w-4 h-4 text-slate-400" />
-                <span>More Services & Tools</span>
-              </span>
-              {isMoreOpen ? (
-                <ChevronUp className="w-3.5 h-3.5 text-slate-400" />
+        {/* Grouped Navigation Sections */}
+        <div className="p-3 space-y-4">
+          {sections.map((section, sIdx) => (
+            <div key={sIdx} className="space-y-1">
+              {!isCollapsed ? (
+                <div className="px-2.5 py-1 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                  {section.title}
+                </div>
               ) : (
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
+                <div className="my-2 border-t border-slate-100" />
               )}
-            </button>
 
-            {isMoreOpen && (
-              <nav className="mt-1 space-y-1 pl-2 border-l-2 border-slate-100 animate-fade-in">
-                {more.map((item) => {
+              <nav className="space-y-0.5">
+                {section.items.map((item) => {
                   const Icon = item.icon;
+                  const isActive = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(`${item.path}/`));
+
                   return (
                     <NavLink
                       key={item.path}
                       to={item.path}
-                      className={({ isActive }) =>
-                        `flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium transition-all ${
-                          isActive
-                            ? 'bg-slate-100 text-slate-900 font-bold'
-                            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
-                        }`
-                      }
+                      className={({ isActive: exactActive }) => {
+                        const active = isActive || exactActive;
+                        return `relative group flex items-center rounded-xl transition-all ${
+                          isCollapsed ? 'justify-center p-2.5' : 'gap-3 px-3 py-2 text-xs font-bold'
+                        } ${
+                          active
+                            ? 'bg-teal-600 text-white shadow-sm font-black'
+                            : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
+                        }`;
+                      }}
                     >
-                      <Icon className="w-3.5 h-3.5 shrink-0 text-slate-500" />
-                      <span className="truncate">{item.name}</span>
+                      <Icon className={`shrink-0 ${isCollapsed ? 'w-5 h-5' : 'w-4 h-4'}`} />
+
+                      {!isCollapsed && (
+                        <>
+                          <span className="truncate flex-1">{item.name}</span>
+                          {item.badge && (
+                            <span className="text-[9px] font-black px-1.5 py-0.2 rounded-md bg-white/20 text-white tracking-wider">
+                              {item.badge}
+                            </span>
+                          )}
+                        </>
+                      )}
+
+                      {/* Tooltip in Collapsed Mode */}
+                      {isCollapsed && (
+                        <div className="absolute left-full ml-3 px-2.5 py-1 bg-slate-900 text-white text-xs font-bold rounded-lg shadow-xl whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">
+                          {item.name}
+                        </div>
+                      )}
                     </NavLink>
                   );
                 })}
               </nav>
-            )}
-          </div>
-        )}
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Non-Clinical Operational Safety Notice */}
-      <div className="mt-4 p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-[11px] text-slate-600 space-y-1">
-        <div className="flex items-center gap-1.5 font-bold text-slate-800">
-          <ShieldAlert className="w-3.5 h-3.5 text-teal-600 shrink-0" />
-          <span>Care Coordination Core</span>
-        </div>
-        <p className="leading-snug text-slate-500 text-[10px]">
-          Operational friction intelligence & care access only. Not for autonomous clinical diagnosis.
-        </p>
+      {/* Bottom Footer Actions: Direct Helpline & Collapse Toggle */}
+      <div className="p-3 border-t border-slate-200 bg-slate-50/70 shrink-0 space-y-2">
+        {/* Direct Helpline Trigger */}
+        <button
+          type="button"
+          onClick={() => initiateHelplineCall()}
+          className={`w-full rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs flex items-center shadow-xs transition-all cursor-pointer ${
+            isCollapsed ? 'justify-center p-2.5' : 'gap-2 px-3 py-2 justify-center'
+          }`}
+          title={`Call 24/7 Healthcare Helpline (${HELPLINE_PHONE_NUMBER})`}
+        >
+          <Phone className="w-4 h-4 fill-current" />
+          {!isCollapsed && <span>Call Helpline</span>}
+        </button>
+
+        {/* Desktop Collapse / Expand Toggle Button */}
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          className="hidden lg:flex w-full items-center justify-center p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-200/70 text-xs font-bold transition-all cursor-pointer"
+          title={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+          aria-label={isCollapsed ? 'Expand Sidebar' : 'Collapse Sidebar'}
+        >
+          {isCollapsed ? (
+            <ChevronRight className="w-4 h-4" />
+          ) : (
+            <div className="flex items-center gap-2">
+              <ChevronLeft className="w-4 h-4" />
+              <span className="text-[11px] font-semibold text-slate-500">Collapse Menu</span>
+            </div>
+          )}
+        </button>
       </div>
-    </aside>
+    </div>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidenavbar */}
+      <aside
+        aria-label="Sidebar Navigation"
+        className={`hidden lg:flex flex-col bg-white border-r border-slate-200/90 min-h-[calc(100vh-4rem)] transition-all duration-200 shrink-0 select-none ${
+          isCollapsed ? 'w-20' : 'w-64'
+        }`}
+      >
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Drawer (Visible when toggled on mobile/tablet) */}
+      {isMobileOpen && (
+        <div className="fixed inset-0 z-50 lg:hidden flex">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs transition-opacity"
+            onClick={onMobileClose}
+          />
+          {/* Drawer Body */}
+          <div className="relative w-72 max-w-[85vw] bg-white h-full shadow-2xl flex flex-col z-10 animate-in slide-in-from-left duration-200">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+    </>
   );
 };

@@ -15,7 +15,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { chatService } from '../../services/chatService';
-import { openElevenLabsCalling } from '../../services/elevenlabsCallingService';
+import { initiateHelplineCall, HELPLINE_PHONE_NUMBER } from '../../services/helplineCallingService';
 
 interface AshaCopilotDrawerProps {
   isOpen: boolean;
@@ -88,9 +88,9 @@ export const AshaCopilotDrawer: React.FC<AshaCopilotDrawerProps> = ({ isOpen, on
           <div className="flex items-center gap-1">
             <button
               type="button"
-              onClick={() => openElevenLabsCalling()}
+              onClick={() => initiateHelplineCall()}
               className="p-1.5 rounded-lg bg-teal-800/80 hover:bg-teal-800 text-white transition-colors cursor-pointer"
-              title="Voice Call Mode"
+              title={`Call 24/7 Healthcare Helpline (${HELPLINE_PHONE_NUMBER})`}
             >
               <Phone className="w-4 h-4" />
             </button>

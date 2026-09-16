@@ -35,7 +35,7 @@ import {
   ShieldAlert,
 } from 'lucide-react';
 import { appointmentVoiceService } from '../../services/appointmentVoiceService';
-import { openElevenLabsCalling } from '../../services/elevenlabsCallingService';
+import { initiateHelplineCall, HELPLINE_PHONE_NUMBER } from '../../services/helplineCallingService';
 import { EmergencySOSModal } from '../../components/common/EmergencySOSModal';
 
 export const PatientDashboard: React.FC = () => {
@@ -161,7 +161,7 @@ export const PatientDashboard: React.FC = () => {
           </p>
         </div>
 
-        {/* Top Actions: Emergency SOS & ElevenLabs Voice Call */}
+        {/* Top Actions: Emergency SOS & Healthcare Helpline Call */}
         <div className="flex flex-wrap items-center gap-2.5 w-full md:w-auto">
           <button
             type="button"
@@ -174,12 +174,12 @@ export const PatientDashboard: React.FC = () => {
 
           <button
             type="button"
-            onClick={() => openElevenLabsCalling()}
+            onClick={() => initiateHelplineCall()}
             className="flex-1 md:flex-initial px-4 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-sm flex items-center justify-center gap-2 shadow-sm transition-all cursor-pointer"
-            title="Start voice call with AI healthcare assistant"
+            title={`Call 24/7 Healthcare Helpline (${HELPLINE_PHONE_NUMBER})`}
           >
             <Phone className="w-4 h-4" />
-            <span>Call AI Assistant</span>
+            <span>Call Helpline</span>
           </button>
         </div>
       </div>
@@ -265,7 +265,7 @@ export const PatientDashboard: React.FC = () => {
           {/* Action 5: Call Healthcare */}
           <button
             type="button"
-            onClick={() => openElevenLabsCalling()}
+            onClick={() => initiateHelplineCall()}
             className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200 hover:border-teal-500 hover:shadow-md transition-all group flex flex-col justify-between text-left cursor-pointer col-span-2 sm:col-span-1"
           >
             <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
@@ -276,7 +276,7 @@ export const PatientDashboard: React.FC = () => {
                 {simpleLanguageMode ? 'Call Health Worker' : 'Call Healthcare'}
               </h3>
               <p className="text-xs text-slate-500 mt-1 leading-snug">
-                {simpleLanguageMode ? 'Speak in your language' : 'Instant AI voice assist'}
+                {simpleLanguageMode ? 'Dial 24/7 Helpline' : `Helpline: ${HELPLINE_PHONE_NUMBER}`}
               </p>
             </div>
           </button>
@@ -474,11 +474,11 @@ export const PatientDashboard: React.FC = () => {
             <div className="mt-3 flex items-center gap-2">
               <button
                 type="button"
-                onClick={() => openElevenLabsCalling()}
+                onClick={() => initiateHelplineCall()}
                 className="px-3 py-1.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <Phone className="w-3.5 h-3.5" />
-                <span>Contact via AI Call</span>
+                <span>Call Helpline ({HELPLINE_PHONE_NUMBER})</span>
               </button>
             </div>
           </div>

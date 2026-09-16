@@ -9,6 +9,7 @@ import { Loader2 } from 'lucide-react';
 
 export const HospitalLayout: React.FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = React.useState(false);
 
   if (isLoading) {
     return (
@@ -29,9 +30,12 @@ export const HospitalLayout: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
       <DemoModeBanner message="HOSPITAL INTAKE & TRIAGE CONSOLE: View consented patient requests, accessibility barriers, and schedule OPD visits." />
-      <Navbar />
-      <div className="flex-grow flex max-w-7xl mx-auto w-full">
-        <Sidebar />
+      <Navbar onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)} />
+      <div className="flex-grow flex max-w-[1700px] mx-auto w-full px-2 sm:px-4 lg:px-6">
+        <Sidebar
+          isMobileOpen={isMobileSidebarOpen}
+          onMobileClose={() => setIsMobileSidebarOpen(false)}
+        />
         <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
           <Outlet />
         </main>

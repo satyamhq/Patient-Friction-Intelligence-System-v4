@@ -1,3 +1,4 @@
+import React, { useState } from 'react';
 import { Outlet, Navigate, useLocation, Link, useOutlet } from 'react-router-dom';
 import { Navbar } from '../components/layout/Navbar';
 import { Sidebar } from '../components/layout/Sidebar';
@@ -9,6 +10,7 @@ import { JudgeImpactDashboard } from '../pages/admin/JudgeImpactDashboard';
 
 export const AdminLayout: React.FC = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
   const location = useLocation();
   const outlet = useOutlet();
   console.log('[AdminLayout DEBUG] path:', location.pathname, 'outlet.type:', outlet?.type);
@@ -64,9 +66,13 @@ export const AdminLayout: React.FC = () => {
       ) : (
         <DemoModeBanner message="ADMINISTRATIVE HEALTH OPERATIONS SUITE: Population friction heatmaps, care leakage analytics, and intervention budget simulations." />
       )}
-      <Navbar />
-      <div className="flex-grow flex max-w-7xl mx-auto w-full">
-        <Sidebar forceRole={isJudgeMode && (!user || user.role !== 'admin') ? 'admin' : undefined} />
+      <Navbar onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev: boolean) => !prev)} />
+      <div className="flex-grow flex max-w-[1700px] mx-auto w-full px-2 sm:px-4 lg:px-6">
+        <Sidebar
+          forceRole={isJudgeMode && (!user || user.role !== 'admin') ? 'admin' : undefined}
+          isMobileOpen={isMobileSidebarOpen}
+          onMobileClose={() => setIsMobileSidebarOpen(false)}
+        />
         <main className="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
           {isJudgeMode ? <JudgeImpactDashboard /> : <Outlet />}
         </main>

@@ -23,7 +23,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import { appointmentVoiceService } from '../../services/appointmentVoiceService';
-import { openElevenLabsCalling } from '../../services/elevenlabsCallingService';
+import { initiateHelplineCall, HELPLINE_PHONE_NUMBER } from '../../services/helplineCallingService';
 
 export interface RecoveryCase {
   id: string;
@@ -203,11 +203,12 @@ export const CareRecoveryDashboard: React.FC = () => {
 
           <button
             type="button"
-            onClick={() => openElevenLabsCalling()}
+            onClick={() => initiateHelplineCall()}
             className="px-3.5 py-2 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs flex items-center gap-1.5 shadow-xs transition-all cursor-pointer"
+            title={`Call 24/7 Healthcare Helpline (${HELPLINE_PHONE_NUMBER})`}
           >
             <Phone className="w-3.5 h-3.5" />
-            <span>Launch Voice Desk</span>
+            <span>Call Helpline</span>
           </button>
         </div>
       </div>

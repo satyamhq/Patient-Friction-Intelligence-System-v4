@@ -23,6 +23,7 @@ import {
   KeyRound,
   ShieldCheck,
   UserCheck,
+  Sparkles,
 } from 'lucide-react';
 
 export const AdminDashboard: React.FC = () => {
@@ -90,6 +91,12 @@ export const AdminDashboard: React.FC = () => {
         </div>
 
         <div className="flex flex-wrap gap-2.5">
+          <Link to="/admin/officer-workflow">
+            <button className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-md transition-all">
+              <Sparkles className="w-4 h-4 text-emerald-200 animate-pulse" />
+              <span>Officer Workflow (11-Step)</span>
+            </button>
+          </Link>
           <Link to="/admin/judge-mode">
             <button className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-teal-600 to-teal-700 hover:from-teal-700 hover:to-teal-800 text-white font-bold text-xs shadow-md transition-all">
               <BarChart3 className="w-4 h-4 text-white" />

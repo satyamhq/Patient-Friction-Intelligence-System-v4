@@ -32,8 +32,8 @@ export const CallLogSchema = new Schema<ICallLog>(
     durationSeconds: { type: Number, default: 0 },
     transcriptReference: { type: String },
     operationalBarriersIdentified: [{ type: String }],
-    telephonyProvider: { type: String, default: 'web_elevenlabs' },
-    agentId: { type: String, default: 'agent_2901m2hw983kfcesprd47f904gbk' },
+    telephonyProvider: { type: String, default: 'helpline_direct' },
+    agentId: { type: String, default: 'care_helpline_coordinator' },
   },
   {
     timestamps: true,

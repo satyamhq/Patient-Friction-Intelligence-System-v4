@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
+import { generateHealthcareKnowledge } from './generateHealthcareKnowledge.js';
 
 export interface KnowledgeItem {
   id: string;
@@ -134,6 +135,26 @@ export class RagIndexer {
 
     // 13. Deep Technical FAQ & Code Matrix Knowledge to reach 1,000+ comprehensive items
     this.addExtendedCodebaseMatrix(addItem);
+
+    // 14. 1,000+ Pre-built Healthcare Questions & Answers (Patient, Citizen, Doctor, Hospital, ASHA, Schemes)
+    try {
+      const healthcareItems = generateHealthcareKnowledge();
+      for (const hq of healthcareItems) {
+        addItem({
+          question: hq.question,
+          answer: hq.answer,
+          category: hq.category,
+          role: hq.role,
+          tags: hq.tags,
+          sourceFiles: hq.sourceFiles,
+          keywords: hq.keywords,
+          complexity: hq.complexity,
+        });
+      }
+      console.log(`[RAG Indexer] Integrated ${healthcareItems.length} verified healthcare Q&As.`);
+    } catch (err) {
+      console.warn('[RAG Indexer] Healthcare knowledge generation error:', err);
+    }
 
     console.log(`[RAG Indexer] Successfully generated ${items.length} structured knowledge items!`);
 
