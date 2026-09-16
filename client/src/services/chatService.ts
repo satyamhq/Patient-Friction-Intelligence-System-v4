@@ -8,6 +8,9 @@ export interface ChatMessage {
   model?: string;
   detectedLanguage?: string;
   timestamp?: string;
+  isPrebuiltMatch?: boolean;
+  prebuiltQuestion?: string;
+  matchScore?: number;
 }
 
 export interface SourceReference {
@@ -25,6 +28,21 @@ export interface ChatResponse {
   retrievedCount: number;
   detectedLanguage?: string;
   timestamp: string;
+  isPrebuiltMatch?: boolean;
+  prebuiltQuestion?: string;
+  matchScore?: number;
+}
+
+export interface PrebuiltHealthcareQA {
+  id: string;
+  question: string;
+  answer: string;
+  category: 'patient' | 'doctor' | 'asha' | 'hospital' | 'government' | 'accessibility';
+  role: string;
+  tags: string[];
+  keywords: string[];
+  complexity?: string;
+  suggestedFollowups?: string[];
 }
 
 export interface SuggestedQuestionCategory {
@@ -49,7 +67,8 @@ export const chatService = {
     history: ChatMessage[] = [],
     role?: string,
     currentPath?: string,
-    language?: string
+    language?: string,
+    mode: 'hybrid' | 'gemini' | 'prebuilt' = 'hybrid'
   ): Promise<ChatResponse> {
     try {
       const response = await api.post('/ai/chat', {
@@ -58,6 +77,7 @@ export const chatService = {
         role,
         currentPath,
         language,
+        mode,
       });
 
       if (response.data && response.data.success && response.data.data) {
@@ -190,6 +210,27 @@ export const chatService = {
       isInitialized: true,
       model: 'gemini-3.6-flash',
     };
+  },
+
+  /**
+   * Fetch 1,000+ Pre-built Healthcare Questions Library
+   */
+  async getPrebuiltQuestions(params?: {
+    category?: string;
+    role?: string;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  }): Promise<{ items: PrebuiltHealthcareQA[]; total: number; categories: string[] }> {
+    try {
+      const response = await api.get('/ai/prebuilt', { params });
+      if (response.data && response.data.success && response.data.data) {
+        return response.data.data;
+      }
+    } catch (err) {
+      console.warn('[Chat Service] Failed to load prebuilt questions:', err);
+    }
+    return { items: [], total: 0, categories: [] };
   },
 
   /**

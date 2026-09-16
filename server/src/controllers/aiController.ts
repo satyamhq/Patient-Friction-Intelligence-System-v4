@@ -92,3 +92,28 @@ export const triggerReindexing = async (req: Request, res: Response): Promise<vo
     });
   }
 };
+
+export const getPrebuiltQuestionsList = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const category = (req.query.category as string) || undefined;
+    const role = (req.query.role as string) || undefined;
+    const search = (req.query.search as string) || undefined;
+    const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 100;
+    const offset = req.query.offset ? parseInt(req.query.offset as string, 10) : 0;
+
+    const data = geminiRagService.getPrebuiltQuestions({ category, role, search, limit, offset });
+
+    res.status(200).json({
+      success: true,
+      data,
+    });
+  } catch (error: any) {
+    console.error('[AI Controller Error] Failed to fetch prebuilt questions:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve prebuilt questions.',
+      error: error.message,
+    });
+  }
+};
+

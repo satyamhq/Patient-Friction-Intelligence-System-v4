@@ -13,8 +13,14 @@ import {
   User,
   Globe,
   ChevronDown,
+  BookOpen,
+  Search,
+  Zap,
+  CheckCircle2,
+  ChevronRight,
+  Filter,
 } from 'lucide-react';
-import { chatService, ChatMessage } from '../../services/chatService';
+import { chatService, ChatMessage, PrebuiltHealthcareQA } from '../../services/chatService';
 import { initiateHelplineCall, HELPLINE_PHONE_NUMBER } from '../../services/helplineCallingService';
 import { useLanguage } from '../../context/LanguageContext';
 
@@ -286,6 +292,17 @@ export const GeminiHealthChatbot: React.FC = () => {
       ? selectedLanguage
       : lastDetectedLanguage || currentLanguage.code || 'hinglish';
 
+  const [activeTab, setActiveTab] = useState<'chat' | 'library'>('chat');
+  const [chatMode, setChatMode] = useState<'hybrid' | 'prebuilt'>('hybrid');
+
+  // 1,000+ Pre-built Questions state
+  const [prebuiltList, setPrebuiltList] = useState<PrebuiltHealthcareQA[]>([]);
+  const [prebuiltTotal, setPrebuiltTotal] = useState<number>(1059);
+  const [prebuiltLoading, setPrebuiltLoading] = useState<boolean>(false);
+  const [libraryCategory, setLibraryCategory] = useState<string>('all');
+  const [librarySearch, setLibrarySearch] = useState<string>('');
+  const [expandedQuestionId, setExpandedQuestionId] = useState<string | null>(null);
+
   const activeUi: UiLocalization =
     UI_LOCALIZATIONS[effectiveLang] ||
     UI_LOCALIZATIONS[currentLanguage.code] ||
@@ -341,6 +358,30 @@ export const GeminiHealthChatbot: React.FC = () => {
     } catch {}
   }, [messages]);
 
+  const loadPrebuiltQuestions = async (category = libraryCategory, search = librarySearch) => {
+    setPrebuiltLoading(true);
+    try {
+      const res = await chatService.getPrebuiltQuestions({
+        category: category !== 'all' ? category : undefined,
+        search: search.trim() || undefined,
+        limit: 100,
+      });
+      setPrebuiltList(res.items || []);
+      if (res.total) setPrebuiltTotal(res.total);
+    } catch (err) {
+      console.warn('Failed to load prebuilt questions:', err);
+    } finally {
+      setPrebuiltLoading(false);
+    }
+  };
+
+  // Load prebuilt questions when modal opens
+  useEffect(() => {
+    if (isOpen && prebuiltList.length === 0) {
+      loadPrebuiltQuestions();
+    }
+  }, [isOpen]);
+
   const handleLanguageChange = (code: string) => {
     setSelectedLanguage(code);
     localStorage.setItem('pfis_chatbot_language', code);
@@ -356,6 +397,8 @@ export const GeminiHealthChatbot: React.FC = () => {
     if (e) e.preventDefault();
     const queryText = (customText || inputQuery).trim();
     if (!queryText || isLoading) return;
+
+    setActiveTab('chat');
 
     // Check if user specifically requested a call
     const lower = queryText.toLowerCase();
@@ -411,7 +454,8 @@ export const GeminiHealthChatbot: React.FC = () => {
         messages,
         'patient',
         location.pathname,
-        selectedLanguage !== 'auto' ? selectedLanguage : (lastDetectedLanguage || currentLanguage.code || 'auto')
+        selectedLanguage !== 'auto' ? selectedLanguage : (lastDetectedLanguage || currentLanguage.code || 'auto'),
+        chatMode
       );
 
       if (response.detectedLanguage) {
@@ -426,6 +470,9 @@ export const GeminiHealthChatbot: React.FC = () => {
         suggestedQuestions: response.suggestedQuestions,
         model: response.model || 'Google Gemini (1,000+ Q&A Base)',
         detectedLanguage: response.detectedLanguage,
+        isPrebuiltMatch: response.isPrebuiltMatch,
+        prebuiltQuestion: response.prebuiltQuestion,
+        matchScore: response.matchScore,
         timestamp: new Date().toISOString(),
       };
 
@@ -537,71 +584,321 @@ export const GeminiHealthChatbot: React.FC = () => {
             </div>
           </div>
 
-          {/* Messages Area */}
-          <div
-            dir={effectiveLang === 'ur' ? 'rtl' : 'ltr'}
-            className="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs text-slate-800 bg-slate-50/50"
-          >
-            {messages.map((msg, index) => (
-              <div
-                key={index}
-                className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+          {/* Sub-Navigation: Chat vs 1,000+ Q&A Library + Dual Engine Mode Selector */}
+          <div className="px-3 py-2 bg-slate-100 border-b border-slate-200 flex items-center justify-between gap-2 text-xs">
+            {/* Tab switch */}
+            <div className="flex items-center gap-1 bg-white p-0.5 rounded-lg border border-slate-200 shadow-2xs">
+              <button
+                type="button"
+                onClick={() => setActiveTab('chat')}
+                className={`px-2.5 py-1 rounded-md font-semibold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer ${
+                  activeTab === 'chat'
+                    ? 'bg-teal-600 text-white shadow-2xs'
+                    : 'text-slate-600 hover:text-teal-700 hover:bg-slate-50'
+                }`}
               >
-                {msg.role === 'assistant' && (
-                  <div className="w-6 h-6 rounded-lg bg-teal-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
-                    <Bot className="w-3.5 h-3.5" />
-                  </div>
-                )}
+                <MessageSquare className="w-3 h-3" />
+                <span>Chat</span>
+              </button>
 
-                <div
-                  className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 leading-relaxed shadow-xs ${
-                    msg.role === 'user'
-                      ? 'bg-teal-600 text-white'
-                      : 'bg-white border border-slate-200 text-slate-800'
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('library');
+                  if (prebuiltList.length === 0) loadPrebuiltQuestions();
+                }}
+                className={`px-2.5 py-1 rounded-md font-semibold text-[11px] flex items-center gap-1.5 transition-all cursor-pointer ${
+                  activeTab === 'library'
+                    ? 'bg-teal-600 text-white shadow-2xs'
+                    : 'text-slate-600 hover:text-teal-700 hover:bg-slate-50'
+                }`}
+              >
+                <BookOpen className="w-3 h-3" />
+                <span>1,000+ Q&As</span>
+                <span
+                  className={`text-[9px] px-1 py-0.2 rounded-full font-bold ${
+                    activeTab === 'library'
+                      ? 'bg-teal-700 text-white'
+                      : 'bg-teal-50 text-teal-800 border border-teal-200'
                   }`}
                 >
-                  <div className="whitespace-pre-wrap">{msg.content}</div>
+                  {prebuiltTotal > 0 ? `${prebuiltTotal}+` : '1000+'}
+                </span>
+              </button>
+            </div>
 
-                  {/* Language badge if detected */}
-                  {msg.detectedLanguage && msg.detectedLanguage !== 'en' && (
-                    <div className="mt-1 text-[9px] text-teal-700/80 font-semibold flex items-center gap-1">
-                      <span>🌐 Responded in: {msg.detectedLanguage.toUpperCase()}</span>
-                    </div>
-                  )}
+            {/* AI Engine Mode Switch: Hybrid (Gemini + 1000+ Pre-built) vs Direct Match */}
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => setChatMode(chatMode === 'hybrid' ? 'prebuilt' : 'hybrid')}
+                className={`px-2 py-1 rounded-md border text-[10px] font-bold flex items-center gap-1 transition-all cursor-pointer ${
+                  chatMode === 'hybrid'
+                    ? 'bg-teal-50 border-teal-300 text-teal-800'
+                    : 'bg-amber-50 border-amber-300 text-amber-900'
+                }`}
+                title={
+                  chatMode === 'hybrid'
+                    ? 'Hybrid Mode: Gemini uses 1,000+ pre-built Q&As as ground truth and translates to any language'
+                    : 'Direct Match Mode: Returns exact verified pre-built answer instantly without waiting for AI generation'
+                }
+              >
+                {chatMode === 'hybrid' ? (
+                  <>
+                    <Zap className="w-2.5 h-2.5 text-teal-600" />
+                    <span>⚡ Gemini + 1,000+ Q&As</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="w-2.5 h-2.5 text-amber-600" />
+                    <span>🎯 Direct 1,000+ Match</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
 
-                  {/* Suggested follow-up chips */}
-                  {msg.suggestedQuestions && msg.suggestedQuestions.length > 0 && (
-                    <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap gap-1">
-                      {msg.suggestedQuestions.map((q, qIdx) => (
-                        <button
-                          key={qIdx}
-                          type="button"
-                          onClick={() => handleSendMessage(undefined, q)}
-                          className="px-2 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-[10px] text-teal-800 border border-teal-200 transition-colors cursor-pointer text-left"
-                        >
-                          {q}
-                        </button>
-                      ))}
-                    </div>
+          {/* 1,000+ Pre-built Questions Library Tab */}
+          {activeTab === 'library' && (
+            <div className="flex-1 overflow-y-auto flex flex-col bg-slate-50 text-xs">
+              {/* Search & Filter Header */}
+              <div className="p-3 bg-white border-b border-slate-200 space-y-2.5">
+                <div className="relative">
+                  <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <input
+                    type="text"
+                    value={librarySearch}
+                    onChange={(e) => {
+                      setLibrarySearch(e.target.value);
+                      loadPrebuiltQuestions(libraryCategory, e.target.value);
+                    }}
+                    placeholder="Search 1,000+ verified healthcare questions..."
+                    className="w-full pl-8 pr-7 py-1.5 rounded-lg bg-slate-50 border border-slate-300 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-teal-600 focus:bg-white transition-colors"
+                  />
+                  {librarySearch && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLibrarySearch('');
+                        loadPrebuiltQuestions(libraryCategory, '');
+                      }}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs cursor-pointer"
+                    >
+                      ✕
+                    </button>
                   )}
                 </div>
 
-                {msg.role === 'user' && (
-                  <div className="w-6 h-6 rounded-lg bg-slate-200 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
-                    <User className="w-3.5 h-3.5" />
+                {/* Categories */}
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none text-[10px]">
+                  {[
+                    { id: 'all', label: 'All 1,000+' },
+                    { id: 'patient', label: '👤 Patient' },
+                    { id: 'doctor', label: '🩺 Doctor' },
+                    { id: 'hospital', label: '🏥 Hospital' },
+                    { id: 'asha', label: '🤝 ASHA' },
+                    { id: 'government', label: '🏛️ Govt Schemes' },
+                  ].map((cat) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      onClick={() => {
+                        setLibraryCategory(cat.id);
+                        loadPrebuiltQuestions(cat.id, librarySearch);
+                      }}
+                      className={`px-2.5 py-1 rounded-full font-medium whitespace-nowrap border transition-all cursor-pointer ${
+                        libraryCategory === cat.id
+                          ? 'bg-teal-600 text-white border-teal-600 shadow-2xs'
+                          : 'bg-white text-slate-600 border-slate-200 hover:border-teal-300 hover:text-teal-700'
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Question list */}
+              <div className="flex-1 p-3 space-y-2 overflow-y-auto">
+                {prebuiltLoading ? (
+                  <div className="py-12 flex flex-col items-center justify-center gap-2 text-slate-500 text-xs">
+                    <Loader2 className="w-5 h-5 animate-spin text-teal-600" />
+                    <span>Loading questions library...</span>
                   </div>
+                ) : prebuiltList.length === 0 ? (
+                  <div className="py-12 text-center text-slate-500 text-xs">
+                    No questions found matching "{librarySearch}". Try a different search term or category.
+                  </div>
+                ) : (
+                  prebuiltList.map((item) => {
+                    const isExpanded = expandedQuestionId === item.id;
+                    return (
+                      <div
+                        key={item.id}
+                        className="bg-white border border-slate-200 rounded-xl p-3 shadow-2xs hover:border-teal-200 transition-all"
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div className="flex-1">
+                            <div className="flex items-center gap-1.5 mb-1">
+                              <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-teal-50 text-teal-800 border border-teal-200 uppercase">
+                                {item.category}
+                              </span>
+                              {item.role && (
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-slate-100 text-slate-700">
+                                  {item.role}
+                                </span>
+                              )}
+                            </div>
+                            <h4 className="font-semibold text-slate-900 text-xs leading-snug">
+                              {item.question}
+                            </h4>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => setExpandedQuestionId(isExpanded ? null : item.id)}
+                            className="text-slate-400 hover:text-teal-600 p-1 cursor-pointer"
+                            title={isExpanded ? 'Collapse' : 'Expand preview'}
+                          >
+                            <ChevronDown
+                              className={`w-3.5 h-3.5 transition-transform ${
+                                isExpanded ? 'rotate-180' : ''
+                              }`}
+                            />
+                          </button>
+                        </div>
+
+                        {/* Answer preview or full */}
+                        <p
+                          className={`mt-2 text-slate-600 text-[11px] leading-relaxed ${
+                            isExpanded ? '' : 'line-clamp-2'
+                          }`}
+                        >
+                          {item.answer}
+                        </p>
+
+                        {/* Action buttons */}
+                        <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveTab('chat');
+                              handleSendMessage(undefined, item.question);
+                            }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-teal-600 hover:bg-teal-700 text-white text-[11px] font-medium transition-colors cursor-pointer shadow-2xs"
+                          >
+                            <Sparkles className="w-3 h-3" />
+                            <span>Ask Gemini</span>
+                          </button>
+
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setActiveTab('chat');
+                              const userMsg: ChatMessage = {
+                                role: 'user',
+                                content: item.question,
+                                timestamp: new Date().toISOString(),
+                              };
+                              const botMsg: ChatMessage = {
+                                role: 'assistant',
+                                content: item.answer,
+                                timestamp: new Date().toISOString(),
+                                isPrebuiltMatch: true,
+                                suggestedQuestions: item.suggestedFollowups || [],
+                              };
+                              setMessages((prev) => [...prev, userMsg, botMsg]);
+                            }}
+                            className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-medium transition-colors cursor-pointer"
+                            title="Insert verified pre-built answer directly into chat"
+                          >
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            <span>Instant Answer</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })
                 )}
               </div>
-            ))}
+            </div>
+          )}
 
-            {isLoading && (
-              <div className="flex items-center gap-2 text-slate-600 text-xs bg-white border border-slate-200 p-2.5 rounded-2xl w-fit shadow-xs">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
-                <span>{activeUi.searching}</span>
-              </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+          {/* Messages Area (Active when activeTab === 'chat') */}
+          {activeTab === 'chat' && (
+            <div
+              dir={effectiveLang === 'ur' ? 'rtl' : 'ltr'}
+              className="flex-1 overflow-y-auto p-4 space-y-3.5 text-xs text-slate-800 bg-slate-50/50"
+            >
+              {messages.map((msg, index) => (
+                <div
+                  key={index}
+                  className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {msg.role === 'assistant' && (
+                    <div className="w-6 h-6 rounded-lg bg-teal-600 text-white flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                      <Bot className="w-3.5 h-3.5" />
+                    </div>
+                  )}
+
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 leading-relaxed shadow-xs ${
+                      msg.role === 'user'
+                        ? 'bg-teal-600 text-white'
+                        : 'bg-white border border-slate-200 text-slate-800'
+                    }`}
+                  >
+                    <div className="whitespace-pre-wrap">{msg.content}</div>
+
+                    {/* Pre-built Ground Truth Badge */}
+                    {msg.isPrebuiltMatch && (
+                      <div className="mt-1.5 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-50 border border-emerald-200 text-[9px] font-semibold text-emerald-800">
+                        <CheckCircle2 className="w-2.5 h-2.5 text-emerald-600 shrink-0" />
+                        <span>Verified 1,000+ Pre-built Q&A</span>
+                      </div>
+                    )}
+
+                    {/* Language badge if detected */}
+                    {msg.detectedLanguage && msg.detectedLanguage !== 'en' && (
+                      <div className="mt-1 text-[9px] text-teal-700/80 font-semibold flex items-center gap-1">
+                        <span>🌐 Responded in: {msg.detectedLanguage.toUpperCase()}</span>
+                      </div>
+                    )}
+
+                    {/* Suggested follow-up chips */}
+                    {msg.suggestedQuestions && msg.suggestedQuestions.length > 0 && (
+                      <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-wrap gap-1">
+                        {msg.suggestedQuestions.map((q, qIdx) => (
+                          <button
+                            key={qIdx}
+                            type="button"
+                            onClick={() => handleSendMessage(undefined, q)}
+                            className="px-2 py-1 rounded-lg bg-teal-50 hover:bg-teal-100 text-[10px] text-teal-800 border border-teal-200 transition-colors cursor-pointer text-left"
+                          >
+                            {q}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {msg.role === 'user' && (
+                    <div className="w-6 h-6 rounded-lg bg-slate-200 text-slate-700 flex items-center justify-center shrink-0 mt-0.5">
+                      <User className="w-3.5 h-3.5" />
+                    </div>
+                  )}
+                </div>
+              ))}
+
+              {isLoading && (
+                <div className="flex items-center gap-2 text-slate-600 text-xs bg-white border border-slate-200 p-2.5 rounded-2xl w-fit shadow-xs">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-teal-600" />
+                  <span>{activeUi.searching}</span>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
 
           {/* Quick Prompts Bar */}
           <div className="px-3 py-1.5 bg-slate-100 border-t border-slate-200 flex items-center gap-1.5 overflow-x-auto scrollbar-none text-[11px]">

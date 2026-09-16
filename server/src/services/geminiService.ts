@@ -3,6 +3,7 @@ import path from 'path';
 import https from 'https';
 import { config } from '../config/env.js';
 import { KnowledgeItem, RagIndexer } from '../intelligence/ragIndexer.js';
+import { HealthcareQA, generateHealthcareKnowledge } from '../intelligence/generateHealthcareKnowledge.js';
 
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
@@ -15,6 +16,7 @@ export interface ChatRequest {
   role?: string;
   currentPath?: string;
   language?: string;
+  mode?: 'hybrid' | 'gemini' | 'prebuilt';
 }
 
 export interface SourceReference {
@@ -32,6 +34,9 @@ export interface ChatResponse {
   retrievedCount: number;
   detectedLanguage: string;
   timestamp: string;
+  isPrebuiltMatch?: boolean;
+  prebuiltQuestion?: string;
+  matchScore?: number;
 }
 
 export interface SuggestedQuestionItem {
@@ -43,6 +48,7 @@ export interface SuggestedQuestionItem {
 export class GeminiRagService {
   private static instance: GeminiRagService;
   private knowledgeBase: KnowledgeItem[] = [];
+  private prebuiltQuestions: HealthcareQA[] = [];
   private idfMap: Map<string, number> = new Map();
   private avgDocLength = 0;
   private docLengths: number[] = [];
@@ -87,20 +93,130 @@ export class GeminiRagService {
         console.error('[Gemini RAG Error] Could not parse knowledge base:', err);
       }
     }
+
+    // Load 1,000+ Verified Pre-built Healthcare Questions & Answers
+    const prebuiltPath = path.join(this.dataDir, 'healthcare_1000_qa.json');
+    if (fs.existsSync(prebuiltPath)) {
+      try {
+        const rawPrebuilt = fs.readFileSync(prebuiltPath, 'utf8');
+        this.prebuiltQuestions = JSON.parse(rawPrebuilt);
+        console.log(`[Gemini RAG] Loaded ${this.prebuiltQuestions.length} pre-built healthcare Q&As into memory.`);
+      } catch (err) {
+        console.error('[Gemini RAG Error] Could not parse healthcare_1000_qa.json:', err);
+      }
+    } else {
+      try {
+        this.prebuiltQuestions = generateHealthcareKnowledge();
+        fs.writeFileSync(prebuiltPath, JSON.stringify(this.prebuiltQuestions, null, 2), 'utf8');
+        console.log(`[Gemini RAG] Generated and loaded ${this.prebuiltQuestions.length} pre-built healthcare Q&As.`);
+      } catch (err) {
+        console.error('[Gemini RAG Error] Could not generate healthcare Q&As:', err);
+      }
+    }
   }
 
-  public reloadIndex(): { success: boolean; totalItems: number } {
+  public reloadIndex(): { success: boolean; totalItems: number; prebuiltItems: number } {
     try {
       const indexer = new RagIndexer();
       const { items } = indexer.generateKnowledgeBase();
       this.knowledgeBase = items;
       this.buildSearchIndex();
+      this.prebuiltQuestions = generateHealthcareKnowledge();
       this.isInitialized = true;
-      return { success: true, totalItems: items.length };
+      return { success: true, totalItems: items.length, prebuiltItems: this.prebuiltQuestions.length };
     } catch (err: any) {
       console.error('[Gemini RAG Error] Reload failed:', err);
-      return { success: false, totalItems: this.knowledgeBase.length };
+      return { success: false, totalItems: this.knowledgeBase.length, prebuiltItems: this.prebuiltQuestions.length };
     }
+  }
+
+  /**
+   * Search and filter from the 1,000+ Pre-built Healthcare Questions Library
+   */
+  public getPrebuiltQuestions(params: {
+    category?: string;
+    role?: string;
+    search?: string;
+    limit?: number;
+    offset?: number;
+  }): { items: HealthcareQA[]; total: number; categories: string[] } {
+    let filtered = this.prebuiltQuestions;
+
+    if (params.category && params.category !== 'all') {
+      filtered = filtered.filter((q) => q.category === params.category);
+    }
+
+    if (params.role && params.role !== 'all') {
+      filtered = filtered.filter((q) => q.role === params.role || q.role === 'all');
+    }
+
+    if (params.search && params.search.trim()) {
+      const q = params.search.toLowerCase().trim();
+      filtered = filtered.filter(
+        (item) =>
+          item.question.toLowerCase().includes(q) ||
+          item.answer.toLowerCase().includes(q) ||
+          (item.tags || []).some((t) => t.toLowerCase().includes(q)) ||
+          (item.keywords || []).some((k) => k.toLowerCase().includes(q))
+      );
+    }
+
+    const total = filtered.length;
+    const offset = params.offset || 0;
+    const limit = params.limit || 50;
+    const paged = filtered.slice(offset, offset + limit);
+
+    const categories = Array.from(new Set(this.prebuiltQuestions.map((q) => q.category)));
+
+    return { items: paged, total, categories };
+  }
+
+  /**
+   * Match a user query directly against the 1,000+ Pre-built Questions
+   */
+  public findPrebuiltMatch(query: string): { item: HealthcareQA; score: number } | null {
+    if (this.prebuiltQuestions.length === 0) return null;
+    const normQuery = query.toLowerCase().trim().replace(/[?!.,]/g, '');
+
+    // 1. Exact or near-exact question match
+    for (const item of this.prebuiltQuestions) {
+      const normQ = item.question.toLowerCase().trim().replace(/[?!.,]/g, '');
+      if (normQ === normQuery) {
+        return { item, score: 1.0 };
+      }
+      if (normQ.includes(normQuery) && normQuery.length > 15) {
+        return { item, score: 0.95 };
+      }
+      if (normQuery.includes(normQ) && normQ.length > 15) {
+        return { item, score: 0.92 };
+      }
+    }
+
+    // 2. Token overlap check
+    const queryTokens = this.tokenize(query);
+    if (queryTokens.length >= 2) {
+      let bestItem: HealthcareQA | null = null;
+      let maxOverlap = 0;
+
+      for (const item of this.prebuiltQuestions) {
+        const qTokens = this.tokenize(item.question);
+        let matchCount = 0;
+        for (const t of queryTokens) {
+          if (qTokens.includes(t)) matchCount++;
+        }
+        const score = matchCount / Math.max(queryTokens.length, qTokens.length);
+        if (score > 0.60 && score > maxOverlap) {
+          maxOverlap = score;
+          bestItem = item;
+        }
+      }
+
+      if (bestItem && maxOverlap >= 0.60) {
+        return { item: bestItem, score: Math.round(maxOverlap * 100) / 100 };
+      }
+    }
+
+    return null;
   }
 
   public getStatus(): { totalItems: number; isInitialized: boolean; model: string; manifest?: any } {
@@ -616,12 +732,39 @@ export class GeminiRagService {
   // -------------------------------------------------------------
 
   public async chat(request: ChatRequest): Promise<ChatResponse> {
-    const { query, history = [], role = 'all', currentPath = '/', language } = request;
+    const { query, history = [], role = 'all', currentPath = '/', language, mode = 'hybrid' } = request;
 
     // Detect user language or respect explicit choice, taking history and conversation continuity into account
     let targetLang = (language && language !== 'auto') ? language : '';
     if (!targetLang) {
       targetLang = this.detectLanguage(query, history, language === 'auto' ? undefined : language);
+    }
+
+    // Direct Pre-built Match Check from 1,000+ Questions Library
+    const prebuiltMatch = this.findPrebuiltMatch(query);
+
+    // If pure pre-built mode requested and we have a strong match, return directly
+    if (mode === 'prebuilt' && prebuiltMatch) {
+      const matchItem = prebuiltMatch.item;
+      return {
+        answer: matchItem.answer,
+        sources: [
+          {
+            file: matchItem.sourceFiles?.[0] || 'server/data/healthcare_1000_qa.json',
+            category: matchItem.category,
+            title: matchItem.question,
+            relevanceScore: prebuiltMatch.score,
+          },
+        ],
+        suggestedQuestions: this.deriveFollowUpQuestions(query, [], role),
+        model: 'Pre-built Healthcare Knowledge Base (Instant Match)',
+        retrievedCount: 1,
+        detectedLanguage: targetLang || 'en',
+        timestamp: new Date().toISOString(),
+        isPrebuiltMatch: true,
+        prebuiltQuestion: matchItem.question,
+        matchScore: prebuiltMatch.score,
+      };
     }
 
     // 1. Retrieve most relevant context items
@@ -729,12 +872,22 @@ Knowledge Base Instructions:
 4. Calling & Emergencies: If the user asks about calling, speaking with a human, or needs emergency care, explicitly inform them that they can directly call the 24/7 Healthcare Helpline at **+91 6205844155** or dial **108** for critical emergencies.
 5. Format cleanly with GitHub markdown (bullet points, bold highlights, clear sections). Keep answers fast, concise, and easy to read.`;
 
+    const prebuiltMatchSnippet = prebuiltMatch
+      ? `\n\n🎯 HIGH-CONFIDENCE PRE-BUILT QUESTION MATCH (GROUND TRUTH):
+Verified Question: "${prebuiltMatch.item.question}"
+Verified Answer:
+${prebuiltMatch.item.answer}
+Category: ${prebuiltMatch.item.category.toUpperCase()} | Role: ${prebuiltMatch.item.role.toUpperCase()}
+Match Confidence Score: ${(prebuiltMatch.score * 100).toFixed(0)}%`
+      : '';
+
     const userPromptWithContext = `User Query: "${query}"
 Target Response Language: ${targetLang.toUpperCase()}
 
 User Context:
 - Active Role: ${role.toUpperCase()}
 - Current Page Path: ${currentPath}
+${prebuiltMatchSnippet}
 
 Retrieved Healthcare Knowledge Context (1,000+ Verified Q&A Base):
 ${contextSnippet}
@@ -751,7 +904,7 @@ Please provide the most accurate, helpful, and concise answer directly addressin
     for (const model of candidateModels) {
       try {
         generatedText = await this.callGeminiApi(model, systemPrompt, userPromptWithContext, history);
-        usedModel = model;
+        usedModel = prebuiltMatch ? `${model} (1,000+ Pre-built Q&A Hybrid)` : `${model} (AI Reasoning)`;
         succeeded = true;
         break;
       } catch (err: any) {
@@ -762,8 +915,12 @@ Please provide the most accurate, helpful, and concise answer directly addressin
     // Safe offline fallback if Gemini API is unreachable
     if (!succeeded || !generatedText) {
       console.warn('[Gemini RAG] All Gemini models failed or offline. Synthesizing direct RAG response.');
-      usedModel = 'Local RAG Knowledge Engine (Offline Fallback)';
-      generatedText = this.synthesizeOfflineResponse(query, retrievedItems, targetLang);
+      usedModel = prebuiltMatch
+        ? 'Pre-built Healthcare Knowledge Base (Direct Answer)'
+        : 'Local RAG Knowledge Engine (Offline Fallback)';
+      generatedText = prebuiltMatch
+        ? prebuiltMatch.item.answer
+        : this.synthesizeOfflineResponse(query, retrievedItems, targetLang);
     }
 
     // 4. Determine intelligent follow-up suggestions
@@ -777,6 +934,9 @@ Please provide the most accurate, helpful, and concise answer directly addressin
       retrievedCount: retrievedItems.length,
       detectedLanguage: targetLang,
       timestamp: new Date().toISOString(),
+      isPrebuiltMatch: !!prebuiltMatch,
+      prebuiltQuestion: prebuiltMatch?.item.question,
+      matchScore: prebuiltMatch?.score,
     };
   }
 

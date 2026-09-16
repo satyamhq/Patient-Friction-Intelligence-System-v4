@@ -4,6 +4,7 @@ import {
   getSuggestedQuestions,
   getAiStatus,
   triggerReindexing,
+  getPrebuiltQuestionsList,
 } from '../controllers/aiController.js';
 
 const router = Router();
@@ -13,6 +14,9 @@ router.post('/chat', handleChatQuery);
 
 // GET /api/ai/suggestions - Retrieve suggested questions categorized by role
 router.get('/suggestions', getSuggestedQuestions);
+
+// GET /api/ai/prebuilt - Retrieve 1,000+ pre-built healthcare questions
+router.get('/prebuilt', getPrebuiltQuestionsList);
 
 // GET /api/ai/status - Check RAG status, active model, and total indexed items
 router.get('/status', getAiStatus);
