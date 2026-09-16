@@ -38,150 +38,209 @@ export const LandingPage: React.FC = () => {
   return (
     <div className="space-y-12 sm:space-y-16 md:space-y-20 lg:space-y-24 pb-16 overflow-hidden">
       {/* ================================================== */}
-      {/* 1. HERO SECTION (HEALTHCARE INFRASTRUCTURE & ACCESS INTELLIGENCE) */}
+      {/* 1. HERO SECTION: INSTITUTIONAL HEALTHCARE ACCESS INTELLIGENCE */}
       {/* ================================================== */}
-      <section className="relative pt-12 pb-16 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-28 bg-white border-b border-slate-200">
-        {/* Subtle engineering grid background for institutional credibility */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#0f172a06_1px,transparent_1px),linear-gradient(to_bottom,#0f172a06_1px,transparent_1px)] bg-[size:3rem_3rem] pointer-events-none" />
+      <section className="relative pt-12 pb-16 sm:pt-16 sm:pb-20 lg:pt-20 lg:pb-24 bg-slate-50/50 border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
+            
+            {/* Left Column: Core Institutional Messaging & Actions */}
+            <div className="lg:col-span-7 space-y-6 sm:space-y-8 text-left">
+              {/* Category Eyebrow */}
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-white border border-slate-200 text-slate-700 text-xs font-semibold tracking-wider uppercase shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-teal-600" />
+                <span>Patient Journey Friction Intelligence System</span>
+              </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-6 sm:space-y-8">
-            {/* Institutional Classification Badge */}
-            <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-slate-100 text-slate-800 text-xs font-semibold tracking-wide uppercase border border-slate-300/80 shadow-xs">
-              <span className="w-2 h-2 rounded-full bg-teal-600 animate-pulse" />
-              <span>Public Health Infrastructure & Access Intelligence</span>
-            </div>
+              {/* Primary Headline */}
+              <h1 className="text-3xl sm:text-5xl lg:text-6xl font-bold text-slate-950 tracking-tight leading-[1.12]">
+                Healthcare availability is not the same{' '}
+                <span className="text-teal-900 block sm:inline font-extrabold">
+                  as healthcare accessibility.
+                </span>
+              </h1>
 
-            {/* Authoritative Primary Headline */}
-            <h1 className="text-[clamp(2.125rem,5.2vw,4.5rem)] font-extrabold text-slate-950 tracking-tight leading-[1.12] max-w-4xl mx-auto">
-              Healthcare availability is not the same{' '}
-              <span className="text-teal-800 underline decoration-teal-500/40 decoration-wavy decoration-2 underline-offset-8 block sm:inline">
-                as healthcare accessibility.
-              </span>
-            </h1>
+              {/* Supporting Copy */}
+              <div className="space-y-3 max-w-2xl">
+                <p className="text-base sm:text-lg text-slate-700 leading-relaxed font-normal">
+                  Hospitals, clinics, and medical staff may exist on paper, but non-clinical friction—transit deficits, administrative delays, documentation barriers, and daily wage loss—prevents patients from completing necessary care.
+                </p>
+                <p className="text-sm sm:text-base text-slate-600 leading-relaxed">
+                  PFIS pinpoints precisely where friction accumulates across the five stages of care, measures drop-out risks, and equips health authorities, hospital administrators, and clinicians with targeted, actionable interventions.
+                </p>
 
-            {/* Evidence-Oriented Supporting Statement */}
-            <div className="flex flex-col items-center gap-3.5 max-w-3xl mx-auto">
-              <p className="text-base sm:text-lg text-slate-700 leading-relaxed font-normal">
-                PFIS quantifies the invisible non-clinical barriers—transit deficits, hospital queue latencies, diagnostic turnarounds, daily wage sacrifice, and documentation hurdles—that prevent patients from completing care. We provide health authorities, clinicians, and citizens with deterministic intelligence to convert healthcare capacity into completed treatments.
-              </p>
+                <div className="pt-1">
+                  <TTSButton
+                    text="Healthcare availability is not the same as healthcare accessibility. Hospitals and clinical capacity may exist, but non-clinical friction like transit deficits, administrative queues, documentation barriers, and wage loss prevent patients from completing necessary care. PFIS measures where friction occurs across the journey and helps health systems identify actionable interventions."
+                    label={t('common.listen', 'Listen to summary')}
+                  />
+                </div>
+              </div>
 
-              <TTSButton
-                text="Healthcare availability is not the same as healthcare accessibility. PFIS quantifies the invisible non-clinical barriers, including transit deficits, hospital queue latencies, diagnostic turnarounds, daily wage sacrifice, and documentation hurdles, that prevent patients from completing care. We provide health authorities, clinicians, and citizens with deterministic intelligence to convert healthcare capacity into completed treatments."
-                label={t('common.listen', 'Listen to overview')}
-                className="mt-1"
-              />
-            </div>
-
-            {/* Clean Professional Action Buttons */}
-            <div className="pt-2 sm:pt-4 space-y-5">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3.5 w-full max-w-md sm:max-w-none mx-auto">
+              {/* Action Buttons */}
+              <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
                 <Link to="/assessment" className="w-full sm:w-auto">
                   <Button
                     variant="primary"
                     size="lg"
-                    icon={<Activity className="w-5 h-5 shrink-0" />}
-                    className="w-full min-h-[50px] px-7 text-sm sm:text-base font-bold shadow-md bg-teal-700 hover:bg-teal-800 text-white rounded-xl transition cursor-pointer"
+                    icon={<Activity className="w-4 h-4 shrink-0" />}
+                    className="w-full sm:w-auto min-h-[48px] px-6 text-sm font-semibold bg-teal-700 hover:bg-teal-800 text-white rounded-lg shadow-2xs transition cursor-pointer"
                   >
-                    Assess Journey Friction →
+                    Assess Journey Friction
+                  </Button>
+                </Link>
+
+                <Link to="/government/friction-intelligence" className="w-full sm:w-auto">
+                  <Button
+                    variant="secondary"
+                    size="lg"
+                    icon={<BarChart3 className="w-4 h-4 shrink-0 text-slate-700" />}
+                    className="w-full sm:w-auto min-h-[48px] px-6 text-sm font-semibold border border-slate-300 bg-white text-slate-800 hover:bg-slate-100 rounded-lg shadow-2xs transition cursor-pointer"
+                  >
+                    Health Authority Command
                   </Button>
                 </Link>
 
                 <Link to="/patient/hospitals" className="w-full sm:w-auto">
                   <Button
-                    variant="secondary"
+                    variant="outline"
                     size="lg"
-                    icon={<MapPin className="w-5 h-5 shrink-0" />}
-                    className="w-full min-h-[50px] px-7 text-sm sm:text-base font-semibold border border-slate-300 bg-white text-slate-800 hover:bg-slate-50 rounded-xl shadow-xs transition cursor-pointer"
+                    icon={<MapPin className="w-4 h-4 shrink-0 text-slate-600" />}
+                    className="w-full sm:w-auto min-h-[48px] px-5 text-sm font-medium border border-slate-200 bg-transparent text-slate-700 hover:bg-slate-100/70 rounded-lg transition cursor-pointer"
                   >
-                    {t('landing.findHospitals', 'Find Nearby Hospitals')}
+                    Find Hospitals
                   </Button>
                 </Link>
-
-                {!isAuthenticated ? (
-                  <Link to="/government/friction-intelligence" className="w-full sm:w-auto">
-                    <Button
-                      variant="outline"
-                      size="lg"
-                      icon={<ShieldCheck className="w-4 h-4 shrink-0 text-slate-700" />}
-                      className="w-full min-h-[50px] px-6 text-sm sm:text-base font-semibold border border-slate-300 bg-slate-50 text-slate-900 hover:bg-slate-100 rounded-xl shadow-xs transition cursor-pointer"
-                    >
-                      Health Authority Command
-                    </Button>
-                  </Link>
-                ) : (
-                  <Link
-                    to={
-                      user?.role === 'patient'
-                        ? '/patient/dashboard'
-                        : user?.role === 'hospital'
-                        ? '/hospital/dashboard'
-                        : user?.role === 'government'
-                        ? '/government/friction-intelligence'
-                        : '/admin/dashboard'
-                    }
-                    className="w-full sm:w-auto"
-                  >
-                    <Button
-                      variant="secondary"
-                      size="lg"
-                      icon={<ArrowRight className="w-4 h-4 shrink-0" />}
-                      className="w-full min-h-[50px] px-7 text-sm sm:text-base font-semibold shadow-md rounded-xl cursor-pointer"
-                    >
-                      {t('landing.goToDashboard', 'Go to Your Dashboard')}
-                    </Button>
-                  </Link>
-                )}
               </div>
 
-              {/* Institutional Portal Jump Links */}
-              <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-600 font-medium pt-2">
-                <span className="text-slate-400 font-semibold uppercase tracking-wider text-[11px]">Portals:</span>
-                <Link to="/login?role=patient" className="hover:text-teal-700 transition">
-                  Patient Vault & Access
+              {/* Institutional Role Portals */}
+              <div className="pt-2 border-t border-slate-200 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-600">
+                <span className="text-slate-400 font-semibold uppercase tracking-wider text-[11px]">Direct Portals:</span>
+                <Link to="/login?role=patient" className="hover:text-teal-800 font-medium transition">
+                  Patient Vault
                 </Link>
                 <span className="text-slate-300">•</span>
-                <Link to="/login?role=hospital" className="hover:text-teal-700 transition">
-                  Hospital Intake & Triage
+                <Link to="/login?role=doctor" className="hover:text-teal-800 font-medium transition">
+                  Doctor OPD Desk
                 </Link>
                 <span className="text-slate-300">•</span>
-                <Link to="/login?role=asha" className="hover:text-teal-700 transition">
-                  Frontline ASHA Worker
+                <Link to="/login?role=hospital" className="hover:text-teal-800 font-medium transition">
+                  Hospital Intake
                 </Link>
                 <span className="text-slate-300">•</span>
-                <Link to="/government/friction-intelligence" className="hover:text-teal-700 transition flex items-center gap-1 font-semibold text-teal-800">
-                  <BarChart3 className="w-3.5 h-3.5" />
-                  Government Action Engine
+                <Link to="/login?role=asha" className="hover:text-teal-800 font-medium transition">
+                  Frontline ASHA
                 </Link>
               </div>
             </div>
 
-            {/* Subtle System Proof / Telemetry Strip (No AI graphics, real infrastructure attributes) */}
-            <div className="pt-8 sm:pt-10 border-t border-slate-200 grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Telemetry Framework</div>
-                <div className="text-sm font-bold text-slate-900 mt-1">5-Stage Journey Mapping</div>
-                <p className="text-xs text-slate-600 mt-0.5">Transit, Intake, OPD, Lab, Admin</p>
-              </div>
+            {/* Right Column: Realistic, Institutional Healthcare Journey Telemetry */}
+            <div className="lg:col-span-5">
+              <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 sm:p-6 space-y-5">
+                {/* Telemetry Header */}
+                <div className="flex items-center justify-between pb-4 border-b border-slate-200">
+                  <div>
+                    <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Live Journey Telemetry</div>
+                    <div className="text-sm font-bold text-slate-900 mt-0.5">District Care-Pathway Friction Analysis</div>
+                  </div>
+                  <div className="px-2.5 py-1 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold">
+                    Friction: 64/100 · High
+                  </div>
+                </div>
 
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Scoring Formula</div>
-                <div className="text-sm font-bold text-slate-900 mt-1">0–100 Friction Index</div>
-                <p className="text-xs text-slate-600 mt-0.5">Deterministic Care Dropout Risk</p>
-              </div>
+                {/* 5 Journey Stages Real Data Metrics */}
+                <div className="space-y-2.5 text-xs">
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-2 h-2 rounded-full bg-rose-500" />
+                      <div>
+                        <div className="font-semibold text-slate-900">1. Transit & Geography</div>
+                        <div className="text-[11px] text-slate-500">22 km commute · 2 bus transfers</div>
+                      </div>
+                    </div>
+                    <span className="font-mono font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                      High Friction
+                    </span>
+                  </div>
 
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Privacy Standard</div>
-                <div className="text-sm font-bold text-slate-900 mt-1">k-Anonymity (k ≥ 3)</div>
-                <p className="text-xs text-slate-600 mt-0.5">Automated sparse cohort protection</p>
-              </div>
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-2 h-2 rounded-full bg-amber-500" />
+                      <div>
+                        <div className="font-semibold text-slate-900">2. Intake & Documentation</div>
+                        <div className="text-[11px] text-slate-500">ABDM e-KYC pending · Counter queue: 45 min</div>
+                      </div>
+                    </div>
+                    <span className="font-mono font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                      Moderate
+                    </span>
+                  </div>
 
-              <div className="p-4 rounded-xl bg-slate-50 border border-slate-200/80">
-                <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">Accountability</div>
-                <div className="text-sm font-bold text-slate-900 mt-1">SHA-256 Sign-off Ledger</div>
-                <p className="text-xs text-slate-600 mt-0.5">Human officer verified mandates</p>
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-2 h-2 rounded-full bg-rose-500" />
+                      <div>
+                        <div className="font-semibold text-slate-900">3. OPD Queue & Consultation</div>
+                        <div className="text-[11px] text-slate-500">38 patients ahead · Est. wait: 110 min</div>
+                      </div>
+                    </div>
+                    <span className="font-mono font-semibold text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">
+                      High Wait
+                    </span>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                      <div>
+                        <div className="font-semibold text-slate-900">4. Diagnostic Turnaround</div>
+                        <div className="text-[11px] text-slate-500">Routine hematology: Same-day available</div>
+                      </div>
+                    </div>
+                    <span className="font-mono font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                      Normal
+                    </span>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="w-2 h-2 rounded-full bg-amber-500" />
+                      <div>
+                        <div className="font-semibold text-slate-900">5. Pharmacy & Financial Settlement</div>
+                        <div className="text-[11px] text-slate-500">Jan Aushadhi stock: 82% · Cashless approved</div>
+                      </div>
+                    </div>
+                    <span className="font-mono font-semibold text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-200">
+                      Low Gap
+                    </span>
+                  </div>
+                </div>
+
+                {/* Deterministic Outcome & Action Panel */}
+                <div className="p-3 rounded-lg bg-teal-50/60 border border-teal-200/80 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-teal-950">Care Failure Risk Estimate</span>
+                    <span className="font-bold text-rose-700">42% (Probability of Drop-out)</span>
+                  </div>
+                  <p className="text-[11px] text-teal-900 leading-relaxed">
+                    <strong>Recommended Intervention:</strong> Issue ASHA transit escort voucher and pre-book token for afternoon OPD session to eliminate morning wage sacrifice.
+                  </p>
+                </div>
+
+                {/* Verification Specifications Footer */}
+                <div className="pt-3 border-t border-slate-200 grid grid-cols-2 gap-2 text-[10px] text-slate-500">
+                  <div className="flex items-center gap-1">
+                    <ShieldCheck className="w-3 h-3 text-slate-400" />
+                    <span>k-Anonymity (k ≥ 3) Preserved</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <CheckCircle2 className="w-3 h-3 text-slate-400" />
+                    <span>Officer SHA-256 Verified</span>
+                  </div>
+                </div>
               </div>
             </div>
+
           </div>
         </div>
       </section>
