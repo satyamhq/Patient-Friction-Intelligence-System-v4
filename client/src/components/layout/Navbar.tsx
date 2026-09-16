@@ -394,11 +394,8 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileSidebar }) => {
                 <Activity className="w-5 h-5 stroke-[2.2]" />
               </div>
               <div className="flex flex-col">
-                <span className="font-extrabold text-base tracking-tight text-slate-900 flex items-center gap-1.5">
+                <span className="font-extrabold text-base tracking-tight text-slate-900">
                   PFIS
-                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 font-bold hidden sm:inline">
-                    v4.0
-                  </span>
                 </span>
                 <span className="text-[10px] font-semibold text-slate-500 -mt-0.5 hidden md:inline">
                   Patient Friction Intelligence System
