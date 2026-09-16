@@ -359,13 +359,13 @@ export const PatientAccessAssessment: React.FC = () => {
         </div>
 
         {/* Non-Clinical Disclaimer (Section 1 & 25) */}
-        <div className="p-3.5 bg-slate-900 text-white rounded-2xl text-xs flex items-start gap-3">
-          <ShieldCheck className="w-5 h-5 text-teal-400 shrink-0 mt-0.5" />
+        <div className="p-3.5 bg-slate-100 text-slate-800 border border-slate-200 rounded-2xl text-xs flex items-start gap-3">
+          <ShieldCheck className="w-5 h-5 text-teal-700 shrink-0 mt-0.5" />
           <div className="space-y-0.5">
-            <p className="font-bold text-teal-300">
+            <p className="font-bold text-teal-900">
               Non-Clinical Scope & Originality Mandate:
             </p>
-            <p className="text-slate-300 leading-relaxed">
+            <p className="text-slate-700 leading-relaxed">
               PFIS evaluates logistical and operational accessibility barriers only. It does <strong>NOT</strong> diagnose medical conditions, recommend drug treatments, replace physician consultations, or predict clinical illness trajectories.
             </p>
           </div>

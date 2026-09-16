@@ -178,7 +178,7 @@ export const ConsentModal: React.FC<ConsentModalProps> = ({
 
         {/* Explicit Confirmation Checkbox */}
         <div className="pt-2 border-t border-slate-100">
-          <label className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-900 text-white cursor-pointer select-none">
+          <label className="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 border border-slate-300 text-slate-800 hover:bg-slate-100 cursor-pointer select-none transition-colors">
             <input
               type="checkbox"
               checked={agreedToTerms}
@@ -186,11 +186,11 @@ export const ConsentModal: React.FC<ConsentModalProps> = ({
                 setAgreedToTerms(e.target.checked);
                 if (e.target.checked) setValidationError(null);
               }}
-              className="mt-0.5 rounded text-teal-500 focus:ring-teal-400 w-4 h-4"
+              className="mt-0.5 rounded accent-teal-600 text-teal-600 focus:ring-teal-500 w-4 h-4"
             />
-            <span className="text-xs leading-relaxed font-medium">
+            <span className="text-xs leading-relaxed font-medium text-slate-700">
               I explicitly agree and authorize PFIS to securely share the selected intake data and
-              accessibility profile with <strong>{hospital.name}</strong>. I retain the right to revoke
+              accessibility profile with <strong className="text-slate-900">{hospital.name}</strong>. I retain the right to revoke
               this consent at any time from my privacy settings.
             </span>
           </label>

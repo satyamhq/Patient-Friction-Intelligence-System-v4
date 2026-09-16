@@ -323,17 +323,17 @@ export const TeleconsultationRoom: React.FC = () => {
       )}
 
       {/* 1. Consultation Reason / Barrier Selection */}
-      <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-indigo-950 rounded-3xl p-5 sm:p-6 text-white shadow-xl border border-teal-500/30 space-y-4">
+      <div className="bg-white rounded-3xl p-5 sm:p-6 text-slate-900 shadow-xs border border-slate-200 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <span className="p-1.5 rounded-lg bg-teal-500/20 text-teal-300">
+            <span className="p-1.5 rounded-lg bg-teal-50 text-teal-700 border border-teal-200">
               <Sparkles className="w-4 h-4" />
             </span>
-            <h2 className="text-sm sm:text-base font-extrabold tracking-tight text-white">
+            <h2 className="text-sm sm:text-base font-extrabold tracking-tight text-slate-900">
               Consultation Purpose: Select Healthcare Barrier
             </h2>
           </div>
-          <span className="text-xs text-teal-200/80">
+          <span className="text-xs text-slate-500">
             Select your specific access difficulty before starting live session
           </span>
         </div>
@@ -349,27 +349,27 @@ export const TeleconsultationRoom: React.FC = () => {
                 disabled={callState === 'CONNECTED'}
                 className={`p-3.5 rounded-2xl text-left transition-all border cursor-pointer relative flex flex-col justify-between ${
                   isSelected
-                    ? 'bg-teal-500/20 border-teal-400 text-white shadow-lg ring-2 ring-teal-400/50'
-                    : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10 hover:border-white/20'
+                    ? 'bg-teal-50 border-teal-500 text-slate-900 shadow-xs ring-2 ring-teal-500/30'
+                    : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-white hover:border-slate-300 hover:shadow-2xs'
                 } ${callState === 'CONNECTED' ? 'opacity-80 cursor-not-allowed' : ''}`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-1 mb-1.5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-teal-300">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-teal-700">
                       {reason.category}
                     </span>
                     {isSelected && (
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
+                      <span className="w-2 h-2 rounded-full bg-teal-600 animate-ping" />
                     )}
                   </div>
-                  <h3 className="font-bold text-xs leading-snug text-white mb-1.5">
+                  <h3 className="font-bold text-xs leading-snug text-slate-900 mb-1.5">
                     {reason.title}
                   </h3>
-                  <p className="text-[11px] text-slate-300/80 line-clamp-2 leading-relaxed">
+                  <p className="text-[11px] text-slate-600 line-clamp-2 leading-relaxed">
                     "{reason.patientContext}"
                   </p>
                 </div>
-                <div className="mt-2.5 pt-2 border-t border-white/10 flex items-center justify-between text-[10px] text-teal-300 font-semibold">
+                <div className="mt-2.5 pt-2 border-t border-slate-200 flex items-center justify-between text-[10px] text-teal-700 font-semibold">
                   <span>{isSelected ? '● Selected for Call' : 'Select Purpose'}</span>
                 </div>
               </button>

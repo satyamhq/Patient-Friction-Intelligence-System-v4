@@ -505,14 +505,14 @@ export const AshaDashboard: React.FC = () => {
       </div>
 
       {/* ── SECTION 3: OFFLINE SYNC STATUS FOOTER ── */}
-      <div className="bg-slate-900 text-white rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-teal-50/80 border border-teal-200 text-slate-900 rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-teal-500/20 text-teal-400 border border-teal-500/30">
+          <div className="p-2.5 rounded-xl bg-teal-100 text-teal-700 border border-teal-200">
             <RefreshCw className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="font-bold text-sm">Offline Field Synchronization Center</h4>
-            <p className="text-xs text-slate-400">
+            <h4 className="font-bold text-sm text-slate-900">Offline Field Synchronization Center</h4>
+            <p className="text-xs text-slate-600">
               {stats?.syncStatus?.pendingRecords || 0} local operations queued • Last successful server confirmation:{' '}
               {new Date(stats?.syncStatus?.lastSuccessfulSync || Date.now()).toLocaleTimeString()}
             </p>
@@ -522,7 +522,7 @@ export const AshaDashboard: React.FC = () => {
         <div className="flex items-center gap-3">
           <Link
             to="/asha/sync"
-            className="px-4 py-2 rounded-xl text-xs font-semibold bg-white/10 hover:bg-white/20 text-white border border-white/10 transition-all"
+            className="px-4 py-2 rounded-xl text-xs font-semibold bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 transition-all shadow-2xs"
           >
             Manage Queue
           </Link>

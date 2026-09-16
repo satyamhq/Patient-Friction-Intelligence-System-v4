@@ -703,16 +703,16 @@ export const AuthorizedOfficerWorkflow: React.FC = () => {
                 <div className="space-y-6">
                   {/* PFI Score & Risk Tier Banner */}
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="p-4 rounded-xl bg-slate-900 text-white space-y-1">
-                      <span className="text-[10px] text-blue-300 uppercase font-bold tracking-wider">Patient Friction Index</span>
-                      <div className="text-3xl font-extrabold text-blue-400">{frictionFingerprint.compositePfiScore}/100</div>
-                      <p className="text-[11px] text-slate-300">Bottleneck: {frictionFingerprint.primaryBottleneck}</p>
+                    <div className="p-4 rounded-xl bg-blue-50/70 border border-blue-200 text-slate-900 space-y-1">
+                      <span className="text-[10px] text-blue-700 uppercase font-bold tracking-wider">Patient Friction Index</span>
+                      <div className="text-3xl font-extrabold text-blue-800">{frictionFingerprint.compositePfiScore}/100</div>
+                      <p className="text-[11px] text-slate-600">Bottleneck: <span className="font-semibold text-slate-900">{frictionFingerprint.primaryBottleneck}</span></p>
                     </div>
 
-                    <div className="p-4 rounded-xl bg-slate-900 text-white space-y-1">
-                      <span className="text-[10px] text-blue-300 uppercase font-bold tracking-wider">Completion Probability</span>
-                      <div className="text-3xl font-extrabold text-emerald-400">{riskAssessment.completionProbabilityPct}%</div>
-                      <p className="text-[11px] text-slate-300">Failure Risk: {riskAssessment.failureRiskScore}%</p>
+                    <div className="p-4 rounded-xl bg-emerald-50/70 border border-emerald-200 text-slate-900 space-y-1">
+                      <span className="text-[10px] text-emerald-700 uppercase font-bold tracking-wider">Completion Probability</span>
+                      <div className="text-3xl font-extrabold text-emerald-800">{riskAssessment.completionProbabilityPct}%</div>
+                      <p className="text-[11px] text-slate-600">Failure Risk: <span className="font-semibold text-slate-900">{riskAssessment.failureRiskScore}%</span></p>
                     </div>
 
                     <div className={`p-4 rounded-xl text-white space-y-1 ${
@@ -943,16 +943,16 @@ export const AuthorizedOfficerWorkflow: React.FC = () => {
               </div>
 
               {/* Digital Signature Credentials */}
-              <div className="p-4 bg-slate-900 text-white rounded-xl space-y-2 text-xs">
-                <div className="flex justify-between items-center border-b border-slate-800 pb-2">
-                  <span className="text-blue-300 font-bold">Approval ID: {approvalRecord.approvalId}</span>
-                  <span className="text-slate-400">{new Date(approvalRecord.approvedAt).toLocaleTimeString()}</span>
+              <div className="p-4 bg-slate-50 border border-slate-200 text-slate-900 rounded-xl space-y-2 text-xs">
+                <div className="flex justify-between items-center border-b border-slate-200 pb-2">
+                  <span className="text-blue-700 font-bold">Approval ID: {approvalRecord.approvalId}</span>
+                  <span className="text-slate-500">{new Date(approvalRecord.approvedAt).toLocaleTimeString()}</span>
                 </div>
-                <div className="font-mono text-[10px] text-slate-300 break-all">
+                <div className="font-mono text-[10px] text-slate-700 break-all bg-white p-2 rounded border border-slate-200">
                   SHA-256 Signature Hash: {approvalRecord.digitalSignatureHash}
                 </div>
-                <div className="text-[11px] text-slate-300">
-                  Authorized By: {approvalRecord.officerName} ({approvalRecord.officerRole}) • Badge: {approvalRecord.officerBadge}
+                <div className="text-[11px] text-slate-600">
+                  Authorized By: <span className="font-semibold text-slate-900">{approvalRecord.officerName}</span> ({approvalRecord.officerRole}) • Badge: {approvalRecord.officerBadge}
                 </div>
               </div>
 

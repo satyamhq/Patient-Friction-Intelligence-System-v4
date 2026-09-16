@@ -74,19 +74,19 @@ export const Contact: React.FC = () => {
         </div>
 
         <div className="space-y-4 text-xs text-slate-600">
-          <div className="p-6 bg-slate-900 text-white rounded-3xl space-y-4">
-            <h4 className="font-bold text-sm text-teal-300">National Health Coordination Center</h4>
-            <div className="space-y-2 text-slate-300">
+          <div className="p-6 bg-slate-50 text-slate-900 border border-slate-200 rounded-3xl space-y-4 shadow-2xs">
+            <h4 className="font-bold text-sm text-teal-800">National Health Coordination Center</h4>
+            <div className="space-y-2 text-slate-700">
               <p className="flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-teal-400" />
+                <Building2 className="w-4 h-4 text-teal-700 shrink-0" />
                 <span>National Healthcare Accessibility Initiative</span>
               </p>
               <p className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-teal-400" />
+                <MapPin className="w-4 h-4 text-teal-700 shrink-0" />
                 <span>Ranchi Medical Enclave, Bariatu, Jharkhand</span>
               </p>
               <p className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-teal-400" />
+                <Mail className="w-4 h-4 text-teal-700 shrink-0" />
                 <span>integration@pfis.org</span>
               </p>
             </div>

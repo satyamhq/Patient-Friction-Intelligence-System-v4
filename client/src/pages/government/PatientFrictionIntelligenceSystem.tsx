@@ -205,13 +205,13 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
   const getTierColor = (tier: FrictionTier) => {
     switch (tier) {
       case 'CRITICAL':
-        return 'bg-red-500/10 text-red-500 border-red-500/30';
+        return 'bg-rose-50 text-rose-800 border-rose-200';
       case 'HIGH':
-        return 'bg-amber-500/10 text-amber-500 border-amber-500/30';
+        return 'bg-amber-50 text-amber-800 border-amber-200';
       case 'MODERATE':
-        return 'bg-blue-500/10 text-blue-500 border-blue-500/30';
+        return 'bg-blue-50 text-blue-800 border-blue-200';
       default:
-        return 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30';
+        return 'bg-emerald-50 text-emerald-800 border-emerald-200';
     }
   };
 
@@ -297,29 +297,27 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
 
   return (
     <div
-      className={`min-h-screen pb-16 transition-colors duration-200 ${
-        highContrast ? 'bg-black text-white' : 'bg-slate-950 text-slate-100'
-      }`}
+      className="min-h-screen pb-16 bg-slate-50 text-slate-900 transition-colors duration-200"
       role="main"
       aria-label="Patient Friction Intelligence and Calculation System"
     >
       {/* Top Telemetry Banner & Loop Indicator */}
-      <div className="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-6 lg:px-8 py-3">
+      <div className="border-b border-slate-200 bg-white/95 backdrop-blur-md sticky top-0 z-30 px-4 sm:px-6 lg:px-8 py-3 shadow-2xs">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400">
-              <Activity className="w-6 h-6 animate-pulse" />
+            <div className="p-2 rounded-xl bg-teal-50 border border-teal-200 text-teal-700">
+              <Activity className="w-6 h-6" />
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="text-lg font-bold tracking-tight text-white">
+                <h1 className="text-lg font-bold tracking-tight text-slate-950">
                   Patient Friction Intelligence & Calculation System
                 </h1>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-teal-500/10 text-teal-300 border border-teal-500/30 font-mono">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200 font-mono font-bold">
                   v4.2 Production
                 </span>
               </div>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 Multi-Level Deterministic Scoring: Individual · Village Cohort · District Systems
               </p>
             </div>
@@ -327,23 +325,23 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
 
           {/* Core Closed-Loop Pipeline Indicator */}
           <div className="flex items-center gap-1.5 overflow-x-auto py-1 text-xs">
-            <span className="px-2 py-1 rounded-md bg-sky-500/10 text-sky-400 font-semibold border border-sky-500/20 flex items-center gap-1">
+            <span className="px-2 py-1 rounded-md bg-sky-50 text-sky-800 font-semibold border border-sky-200 flex items-center gap-1">
               <Compass className="w-3 h-3" /> 1. DETECT
             </span>
-            <ChevronRight className="w-3 h-3 text-slate-600" />
-            <span className="px-2 py-1 rounded-md bg-indigo-500/10 text-indigo-400 font-semibold border border-indigo-500/20 flex items-center gap-1">
+            <ChevronRight className="w-3 h-3 text-slate-400" />
+            <span className="px-2 py-1 rounded-md bg-indigo-50 text-indigo-800 font-semibold border border-indigo-200 flex items-center gap-1">
               <BarChart3 className="w-3 h-3" /> 2. ANALYZE
             </span>
-            <ChevronRight className="w-3 h-3 text-slate-600" />
-            <span className="px-2 py-1 rounded-md bg-amber-500/10 text-amber-400 font-semibold border border-amber-500/20 flex items-center gap-1">
+            <ChevronRight className="w-3 h-3 text-slate-400" />
+            <span className="px-2 py-1 rounded-md bg-amber-50 text-amber-800 font-semibold border border-amber-200 flex items-center gap-1">
               <UserCheck className="w-3 h-3" /> 3. APPROVE
             </span>
-            <ChevronRight className="w-3 h-3 text-slate-600" />
-            <span className="px-2 py-1 rounded-md bg-emerald-500/10 text-emerald-400 font-semibold border border-emerald-500/20 flex items-center gap-1">
+            <ChevronRight className="w-3 h-3 text-slate-400" />
+            <span className="px-2 py-1 rounded-md bg-emerald-50 text-emerald-800 font-semibold border border-emerald-200 flex items-center gap-1">
               <Zap className="w-3 h-3" /> 4. INTERVENE
             </span>
-            <ChevronRight className="w-3 h-3 text-slate-600" />
-            <span className="px-2 py-1 rounded-md bg-purple-500/10 text-purple-400 font-semibold border border-purple-500/20 flex items-center gap-1">
+            <ChevronRight className="w-3 h-3 text-slate-400" />
+            <span className="px-2 py-1 rounded-md bg-purple-50 text-purple-800 font-semibold border border-purple-200 flex items-center gap-1">
               <Sparkles className="w-3 h-3" /> 5. LEARN
             </span>
           </div>
@@ -352,10 +350,10 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setHighContrast(!highContrast)}
-              className={`text-xs px-3 py-1.5 rounded-lg border flex items-center gap-1.5 font-medium transition ${
+              className={`text-xs px-3 py-1.5 rounded-lg border flex items-center gap-1.5 font-medium transition cursor-pointer ${
                 highContrast
-                  ? 'bg-yellow-400 text-black border-yellow-300 shadow-md'
-                  : 'bg-slate-800 text-slate-300 border-slate-700 hover:bg-slate-700'
+                  ? 'bg-yellow-400 text-black border-yellow-500 shadow-md font-bold'
+                  : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-100'
               }`}
               aria-label="Toggle High Contrast ADA Mode"
             >
@@ -370,11 +368,11 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                 if (activeLevel === 'DISTRICT') loadDistrict(selectedDistrict);
                 if (activeLevel === 'LEDGER') loadLedger();
               }}
-              className="p-2 rounded-lg bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition"
+              className="p-2 rounded-lg bg-white text-slate-700 border border-slate-300 hover:bg-slate-100 transition cursor-pointer"
               title="Refresh Pipeline Telemetry"
               aria-label="Refresh Data"
             >
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-teal-400' : ''}`} />
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin text-teal-700' : ''}`} />
             </button>
           </div>
         </div>
@@ -383,13 +381,13 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
       {/* Main Container */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
         {/* Navigation Tabs */}
-        <div className="flex items-center gap-2 border-b border-slate-800 pb-3 mb-6 overflow-x-auto">
+        <div className="flex items-center gap-2 border-b border-slate-200 pb-3 mb-6 overflow-x-auto">
           <button
             onClick={() => setActiveLevel('INDIVIDUAL')}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition ${
+            className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition cursor-pointer ${
               activeLevel === 'INDIVIDUAL'
-                ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-teal-700 text-white shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Compass className="w-4 h-4" />
@@ -397,10 +395,10 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveLevel('VILLAGE')}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition ${
+            className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition cursor-pointer ${
               activeLevel === 'VILLAGE'
-                ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-teal-700 text-white shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Users className="w-4 h-4" />
@@ -408,10 +406,10 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveLevel('DISTRICT')}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition ${
+            className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition cursor-pointer ${
               activeLevel === 'DISTRICT'
-                ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-teal-700 text-white shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <Building2 className="w-4 h-4" />
@@ -419,10 +417,10 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
           </button>
           <button
             onClick={() => setActiveLevel('LEDGER')}
-            className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition ${
+            className={`px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2 transition cursor-pointer ${
               activeLevel === 'LEDGER'
-                ? 'bg-teal-500 text-slate-950 shadow-lg shadow-teal-500/20'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-teal-700 text-white shadow-2xs'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <FileCheck className="w-4 h-4" />
@@ -431,10 +429,10 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
         </div>
 
         {/* Global Cascader Filters (District / Village / Journey) */}
-        <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 mb-6 backdrop-blur">
+        <div className="bg-white border border-slate-200 rounded-2xl p-4 mb-6 shadow-2xs">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                 Target District
               </label>
               <select
@@ -445,7 +443,7 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                   const vList = hierarchy.find((h) => h.district === d)?.villages || [];
                   if (vList.length > 0) setSelectedVillage(vList[0].village);
                 }}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-teal-500 focus:outline-none focus:bg-white"
               >
                 {hierarchy.map((h) => (
                   <option key={h.district} value={h.district}>
@@ -457,13 +455,13 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
 
             {activeLevel !== 'DISTRICT' && (
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                   Village / Urban Block
                 </label>
                 <select
                   value={selectedVillage}
                   onChange={(e) => setSelectedVillage(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-teal-500 focus:outline-none focus:bg-white"
                 >
                   {availableVillages.map((v) => (
                     <option key={v.village} value={v.village}>
@@ -476,7 +474,7 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
 
             {activeLevel === 'INDIVIDUAL' && (
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1.5">
+                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                   Select Patient Journey
                 </label>
                 <select
@@ -485,7 +483,7 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                     setSelectedJourneyId(e.target.value);
                     loadIndividual(e.target.value);
                   }}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white focus:ring-2 focus:ring-teal-500 focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:ring-2 focus:ring-teal-500 focus:outline-none focus:bg-white"
                 >
                   {journeysList.map((j) => (
                     <option key={j.journeyId} value={j.journeyId}>
@@ -503,16 +501,16 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
           <div className="space-y-6">
             {/* Top Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                   <span>Deterministic Friction Score</span>
-                  <Activity className="w-4 h-4 text-teal-400" />
+                  <Activity className="w-4 h-4 text-teal-700" />
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-white">
+                  <span className="text-3xl font-black text-slate-950">
                     {individualResult.overallFrictionScore}
                   </span>
-                  <span className="text-xs text-slate-400">/ 100</span>
+                  <span className="text-xs text-slate-500">/ 100</span>
                 </div>
                 <div className="mt-2 flex items-center gap-2">
                   <span
@@ -525,69 +523,69 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                   <span>Care Failure Risk Model</span>
-                  <AlertTriangle className="w-4 h-4 text-amber-400" />
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-amber-400">
+                  <span className="text-3xl font-black text-amber-700">
                     {individualResult.careFailureRisk}%
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs text-slate-500 mt-2">
                   Dropout or clinical deterioration hazard without intervention
                 </p>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                   <span>Completion Probability</span>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-emerald-400">
+                  <span className="text-3xl font-black text-emerald-700">
                     {individualResult.completionProbability}%
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs text-slate-500 mt-2">
                   Projected baseline full episode adherence
                 </p>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                   <span>Signal Confidence</span>
-                  <ShieldCheck className="w-4 h-4 text-sky-400" />
+                  <ShieldCheck className="w-4 h-4 text-sky-600" />
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-sky-400">
+                  <span className="text-3xl font-black text-sky-700">
                     {individualResult.confidenceScore}%
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs text-slate-500 mt-2">
                   Derived from 5 telemetry stage validators
                 </p>
               </div>
             </div>
 
             {/* 5 Journey Stages Breakdown */}
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
-              <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                <Layers className="w-5 h-5 text-teal-400" />
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs">
+              <h3 className="text-base font-bold text-slate-950 mb-4 flex items-center gap-2">
+                <Layers className="w-5 h-5 text-teal-700" />
                 Journey Stages Telemetry & Bottlenecks
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
                 {individualResult.stages.map((stg, idx) => (
                   <div
                     key={stg.stage}
-                    className="p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 relative overflow-hidden"
+                    className="p-4 rounded-xl bg-slate-50 border border-slate-200 relative overflow-hidden"
                   >
-                    <div className="text-xs font-mono text-slate-400 mb-1">Stage {idx + 1}</div>
-                    <div className="text-sm font-semibold text-white truncate">{stg.stageName}</div>
+                    <div className="text-xs font-mono text-slate-500 mb-1">Stage {idx + 1}</div>
+                    <div className="text-sm font-semibold text-slate-900 truncate">{stg.stageName}</div>
                     <div className="mt-2 flex items-baseline justify-between">
-                      <span className="text-xl font-bold text-teal-300">{stg.score}</span>
-                      <span className="text-xs text-slate-400 font-mono">
+                      <span className="text-xl font-bold text-teal-800">{stg.score}</span>
+                      <span className="text-xs text-slate-500 font-mono">
                         {stg.latencyMinutes} mins
                       </span>
                     </div>
@@ -601,8 +599,8 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                       </span>
                     </div>
                     {stg.barriers.length > 0 && (
-                      <div className="mt-2 text-xs text-slate-400">
-                        <span className="text-slate-500">Barrier:</span> {stg.barriers[0]}
+                      <div className="mt-2 text-xs text-slate-600">
+                        <span className="text-slate-400">Barrier:</span> {stg.barriers[0]}
                       </div>
                     )}
                   </div>
@@ -612,87 +610,87 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
 
             {/* Contributing Factor Weights */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
-                <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                  <BarChart3 className="w-5 h-5 text-indigo-400" />
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs">
+                <h3 className="text-base font-bold text-slate-950 mb-4 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-indigo-700" />
                   Weighted Factor Decomposition
                 </h3>
                 <div className="space-y-4">
                   {individualResult.topContributingFactors.map((f) => (
                     <div key={f.factor}>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="font-semibold text-slate-200">{f.factor}</span>
-                        <span className="font-mono text-teal-400">{f.score}/100</span>
+                        <span className="font-semibold text-slate-800">{f.factor}</span>
+                        <span className="font-mono font-bold text-teal-700">{f.score}/100</span>
                       </div>
-                      <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                      <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                         <div
-                          className="bg-gradient-to-r from-teal-500 to-indigo-500 h-full rounded-full"
+                          className="bg-gradient-to-r from-teal-600 to-indigo-600 h-full rounded-full"
                           style={{ width: `${Math.min(100, f.score)}%` }}
                         />
                       </div>
-                      <p className="text-[11px] text-slate-400 mt-1">{f.description}</p>
+                      <p className="text-[11px] text-slate-500 mt-1">{f.description}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               {/* Recommended Government Action Card */}
-              <div className="bg-gradient-to-br from-slate-900 via-slate-900 to-teal-950/40 border border-teal-500/30 rounded-2xl p-6 flex flex-col justify-between">
+              <div className="bg-teal-50/70 border border-teal-200 rounded-2xl p-6 flex flex-col justify-between shadow-2xs">
                 <div>
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs px-2.5 py-1 rounded-full bg-teal-500/10 text-teal-400 border border-teal-500/30 font-semibold flex items-center gap-1">
-                      <Sparkles className="w-3.5 h-3.5" /> Prescribed Intervention
+                    <span className="text-xs px-2.5 py-1 rounded-full bg-teal-100 text-teal-900 border border-teal-300 font-semibold flex items-center gap-1">
+                      <Sparkles className="w-3.5 h-3.5 text-teal-700" /> Prescribed Intervention
                     </span>
-                    <span className="text-xs font-mono text-slate-400">
+                    <span className="text-xs font-mono text-slate-500">
                       ID: {individualResult.recommendation.id}
                     </span>
                   </div>
-                  <h4 className="text-base font-bold text-white mb-1">
+                  <h4 className="text-base font-bold text-slate-950 mb-1">
                     {individualResult.recommendation.recommendedIntervention}
                   </h4>
-                  <p className="text-xs text-slate-300 mb-4">
+                  <p className="text-xs text-slate-700 mb-4">
                     {individualResult.recommendation.rootCause}
                   </p>
 
-                  <div className="grid grid-cols-2 gap-3 text-xs bg-slate-800/60 p-3 rounded-xl border border-slate-700/60 mb-4">
+                  <div className="grid grid-cols-2 gap-3 text-xs bg-white p-3.5 rounded-xl border border-teal-200 mb-4 shadow-2xs">
                     <div>
-                      <div className="text-slate-400">Target Authority:</div>
-                      <div className="font-semibold text-teal-300">
+                      <div className="text-slate-500">Target Authority:</div>
+                      <div className="font-semibold text-teal-900">
                         {individualResult.recommendation.responsibleAuthority}
                       </div>
                     </div>
                     <div>
-                      <div className="text-slate-400">Projected Friction Cut:</div>
-                      <div className="font-semibold text-emerald-400">
+                      <div className="text-slate-500">Projected Friction Cut:</div>
+                      <div className="font-semibold text-emerald-700">
                         -{individualResult.recommendation.expectedImpact.frictionReductionPct}%
                       </div>
                     </div>
                     <div>
-                      <div className="text-slate-400">Estimated Cost:</div>
-                      <div className="font-semibold text-white font-mono">
+                      <div className="text-slate-500">Estimated Cost:</div>
+                      <div className="font-semibold text-slate-900 font-mono">
                         ₹{individualResult.recommendation.costEstimateInr.toLocaleString('en-IN')}
                       </div>
                     </div>
                     <div>
-                      <div className="text-slate-400">Completion Gain:</div>
-                      <div className="font-semibold text-emerald-400">
+                      <div className="text-slate-500">Completion Gain:</div>
+                      <div className="font-semibold text-emerald-700">
                         +{individualResult.recommendation.expectedImpact.completionGainPct}%
                       </div>
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 pt-4 border-t border-slate-800">
+                <div className="flex items-center gap-3 pt-4 border-t border-teal-200/60">
                   <button
                     onClick={() => handleOpenSimulation(individualResult.recommendation)}
-                    className="flex-1 px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center justify-center gap-2 border border-slate-700 transition"
+                    className="flex-1 px-4 py-2.5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold flex items-center justify-center gap-2 border border-slate-300 transition cursor-pointer shadow-2xs"
                   >
                     <Sliders className="w-3.5 h-3.5" />
                     What-If Simulation
                   </button>
                   <button
                     onClick={() => handleOpenApproval(individualResult.recommendation)}
-                    className="flex-1 px-4 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold flex items-center justify-center gap-2 shadow-lg shadow-teal-500/20 transition"
+                    className="flex-1 px-4 py-2.5 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold flex items-center justify-center gap-2 shadow-sm transition cursor-pointer"
                   >
                     <UserCheck className="w-3.5 h-3.5" />
                     Officer Sign-off
@@ -709,27 +707,27 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
             {/* Privacy Gate Notification if Sample Size < 3 */}
             {!villageResult.hasSufficientData ? (
               <div
-                className="bg-amber-500/10 border-2 border-amber-500/40 rounded-2xl p-6 text-amber-200"
+                className="bg-amber-50 border-2 border-amber-300 rounded-2xl p-6 text-amber-950 shadow-2xs"
                 role="alert"
                 aria-live="assertive"
               >
                 <div className="flex items-start gap-4">
-                  <div className="p-3 bg-amber-500/20 rounded-xl border border-amber-500/40 text-amber-400">
+                  <div className="p-3 bg-amber-100 rounded-xl border border-amber-300 text-amber-800">
                     <ShieldAlert className="w-6 h-6" />
                   </div>
                   <div className="flex-1">
-                    <h3 className="text-lg font-bold text-amber-300 mb-1">
+                    <h3 className="text-lg font-bold text-amber-950 mb-1">
                       Data Privacy & Statistical Reliability Gate Triggered
                     </h3>
-                    <p className="text-sm text-amber-200/90 mb-3">
+                    <p className="text-sm text-amber-900 mb-3 leading-relaxed">
                       {villageResult.insufficientDataReason ||
                         `Village sample size (N=${villageResult.sampleSize}) is below privacy-preserving k-anonymity threshold (k >= 3). Aggregated metrics suppressed to prevent individual patient re-identification.`}
                     </p>
-                    <div className="bg-slate-900/80 p-4 rounded-xl border border-amber-500/30 text-xs space-y-2">
-                      <div className="font-semibold text-white">
+                    <div className="bg-white p-4 rounded-xl border border-amber-200 text-xs space-y-2 shadow-2xs">
+                      <div className="font-bold text-slate-900">
                         Missing Signal Ingestion Checklist to Unlock Cohort Scoring:
                       </div>
-                      <ul className="list-disc pl-5 space-y-1 text-slate-300">
+                      <ul className="list-disc pl-5 space-y-1 text-slate-700">
                         {villageResult.missingDataRequirements?.map((req, i) => (
                           <li key={i}>{req}</li>
                         ))}
@@ -742,16 +740,16 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
               <>
                 {/* Village Telemetry Overview */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                    <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                    <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                       <span>Village Friction Index</span>
-                      <Users className="w-4 h-4 text-teal-400" />
+                      <Users className="w-4 h-4 text-teal-700" />
                     </div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-black text-white">
+                      <span className="text-3xl font-black text-slate-950">
                         {villageResult.overallFrictionScore}
                       </span>
-                      <span className="text-xs text-slate-400">/ 100</span>
+                      <span className="text-xs text-slate-500">/ 100</span>
                     </div>
                     <div className="mt-2">
                       <span
@@ -764,59 +762,59 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                    <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                    <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                       <span>Assessed Sample Size</span>
-                      <Database className="w-4 h-4 text-indigo-400" />
+                      <Database className="w-4 h-4 text-indigo-700" />
                     </div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-black text-indigo-400">
+                      <span className="text-3xl font-black text-indigo-700">
                         {villageResult.sampleSize}
                       </span>
-                      <span className="text-xs text-slate-400">patient journeys</span>
+                      <span className="text-xs text-slate-500">patient journeys</span>
                     </div>
-                    <p className="text-xs text-slate-400 mt-2">
+                    <p className="text-xs text-slate-500 mt-2">
                       Est. Affected Pop: {villageResult.affectedPopulationEstimate.toLocaleString()}
                     </p>
                   </div>
 
-                  <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                    <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                    <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                       <span>Avg Failure Risk</span>
-                      <Flame className="w-4 h-4 text-red-400" />
+                      <Flame className="w-4 h-4 text-rose-700" />
                     </div>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-3xl font-black text-red-400">
+                      <span className="text-3xl font-black text-rose-700">
                         {villageResult.averageCareFailureRisk}%
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 mt-2">
+                    <p className="text-xs text-slate-500 mt-2">
                       Community-level risk of non-completion
                     </p>
                   </div>
 
-                  <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                    <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+                  <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                    <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                       <span>Trend vs Last Month</span>
                       {villageResult.trendVsLastMonth.direction === 'improving' ? (
-                        <TrendingDown className="w-4 h-4 text-emerald-400" />
+                        <TrendingDown className="w-4 h-4 text-emerald-700" />
                       ) : (
-                        <TrendingUp className="w-4 h-4 text-red-400" />
+                        <TrendingUp className="w-4 h-4 text-rose-700" />
                       )}
                     </div>
                     <div className="flex items-baseline gap-2">
                       <span
                         className={`text-3xl font-black ${
                           villageResult.trendVsLastMonth.direction === 'improving'
-                            ? 'text-emerald-400'
-                            : 'text-red-400'
+                            ? 'text-emerald-700'
+                            : 'text-rose-700'
                         }`}
                       >
                         {villageResult.trendVsLastMonth.scoreDelta > 0 ? '+' : ''}
                         {villageResult.trendVsLastMonth.scoreDelta} pts
                       </span>
                     </div>
-                    <p className="text-xs text-slate-400 mt-2 uppercase tracking-wider font-semibold">
+                    <p className="text-xs text-slate-500 mt-2 uppercase tracking-wider font-semibold">
                       {villageResult.trendVsLastMonth.direction}
                     </p>
                   </div>
@@ -824,20 +822,20 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
 
                 {/* Cohorts & Barriers Breakdown */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
-                    <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                      <ShieldAlert className="w-5 h-5 text-amber-400" />
+                  <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs">
+                    <h3 className="text-base font-bold text-slate-950 mb-4 flex items-center gap-2">
+                      <ShieldAlert className="w-5 h-5 text-amber-600" />
                       Vulnerable Demographic Cohorts
                     </h3>
                     <div className="space-y-3">
                       {villageResult.affectedCohorts.map((c) => (
                         <div
                           key={c.cohort}
-                          className="p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center justify-between"
+                          className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between"
                         >
                           <div>
-                            <div className="text-sm font-semibold text-white">{c.cohort}</div>
-                            <div className="text-xs text-slate-400">{c.description}</div>
+                            <div className="text-sm font-semibold text-slate-900">{c.cohort}</div>
+                            <div className="text-xs text-slate-500">{c.description}</div>
                           </div>
                           <span
                             className={`text-xs px-2 py-0.5 rounded-full border font-mono ${getTierColor(
@@ -851,21 +849,21 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
-                    <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                      <AlertTriangle className="w-5 h-5 text-red-400" />
+                  <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs">
+                    <h3 className="text-base font-bold text-slate-950 mb-4 flex items-center gap-2">
+                      <AlertTriangle className="w-5 h-5 text-rose-600" />
                       High Frequency Barriers
                     </h3>
                     <div className="space-y-3">
                       {villageResult.topBarriers.map((b) => (
                         <div key={b.barrier}>
                           <div className="flex justify-between text-xs mb-1">
-                            <span className="font-semibold text-slate-200">{b.barrier}</span>
-                            <span className="font-mono text-teal-400">{b.frequencyPct}%</span>
+                            <span className="font-semibold text-slate-800">{b.barrier}</span>
+                            <span className="font-mono font-bold text-teal-700">{b.frequencyPct}%</span>
                           </div>
-                          <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                          <div className="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
                             <div
-                              className="bg-red-500 h-full rounded-full"
+                              className="bg-rose-600 h-full rounded-full"
                               style={{ width: `${b.frequencyPct}%` }}
                             />
                           </div>
@@ -877,29 +875,29 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
 
                 {/* Village Recommendation Card */}
                 {villageResult.recommendation && (
-                  <div className="bg-gradient-to-r from-slate-900 via-slate-900 to-indigo-950/40 border border-indigo-500/30 rounded-2xl p-6">
+                  <div className="bg-indigo-50/70 border border-indigo-200 rounded-2xl p-6 shadow-2xs">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                       <div>
-                        <span className="text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/30 font-semibold">
+                        <span className="text-xs px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-900 border border-indigo-300 font-semibold">
                           VILLAGE INTERVENTION PACKAGE
                         </span>
-                        <h3 className="text-lg font-bold text-white mt-2">
+                        <h3 className="text-lg font-bold text-slate-950 mt-2">
                           {villageResult.recommendation.recommendedIntervention}
                         </h3>
-                        <p className="text-xs text-slate-300 mt-1 max-w-2xl">
+                        <p className="text-xs text-slate-700 mt-1 max-w-2xl">
                           {villageResult.recommendation.rootCause}
                         </p>
                       </div>
                       <div className="flex items-center gap-3">
                         <button
                           onClick={() => handleOpenSimulation(villageResult.recommendation)}
-                          className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700"
+                          className="px-4 py-2 rounded-xl bg-white hover:bg-slate-50 text-slate-800 text-xs font-semibold border border-slate-300 transition cursor-pointer shadow-2xs"
                         >
                           Simulate Impact
                         </button>
                         <button
                           onClick={() => handleOpenApproval(villageResult.recommendation)}
-                          className="px-4 py-2 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 text-xs font-bold"
+                          className="px-4 py-2 rounded-xl bg-teal-700 hover:bg-teal-800 text-white text-xs font-bold transition cursor-pointer shadow-sm"
                         >
                           Authorize Package
                         </button>
@@ -917,16 +915,16 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
           <div className="space-y-6">
             {/* District Stat Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                   <span>District Composite Score</span>
-                  <Building2 className="w-4 h-4 text-teal-400" />
+                  <Building2 className="w-4 h-4 text-teal-700" />
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-white">
+                  <span className="text-3xl font-black text-slate-950">
                     {districtResult.overallDistrictScore}
                   </span>
-                  <span className="text-xs text-slate-400">/ 100</span>
+                  <span className="text-xs text-slate-500">/ 100</span>
                 </div>
                 <div className="mt-2">
                   <span
@@ -939,71 +937,71 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                   <span>Inter-Village Disparity</span>
-                  <Sliders className="w-4 h-4 text-indigo-400" />
+                  <Sliders className="w-4 h-4 text-indigo-700" />
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-indigo-400">
+                  <span className="text-3xl font-black text-indigo-700">
                     {districtResult.interVillageDisparityIndex}
                   </span>
-                  <span className="text-xs text-slate-400">pt spread</span>
+                  <span className="text-xs text-slate-500">pt spread</span>
                 </div>
-                <p className="text-xs text-slate-400 mt-2">
+                <p className="text-xs text-slate-500 mt-2">
                   Variance between best and worst served villages
                 </p>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                   <span>Total Assessed Journeys</span>
-                  <Users className="w-4 h-4 text-emerald-400" />
+                  <Users className="w-4 h-4 text-emerald-700" />
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-emerald-400">
+                  <span className="text-3xl font-black text-emerald-700">
                     {districtResult.totalJourneysAssessed}
                   </span>
-                  <span className="text-xs text-slate-400">across {districtResult.totalVillagesAssessed} blocks</span>
+                  <span className="text-xs text-slate-500">across {districtResult.totalVillagesAssessed} blocks</span>
                 </div>
-                <p className="text-xs text-slate-400 mt-2">Continuous telemetry aggregation</p>
+                <p className="text-xs text-slate-500 mt-2">Continuous telemetry aggregation</p>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4">
-                <div className="flex items-center justify-between text-xs text-slate-400 mb-2">
+              <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-2xs">
+                <div className="flex items-center justify-between text-xs text-slate-500 mb-2">
                   <span>Systemic Hotspots</span>
-                  <Flame className="w-4 h-4 text-red-400" />
+                  <Flame className="w-4 h-4 text-rose-700" />
                 </div>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-black text-red-400">
+                  <span className="text-3xl font-black text-rose-700">
                     {districtResult.systemicHotspots.length}
                   </span>
-                  <span className="text-xs text-slate-400">critical blocks</span>
+                  <span className="text-xs text-slate-500">critical blocks</span>
                 </div>
-                <p className="text-xs text-slate-400 mt-2">Requiring immediate resource triage</p>
+                <p className="text-xs text-slate-500 mt-2">Requiring immediate resource triage</p>
               </div>
             </div>
 
             {/* Systemic Hotspots & Facility Benchmarks */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
-                <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                  <Flame className="w-5 h-5 text-red-400" />
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs">
+                <h3 className="text-base font-bold text-slate-950 mb-4 flex items-center gap-2">
+                  <Flame className="w-5 h-5 text-rose-600" />
                   Geographic Friction Hotspots
                 </h3>
                 <div className="space-y-3">
                   {districtResult.systemicHotspots.map((spot) => (
                     <div
                       key={spot.village}
-                      className="p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 flex items-center justify-between"
+                      className="p-3 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between"
                     >
                       <div>
-                        <div className="text-sm font-bold text-white">{spot.village}</div>
-                        <div className="text-xs text-slate-400">{spot.primaryRootCause}</div>
+                        <div className="text-sm font-bold text-slate-900">{spot.village}</div>
+                        <div className="text-xs text-slate-500">{spot.primaryRootCause}</div>
                       </div>
                       <div className="text-right">
-                        <span className="text-base font-black text-red-400">{spot.score}</span>
-                        <div className="text-[10px] text-slate-400">
+                        <span className="text-base font-black text-rose-700">{spot.score}</span>
+                        <div className="text-[10px] text-slate-500 font-medium">
                           {spot.population.toLocaleString()} pop
                         </div>
                       </div>
@@ -1012,24 +1010,24 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
-                <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-teal-400" />
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs">
+                <h3 className="text-base font-bold text-slate-950 mb-4 flex items-center gap-2">
+                  <Building2 className="w-5 h-5 text-teal-700" />
                   Facility Operational Telemetry
                 </h3>
                 <div className="space-y-3">
                   {districtResult.facilityPerformance.map((fac) => (
                     <div
                       key={fac.facilityName}
-                      className="p-3 rounded-xl bg-slate-800/60 border border-slate-700/60 text-xs"
+                      className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs"
                     >
-                      <div className="flex justify-between font-semibold text-white mb-1.5">
+                      <div className="flex justify-between font-semibold text-slate-900 mb-1.5">
                         <span>{fac.facilityName}</span>
-                        <span className="text-teal-400">
+                        <span className="text-teal-700 font-bold">
                           Friction: +{fac.frictionContribution} pts
                         </span>
                       </div>
-                      <div className="grid grid-cols-3 gap-2 text-slate-300">
+                      <div className="grid grid-cols-3 gap-2 text-slate-600">
                         <div>OPD Wait: {fac.avgOpdWaitMinutes}m</div>
                         <div>Bed Occ: {fac.bedOccupancyPct}%</div>
                         <div>Stockout: {fac.stockoutRatePct}%</div>
@@ -1041,39 +1039,39 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
             </div>
 
             {/* District Systemic Recommendations */}
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
-              <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-teal-400" />
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs">
+              <h3 className="text-base font-bold text-slate-950 mb-4 flex items-center gap-2">
+                <Sparkles className="w-5 h-5 text-teal-700" />
                 District Policy & Structural Interventions
               </h3>
               <div className="space-y-4">
                 {districtResult.recommendations.map((rec) => (
                   <div
                     key={rec.id}
-                    className="p-4 rounded-xl bg-slate-800/50 border border-slate-700/60 flex flex-col md:flex-row md:items-center justify-between gap-4"
+                    className="p-4 rounded-xl bg-slate-50 border border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4"
                   >
                     <div>
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs px-2 py-0.5 rounded bg-teal-500/10 text-teal-400 font-semibold border border-teal-500/30">
+                        <span className="text-xs px-2 py-0.5 rounded bg-teal-50 text-teal-800 font-semibold border border-teal-200">
                           {rec.priority} PRIORITY
                         </span>
-                        <span className="text-xs text-slate-400">{rec.responsibleAuthority}</span>
+                        <span className="text-xs text-slate-500">{rec.responsibleAuthority}</span>
                       </div>
-                      <div className="text-sm font-bold text-white">
+                      <div className="text-sm font-bold text-slate-900">
                         {rec.recommendedIntervention}
                       </div>
-                      <div className="text-xs text-slate-400 mt-1">{rec.rootCause}</div>
+                      <div className="text-xs text-slate-500 mt-1">{rec.rootCause}</div>
                     </div>
                     <div className="flex items-center gap-3">
                       <button
                         onClick={() => handleOpenSimulation(rec)}
-                        className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-slate-200 border border-slate-700"
+                        className="px-3 py-1.5 rounded-lg bg-white hover:bg-slate-100 text-xs font-semibold text-slate-800 border border-slate-300 transition cursor-pointer shadow-2xs"
                       >
                         Simulate
                       </button>
                       <button
                         onClick={() => handleOpenApproval(rec)}
-                        className="px-3 py-1.5 rounded-lg bg-teal-500 hover:bg-teal-400 text-xs font-bold text-slate-950"
+                        className="px-3 py-1.5 rounded-lg bg-teal-700 hover:bg-teal-800 text-xs font-bold text-white transition cursor-pointer shadow-sm"
                       >
                         Sign Approval
                       </button>
@@ -1088,25 +1086,25 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
         {/* TAB 4: INTERVENTIONS LEDGER & OUTCOMES */}
         {activeLevel === 'LEDGER' && (
           <div className="space-y-6">
-            <div className="bg-slate-900/80 border border-slate-800 rounded-2xl p-6">
+            <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-2xs">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
                 <div>
-                  <h3 className="text-base font-bold text-white flex items-center gap-2">
-                    <FileCheck className="w-5 h-5 text-teal-400" />
+                  <h3 className="text-base font-bold text-slate-950 flex items-center gap-2">
+                    <FileCheck className="w-5 h-5 text-teal-700" />
                     Digitally Signed Intervention Ledger (Cryptographic Audit Trail)
                   </h3>
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-500 mt-1">
                     Consequential government actions sealed with SHA-256 officer signatures and measured outcomes.
                   </p>
                 </div>
-                <div className="text-xs text-slate-400 font-mono">
+                <div className="text-xs text-slate-500 font-mono font-semibold">
                   {ledgerEntries.length} Recorded Signatures
                 </div>
               </div>
 
               <div className="overflow-x-auto">
-                <table className="w-full text-xs text-left text-slate-300">
-                  <thead className="bg-slate-800/80 text-slate-400 font-semibold border-b border-slate-700">
+                <table className="w-full text-xs text-left text-slate-700">
+                  <thead className="bg-slate-50 text-slate-600 font-bold border-b border-slate-200 uppercase tracking-wider">
                     <tr>
                       <th className="p-3">Approval ID</th>
                       <th className="p-3">Entity & Intervention</th>
@@ -1116,24 +1114,24 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                       <th className="p-3 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800">
+                  <tbody className="divide-y divide-slate-100">
                     {ledgerEntries.map((entry) => (
-                      <tr key={entry.approvalId} className="hover:bg-slate-800/40">
-                        <td className="p-3 font-mono text-teal-300">{entry.approvalId}</td>
+                      <tr key={entry.approvalId} className="hover:bg-slate-50/80">
+                        <td className="p-3 font-mono font-semibold text-teal-800">{entry.approvalId}</td>
                         <td className="p-3">
-                          <div className="font-semibold text-white">{entry.targetEntity}</div>
-                          <div className="text-slate-400 truncate max-w-xs">{entry.interventionName}</div>
+                          <div className="font-semibold text-slate-900">{entry.targetEntity}</div>
+                          <div className="text-slate-500 truncate max-w-xs">{entry.interventionName}</div>
                         </td>
                         <td className="p-3">
-                          <div className="text-white">{entry.officerName}</div>
+                          <div className="font-medium text-slate-900">{entry.officerName}</div>
                           <div className="text-slate-500 text-[11px]">{entry.officerRole}</div>
                         </td>
                         <td className="p-3">
                           <span
                             className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
                               entry.status === 'OUTCOME_RECORDED'
-                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                                : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                                ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                                : 'bg-amber-50 text-amber-800 border-amber-200'
                             }`}
                           >
                             {entry.status}
@@ -1149,12 +1147,12 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                                 setSelectedApprovalForOutcome(entry);
                                 setOutcomeModalOpen(true);
                               }}
-                              className="px-3 py-1 bg-teal-500 hover:bg-teal-400 text-slate-950 rounded-lg font-bold text-xs"
+                              className="px-3 py-1 bg-teal-700 hover:bg-teal-800 text-white rounded-lg font-bold text-xs cursor-pointer shadow-2xs"
                             >
                               Record Outcome
                             </button>
                           ) : (
-                            <span className="text-emerald-400 font-semibold flex items-center justify-end gap-1">
+                            <span className="text-emerald-700 font-semibold flex items-center justify-end gap-1">
                               <CheckCircle2 className="w-3.5 h-3.5" /> Closed
                             </span>
                           )}
@@ -1179,74 +1177,74 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
       {/* WHAT-IF SIMULATION MODAL */}
       {simulationModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
           role="dialog"
           aria-modal="true"
         >
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl text-slate-900">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <Sliders className="w-5 h-5 text-teal-400" />
-                <h3 className="text-base font-bold text-white">What-If Intervention Simulation</h3>
+                <Sliders className="w-5 h-5 text-teal-600" />
+                <h3 className="text-base font-bold text-slate-900">What-If Intervention Simulation</h3>
               </div>
               <button
                 onClick={() => setSimulationModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-slate-800 text-slate-400"
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Intervention Strategy
               </label>
               <input
                 type="text"
                 value={simulationCandidate?.name || activeRecommendation?.recommendedIntervention || ''}
                 readOnly
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                className="w-full bg-slate-100 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-800"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-400 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 mb-1">
                 Budget Allocation (₹ INR)
               </label>
               <input
                 type="number"
                 value={simulationBudget}
                 onChange={(e) => setSimulationBudget(Number(e.target.value))}
-                className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-sm text-white"
+                className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
             </div>
 
             <button
               onClick={runSimulation}
               disabled={simulating}
-              className="w-full py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition"
+              className="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-sm"
             >
               <Sparkles className="w-4 h-4" />
               {simulating ? 'Computing Trajectory...' : 'Run Simulation'}
             </button>
 
             {simulationResult && (
-              <div className="bg-slate-950 p-4 rounded-xl border border-teal-500/30 text-xs space-y-2">
+              <div className="bg-teal-50/80 p-4 rounded-xl border border-teal-200 text-xs space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Projected Friction Reduction:</span>
-                  <span className="font-bold text-emerald-400">
+                  <span className="text-slate-600">Projected Friction Reduction:</span>
+                  <span className="font-bold text-emerald-700">
                     -{simulationResult.frictionReduction} pts (to {simulationResult.projectedScore}/100)
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Completion Adherence Gain:</span>
-                  <span className="font-bold text-teal-300">
+                  <span className="text-slate-600">Completion Adherence Gain:</span>
+                  <span className="font-bold text-teal-700">
                     +{simulationResult.completionGainPct}%
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Cost-Effectiveness Ratio:</span>
-                  <span className="font-bold text-sky-300 font-mono">
+                  <span className="text-slate-600">Cost-Effectiveness Ratio:</span>
+                  <span className="font-bold text-slate-900 font-mono">
                     ₹{simulationResult.costPerFrictionPointSaved?.toFixed(0)} per pt saved
                   </span>
                 </div>
@@ -1259,21 +1257,21 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
       {/* HUMAN OFFICER APPROVAL MODAL */}
       {approvalModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
           role="dialog"
           aria-modal="true"
         >
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl text-slate-900">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-teal-400" />
-                <h3 className="text-base font-bold text-white">
+                <ShieldCheck className="w-5 h-5 text-teal-600" />
+                <h3 className="text-base font-bold text-slate-900">
                   Authorized Officer Cryptographic Approval
                 </h3>
               </div>
               <button
                 onClick={() => setApprovalModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-slate-800 text-slate-400"
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1281,16 +1279,16 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
 
             {approvalSuccessRecord ? (
               <div className="space-y-4">
-                <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-300 text-xs space-y-2">
-                  <div className="flex items-center gap-2 font-bold text-sm">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-900 text-xs space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-sm text-emerald-800">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     Intervention Digitally Signed & Sealed
                   </div>
-                  <div>Approval Reference: {approvalSuccessRecord.approvalId}</div>
-                  <div className="break-all font-mono text-[10px] text-slate-400">
+                  <div>Approval Reference: <span className="font-semibold">{approvalSuccessRecord.approvalId}</span></div>
+                  <div className="break-all font-mono text-[10px] text-slate-600">
                     SHA-256 Hash: {approvalSuccessRecord.signatureHash}
                   </div>
-                  <div>Timestamp: {approvalSuccessRecord.timestamp}</div>
+                  <div className="text-slate-600">Timestamp: {approvalSuccessRecord.timestamp}</div>
                 </div>
                 <button
                   onClick={() => {
@@ -1298,64 +1296,64 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                     setActiveLevel('LEDGER');
                     loadLedger();
                   }}
-                  className="w-full py-2 bg-teal-500 text-slate-950 font-bold rounded-xl text-xs"
+                  className="w-full py-2 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl text-xs transition shadow-sm"
                 >
                   View in Interventions Ledger
                 </button>
               </div>
             ) : (
               <div className="space-y-3">
-                <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/60 text-xs text-slate-300">
-                  <div className="text-slate-400 font-semibold mb-1">Target Action:</div>
-                  <div className="text-white font-bold">
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200 text-xs text-slate-700">
+                  <div className="text-slate-500 font-semibold mb-1">Target Action:</div>
+                  <div className="text-slate-900 font-bold">
                     {activeRecommendation?.recommendedIntervention}
                   </div>
-                  <div className="text-teal-300 mt-1">
+                  <div className="text-teal-700 font-medium mt-1">
                     Entity: {activeRecommendation?.targetEntity} · Authority:{' '}
                     {activeRecommendation?.responsibleAuthority}
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Officer Name
                   </label>
                   <input
                     type="text"
                     value={officerName}
                     onChange={(e) => setOfficerName(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Designation / Role
                   </label>
                   <input
                     type="text"
                     value={officerRole}
                     onChange={(e) => setOfficerRole(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-400 mb-1">
+                  <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Executive Remarks & Authorization Mandate
                   </label>
                   <textarea
                     rows={3}
                     value={approvalRemarks}
                     onChange={(e) => setApprovalRemarks(e.target.value)}
-                    className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-xs text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                   />
                 </div>
 
                 <button
                   onClick={submitApproval}
                   disabled={approving}
-                  className="w-full py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition"
+                  className="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-sm"
                 >
                   <UserCheck className="w-4 h-4" />
                   {approving ? 'Generating Signature...' : 'Sign & Dispatch Mandate'}
@@ -1369,40 +1367,40 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
       {/* OUTCOME & FEEDBACK MODAL */}
       {outcomeModalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs"
           role="dialog"
           aria-modal="true"
         >
-          <div className="bg-slate-900 border border-slate-700 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+          <div className="bg-white border border-slate-200 rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl text-slate-900">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                <h3 className="text-base font-bold text-white">Record Final Intervention Outcome</h3>
+                <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                <h3 className="text-base font-bold text-slate-900">Record Final Intervention Outcome</h3>
               </div>
               <button
                 onClick={() => setOutcomeModalOpen(false)}
-                className="p-1 rounded-lg hover:bg-slate-800 text-slate-400"
+                className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-3 text-xs">
-              <div className="p-3 bg-slate-800/60 rounded-xl border border-slate-700/60">
-                <span className="text-slate-400">Ref: </span>
-                <span className="text-white font-mono">
+              <div className="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                <span className="text-slate-500">Ref: </span>
+                <span className="text-slate-900 font-mono font-medium">
                   {selectedApprovalForOutcome?.approvalId}
                 </span>
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-400 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Did the patient complete secondary care?
                 </label>
                 <select
                   value={outcomeCompleted ? 'YES' : 'NO'}
                   onChange={(e) => setOutcomeCompleted(e.target.value === 'YES')}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                 >
                   <option value="YES">Yes - Completed care without dropout</option>
                   <option value="NO">No - Incomplete care / Abandoned</option>
@@ -1410,19 +1408,19 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-400 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Delay Incurred (Hours)
                 </label>
                 <input
                   type="number"
                   value={outcomeDelayHours}
                   onChange={(e) => setOutcomeDelayHours(Number(e.target.value))}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-400 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Patient Satisfaction Rating (1 to 5)
                 </label>
                 <input
@@ -1431,26 +1429,26 @@ export const PatientFrictionIntelligenceSystem: React.FC = () => {
                   max={5}
                   value={outcomeRating}
                   onChange={(e) => setOutcomeRating(Number(e.target.value))}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
               <div>
-                <label className="block font-semibold text-slate-400 mb-1">
+                <label className="block font-semibold text-slate-700 mb-1">
                   Field Operational Notes & Learning Insights
                 </label>
                 <textarea
                   rows={3}
                   value={outcomeNotes}
                   onChange={(e) => setOutcomeNotes(e.target.value)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-xl px-3 py-2 text-white"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500"
                 />
               </div>
 
               <button
                 onClick={submitOutcome}
                 disabled={recordingOutcome}
-                className="w-full py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-xl bg-teal-600 hover:bg-teal-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition shadow-sm"
               >
                 <Sparkles className="w-4 h-4" />
                 {recordingOutcome ? 'Saving & Updating Model...' : 'Submit & Close Loop'}

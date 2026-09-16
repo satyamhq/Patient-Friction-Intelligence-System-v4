@@ -161,11 +161,11 @@ export const InterventionOptimizer: React.FC = () => {
           </div>
 
           {/* Explainable Optimization Rationale */}
-          <div className="p-4 bg-slate-900 text-white rounded-2xl space-y-1.5 text-xs">
-            <span className="text-[10px] font-bold text-teal-400 uppercase tracking-wider block">
+          <div className="p-4 bg-teal-50/80 border border-teal-200 text-slate-900 rounded-2xl space-y-1.5 text-xs">
+            <span className="text-[10px] font-bold text-teal-800 uppercase tracking-wider block">
               Explainable Decision Rationale
             </span>
-            <p className="text-slate-200 leading-relaxed">{recommendation.rationale}</p>
+            <p className="text-slate-700 leading-relaxed font-medium">{recommendation.rationale}</p>
           </div>
 
           {/* Selected Interventions Detailed Cards */}

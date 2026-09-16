@@ -318,64 +318,64 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Solution Highlight Visual Card */}
-          <div className="bg-slate-900 text-white rounded-3xl p-7 sm:p-9 shadow-xl border border-slate-800 space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div className="bg-white text-slate-900 rounded-3xl p-7 sm:p-9 shadow-sm border border-slate-200 space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-teal-500 text-slate-950 font-black flex items-center justify-center text-sm shadow-sm">
+                <div className="w-9 h-9 rounded-xl bg-teal-600 text-white font-bold flex items-center justify-center text-sm shadow-2xs">
                   PFIS
                 </div>
                 <div>
-                  <h4 className="font-bold text-sm text-white">Access Friction Profiling</h4>
-                  <p className="text-xs text-teal-400">Transparent Multi-Vector Assessment</p>
+                  <h4 className="font-bold text-sm text-slate-950">Access Friction Profiling</h4>
+                  <p className="text-xs text-teal-700 font-medium">Transparent Multi-Vector Assessment</p>
                 </div>
               </div>
-              <span className="px-2.5 py-1 rounded-full bg-teal-950 text-teal-300 text-[11px] font-semibold border border-teal-800">
+              <span className="px-2.5 py-1 rounded-full bg-teal-50 text-teal-800 text-[11px] font-semibold border border-teal-200">
                 Rule-Based Rationale
               </span>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
+            <p className="text-xs text-slate-600 leading-relaxed">
               PFIS calculates practical friction across verified logistical indicators so healthcare teams understand the specific reasons preventing care completion:
             </p>
 
             <div className="space-y-3">
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-300">Travel Distance & Terrain Burden</span>
-                  <span className="font-bold text-rose-400">82 / 100 (Severe)</span>
+                  <span className="text-slate-700 font-medium">Travel Distance & Terrain Burden</span>
+                  <span className="font-bold text-rose-700">82 / 100 (Severe)</span>
                 </div>
-                <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-rose-500 rounded-full w-[82%]" />
-                </div>
-              </div>
-
-              <div className="space-y-1">
-                <div className="flex justify-between text-xs">
-                  <span className="text-slate-300">Public Transit Availability</span>
-                  <span className="font-bold text-orange-400">75 / 100 (High)</span>
-                </div>
-                <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-orange-500 rounded-full w-[75%]" />
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-rose-600 rounded-full w-[82%]" />
                 </div>
               </div>
 
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-300">Family & Caregiver Accompaniment</span>
-                  <span className="font-bold text-amber-400">65 / 100 (Moderate)</span>
+                  <span className="text-slate-700 font-medium">Public Transit Availability</span>
+                  <span className="font-bold text-amber-700">75 / 100 (High)</span>
                 </div>
-                <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-amber-500 rounded-full w-[65%]" />
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-amber-500 rounded-full w-[75%]" />
                 </div>
               </div>
 
               <div className="space-y-1">
                 <div className="flex justify-between text-xs">
-                  <span className="text-slate-300">Digital Access & Scheme Readiness</span>
-                  <span className="font-bold text-emerald-400">30 / 100 (Low)</span>
+                  <span className="text-slate-700 font-medium">Family & Caregiver Accompaniment</span>
+                  <span className="font-bold text-amber-700">65 / 100 (Moderate)</span>
                 </div>
-                <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
-                  <div className="h-full bg-emerald-500 rounded-full w-[30%]" />
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-amber-400 rounded-full w-[65%]" />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex justify-between text-xs">
+                  <span className="text-slate-700 font-medium">Digital Access & Scheme Readiness</span>
+                  <span className="font-bold text-emerald-700">30 / 100 (Low)</span>
+                </div>
+                <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-emerald-600 rounded-full w-[30%]" />
                 </div>
               </div>
             </div>
@@ -703,19 +703,19 @@ export const LandingPage: React.FC = () => {
       {/* 7. DECISION SUPPORT & INTERVENTION SIMULATOR */}
       {/* Clean, User-Friendly Healthcare Planning Showcase */}
       {/* ================================================== */}
-      <section className="bg-slate-900 text-white py-10 sm:py-14 rounded-2xl sm:rounded-3xl max-w-7xl mx-3 sm:mx-6 lg:mx-auto px-5 sm:px-10 lg:px-12 shadow-xl border border-slate-800 space-y-8">
+      <section className="bg-slate-50 text-slate-900 py-10 sm:py-14 rounded-2xl sm:rounded-3xl max-w-7xl mx-3 sm:mx-6 lg:mx-auto px-5 sm:px-10 lg:px-12 border border-slate-200 space-y-8 shadow-2xs">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           <div className="space-y-5">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-950 text-teal-300 text-xs font-semibold border border-teal-800">
-              <Sliders className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-50 text-teal-800 text-xs font-semibold border border-teal-200">
+              <Sliders className="w-3.5 h-3.5 text-teal-700 shrink-0" />
               <span>Decision Support for Healthcare Planners</span>
             </div>
 
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-snug">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-950 tracking-tight leading-snug">
               Predict Impact Before Deploying Interventions
             </h2>
 
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
               Healthcare administrators can model how targeted logistical programs, such as community transport feeder shuttles, local document helpdesks, or extended evening OPDs, measurably reduce patient dropouts.
             </p>
 
@@ -725,17 +725,17 @@ export const LandingPage: React.FC = () => {
                   variant="primary"
                   size="md"
                   icon={<Sliders className="w-4 h-4" />}
-                  className="w-full sm:w-auto min-h-[44px] bg-teal-600 hover:bg-teal-500 text-white font-bold cursor-pointer"
+                  className="w-full sm:w-auto min-h-[44px] bg-teal-700 hover:bg-teal-800 text-white font-bold cursor-pointer"
                 >
                   Open What-If Simulator →
                 </Button>
               </Link>
               <Link to="/admin/interventions" className="w-full sm:w-auto">
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="md"
                   icon={<BarChart3 className="w-4 h-4" />}
-                  className="w-full sm:w-auto min-h-[44px] text-teal-300 border-teal-700 hover:bg-teal-950/60 font-semibold cursor-pointer"
+                  className="w-full sm:w-auto min-h-[44px] text-slate-800 bg-white border border-slate-300 hover:bg-slate-100 font-semibold cursor-pointer"
                 >
                   View Budget Allocator
                 </Button>
@@ -744,37 +744,37 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Simulation Preview Card */}
-          <div className="bg-slate-800/95 rounded-2xl p-5 sm:p-6 border border-slate-700/80 space-y-4 shadow-lg">
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-700 pb-3 text-xs gap-1">
-              <span className="font-bold text-teal-300">Demonstration Scenario: Rural Cohort (1,000 Patients)</span>
-              <span className="text-[11px] text-slate-400">Baseline Completion: 37%</span>
+          <div className="bg-white rounded-2xl p-5 sm:p-6 border border-slate-200 space-y-4 shadow-sm">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-100 pb-3 text-xs gap-1">
+              <span className="font-bold text-slate-900">Demonstration Scenario: Rural Cohort (1,000 Patients)</span>
+              <span className="text-[11px] text-slate-500">Baseline Completion: 37%</span>
             </div>
 
             <div className="space-y-2.5">
-              <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900/90 border border-slate-700 text-xs">
-                <span className="text-slate-300">Baseline Care Completion Rate:</span>
-                <span className="font-bold text-rose-400">37%</span>
+              <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-slate-200 text-xs">
+                <span className="text-slate-700 font-medium">Baseline Care Completion Rate:</span>
+                <span className="font-bold text-rose-700">37%</span>
               </div>
 
-              <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900/90 border border-teal-900/60 text-xs">
-                <span className="text-teal-200">With Community Transit Feeder Shuttle</span>
-                <span className="font-bold text-teal-400">37% → 62% (+25%)</span>
+              <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-teal-200 text-xs">
+                <span className="text-teal-900 font-medium">With Community Transit Feeder Shuttle</span>
+                <span className="font-bold text-teal-700">37% → 62% (+25%)</span>
               </div>
 
-              <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900/90 border border-teal-900/60 text-xs">
-                <span className="text-teal-200">With Ayushman Scheme Helpdesk</span>
-                <span className="font-bold text-teal-400">62% → 79% (+17%)</span>
+              <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-teal-200 text-xs">
+                <span className="text-teal-900 font-medium">With Ayushman Scheme Helpdesk</span>
+                <span className="font-bold text-teal-700">62% → 79% (+17%)</span>
               </div>
 
-              <div className="flex justify-between items-center p-3 rounded-xl bg-slate-900/90 border border-teal-900/60 text-xs">
-                <span className="text-teal-200">With Frontline Community Escorts</span>
-                <span className="font-bold text-teal-400">79% → 89% (+10%)</span>
+              <div className="flex justify-between items-center p-3 rounded-xl bg-slate-50 border border-teal-200 text-xs">
+                <span className="text-teal-900 font-medium">With Frontline Community Escorts</span>
+                <span className="font-bold text-teal-700">79% → 89% (+10%)</span>
               </div>
             </div>
 
-            <div className="p-3.5 bg-teal-950/80 border border-teal-800/80 rounded-xl text-xs flex justify-between items-center">
-              <span className="text-slate-200 font-medium">Projected Outcome:</span>
-              <span className="font-bold text-teal-300 text-sm">~520 Additional Patients Helped</span>
+            <div className="p-3.5 bg-teal-50 border border-teal-200 rounded-xl text-xs flex justify-between items-center">
+              <span className="text-slate-700 font-medium">Projected Outcome:</span>
+              <span className="font-bold text-teal-800 text-sm">~520 Additional Patients Helped</span>
             </div>
           </div>
         </div>

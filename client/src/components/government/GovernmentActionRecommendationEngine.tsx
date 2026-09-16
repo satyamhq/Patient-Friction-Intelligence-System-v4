@@ -267,28 +267,29 @@ export const GovernmentActionRecommendationEngine: React.FC<Props> = ({ onTicket
       </div>
 
       {/* Interactive Evaluator Panel */}
+      {/* Interactive Evaluator Panel */}
       {showEvaluator && (
-        <div className="p-6 rounded-3xl bg-slate-900 text-white border border-indigo-900/50 shadow-xl space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div className="p-6 rounded-3xl bg-indigo-50/70 text-slate-900 border border-indigo-200 shadow-sm space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-indigo-200/80">
             <div>
-              <h3 className="font-bold text-lg flex items-center gap-2">
-                <Cpu className="w-5 h-5 text-indigo-400" />
+              <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
+                <Cpu className="w-5 h-5 text-indigo-600" />
                 Scenario Friction Score Evaluator
               </h3>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-slate-600 mt-0.5">
                 Input any live or simulated friction profile to generate an instant, evidence-based government action recommendation.
               </p>
             </div>
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-900/60 text-indigo-300 border border-indigo-700/50">
+            <span className="px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-800 border border-indigo-200">
               Deterministic Simulation
             </span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-slate-300 flex justify-between">
+              <label className="text-xs font-bold text-slate-700 flex justify-between">
                 <span>Friction Score</span>
-                <span className="text-indigo-400 font-black">{evalFrictionScore}/100</span>
+                <span className="text-indigo-700 font-black">{evalFrictionScore}/100</span>
               </label>
               <input
                 type="range"
@@ -296,22 +297,22 @@ export const GovernmentActionRecommendationEngine: React.FC<Props> = ({ onTicket
                 max="100"
                 value={evalFrictionScore}
                 onChange={(e) => setEvalFrictionScore(Number(e.target.value))}
-                className="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
               />
-              <div className="flex justify-between text-[10px] text-slate-500">
+              <div className="flex justify-between text-[10px] text-slate-600">
                 <span>Low (0-29)</span>
                 <span>Moderate (30-49)</span>
                 <span>High (50-69)</span>
-                <span className="text-rose-400 font-bold">Critical (70+)</span>
+                <span className="text-rose-700 font-bold">Critical (70+)</span>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-300">Top Identified Barrier</label>
+              <label className="text-xs font-bold text-slate-700">Top Identified Barrier</label>
               <select
                 value={evalTopBarrier}
                 onChange={(e) => setEvalTopBarrier(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-indigo-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               >
                 <option value="Transport Availability">Transport Availability & Roads</option>
                 <option value="Financial Accessibility">Financial & Out-of-Pocket Cost</option>
@@ -322,21 +323,21 @@ export const GovernmentActionRecommendationEngine: React.FC<Props> = ({ onTicket
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-300">Distance to Facility (Km)</label>
+              <label className="text-xs font-bold text-slate-700">Distance to Facility (Km)</label>
               <input
                 type="number"
                 value={evalDistanceKm}
                 onChange={(e) => setEvalDistanceKm(Number(e.target.value))}
-                className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-indigo-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               />
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-300">Block / Administrative Zone</label>
+              <label className="text-xs font-bold text-slate-700">Block / Administrative Zone</label>
               <select
                 value={evalBlock}
                 onChange={(e) => setEvalBlock(e.target.value)}
-                className="w-full px-3 py-2 rounded-xl bg-slate-800 border border-slate-700 text-xs text-white focus:outline-none focus:border-indigo-500"
+                className="w-full px-3 py-2 rounded-xl bg-white border border-slate-300 text-xs text-slate-900 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
               >
                 <option value="Phagwara Rural">Phagwara Rural</option>
                 <option value="Bholath Sub-Centre">Bholath Sub-Centre</option>
@@ -350,7 +351,7 @@ export const GovernmentActionRecommendationEngine: React.FC<Props> = ({ onTicket
             <button
               onClick={handleRunEvaluation}
               disabled={evaluating}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-500 hover:bg-indigo-400 text-white text-xs font-bold transition-all shadow-md disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold transition-all shadow-sm disabled:opacity-50"
             >
               <Zap className="w-4 h-4" />
               <span>{evaluating ? 'Translating Score...' : 'Generate Action Plan'}</span>
@@ -359,16 +360,16 @@ export const GovernmentActionRecommendationEngine: React.FC<Props> = ({ onTicket
 
           {/* Evaluated Plan Preview */}
           {evaluatedPlan && (
-            <div className="p-5 rounded-2xl bg-slate-800/90 border border-indigo-700/60 space-y-4">
-              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-700">
+            <div className="p-5 rounded-2xl bg-white border border-indigo-200 shadow-sm space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2 pb-3 border-b border-slate-200">
                 <div className="flex items-center gap-2">
                   <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-black ${getTierColor(evaluatedPlan.frictionLevel)}`}>
                     Score: {evaluatedPlan.frictionScore}/100 • {evaluatedPlan.frictionLevel}
                   </span>
-                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-900/60 text-indigo-300 border border-indigo-700">
+                  <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-indigo-50 text-indigo-800 border border-indigo-200">
                     Priority Score: {evaluatedPlan.priorityScore}/100 ({evaluatedPlan.priorityLevel})
                   </span>
-                  <span className="text-xs text-slate-400 font-semibold">• {evaluatedPlan.rootCauseCategory} Root Cause</span>
+                  <span className="text-xs text-slate-600 font-semibold">• {evaluatedPlan.rootCauseCategory} Root Cause</span>
                 </div>
 
                 <button
@@ -389,31 +390,31 @@ export const GovernmentActionRecommendationEngine: React.FC<Props> = ({ onTicket
               </div>
 
               <div className="space-y-1">
-                <strong className="text-sm font-bold text-white block">{evaluatedPlan.problemIdentified}</strong>
-                <p className="text-xs text-slate-300">{evaluatedPlan.rootCauseDetails}</p>
+                <strong className="text-sm font-bold text-slate-900 block">{evaluatedPlan.problemIdentified}</strong>
+                <p className="text-xs text-slate-700">{evaluatedPlan.rootCauseDetails}</p>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-indigo-950/70 border border-indigo-800/80 space-y-1">
-                <span className="text-[10px] uppercase tracking-wider font-bold text-indigo-300 flex items-center gap-1">
+              <div className="p-3.5 rounded-xl bg-indigo-50 border border-indigo-200 space-y-1">
+                <span className="text-[10px] uppercase tracking-wider font-bold text-indigo-800 flex items-center gap-1">
                   <Building2 className="w-3.5 h-3.5" /> Assigned Authority: {evaluatedPlan.responsibleAuthority.authorityLabel}
                 </span>
-                <p className="text-xs font-bold text-white">
+                <p className="text-xs font-bold text-slate-900">
                   Directive: {evaluatedPlan.recommendedGovernmentAction}
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-slate-900/80 p-3 rounded-xl border border-slate-700/60">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-slate-50 p-3 rounded-xl border border-slate-200">
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Expected Impact</span>
-                  <strong className="text-emerald-400">{evaluatedPlan.expectedImpact}</strong>
+                  <span className="text-slate-500 block text-[10px]">Expected Impact</span>
+                  <strong className="text-emerald-700">{evaluatedPlan.expectedImpact}</strong>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Timeline</span>
-                  <strong className="text-white">{evaluatedPlan.implementationTimeline}</strong>
+                  <span className="text-slate-500 block text-[10px]">Timeline</span>
+                  <strong className="text-slate-900">{evaluatedPlan.implementationTimeline}</strong>
                 </div>
                 <div>
-                  <span className="text-slate-400 block text-[10px]">Estimated Budget</span>
-                  <strong className="text-amber-300">₹{evaluatedPlan.requiredResources.estimatedBudgetINR.toLocaleString('en-IN')}</strong>
+                  <span className="text-slate-500 block text-[10px]">Estimated Budget</span>
+                  <strong className="text-amber-800">₹{evaluatedPlan.requiredResources.estimatedBudgetINR.toLocaleString('en-IN')}</strong>
                 </div>
               </div>
             </div>

@@ -30,6 +30,8 @@ export const AccessibilityProvider: React.FC<{ children: React.ReactNode }> = ({
 
   useEffect(() => {
     const root = document.documentElement;
+    root.classList.remove('dark');
+    document.body.classList.remove('dark');
 
     // Apply Text Size Scaling
     root.classList.remove('text-size-normal', 'text-size-large', 'text-size-xlarge');
